@@ -21,6 +21,7 @@
 #pragma once
 
 #include <vector>
+#include <unordered_map>
 
 #include <Geant4/g4root.hh>
 
@@ -29,20 +30,16 @@ namespace MATHUSLA { namespace MU {
 namespace Analysis { ///////////////////////////////////////////////////////////////////////////
 
 //__Simulation Setting Key-Value Pair___________________________________________________________
-struct SimSetting { std::string name, text; };
+struct SimSetting {
+  std::string name, text;
+  SimSetting() = default;
+  SimSetting(const std::string& setting_name,
+             const std::string& setting_text) : name(setting_name), text(setting_text) {}
+  SimSetting(const std::string& prefix,
+             const std::string& setting_name,
+             const std::string& setting_text) : name(prefix + setting_name), text(setting_text) {}
+};
 using SimSettingList = std::vector<SimSetting>;
-//----------------------------------------------------------------------------------------------
-
-//__Simulation Setting Pseudo-Constructors______________________________________________________
-inline SimSetting Setting(const std::string& name,
-                          const std::string& text) {
-  return {name, text};
-}
-inline SimSetting Setting(const std::string& prefix,
-                          const std::string& name,
-                          const std::string& text) {
-  return {prefix + name, text};
-}
 //----------------------------------------------------------------------------------------------
 
 namespace detail { /////////////////////////////////////////////////////////////////////////////
@@ -51,13 +48,13 @@ namespace detail { /////////////////////////////////////////////////////////////
 inline void AddSetting(SimSettingList& list,
                        const std::string& name,
                        const std::string& text) {
-  list.push_back(Setting(name, text));
+  list.emplace_back(name, text);
 }
 inline void AddSettingWithPrefix(SimSettingList& list,
                                  const std::string& prefix,
                                  const std::string& name,
                                  const std::string& text) {
-  list.push_back(Setting(prefix, name, text));
+  list.emplace_back(prefix, name, text);
 }
 //----------------------------------------------------------------------------------------------
 
@@ -93,6 +90,9 @@ SimSettingList Settings(const std::string& name,
   detail::AddSetting(out, name, text, rest...);
   return out;
 }
+//----------------------------------------------------------------------------------------------
+
+//__Generate SimSettingList_____________________________________________________________________
 template<class ...Strings>
 SimSettingList Settings(const std::string& prefix,
                         const std::string& name,
@@ -101,6 +101,72 @@ SimSettingList Settings(const std::string& prefix,
   SimSettingList out;
   out.reserve(sizeof...(Strings));
   detail::AddSettingWithPrefix(out, prefix, name, text, rest...);
+  return out;
+}
+//----------------------------------------------------------------------------------------------
+
+//__Generate SimSettingList_____________________________________________________________________
+inline SimSettingList Settings(const std::vector<std::string>& names,
+                               const std::vector<std::string>& texts) {
+  const auto name_count = names.size();
+  const auto text_count = texts.size();
+  if (name_count != text_count || name_count == 0UL || text_count == 0UL)
+    return SimSettingList{};
+
+  SimSettingList out;
+  out.reserve(name_count);
+  for (std::size_t i{}; i < name_count; ++i)
+    detail::AddSetting(out, names[i], texts[i]);
+  return out;
+}
+//----------------------------------------------------------------------------------------------
+
+//__Generate SimSettingList_____________________________________________________________________
+inline SimSettingList Settings(const std::string& prefix,
+                               const std::vector<std::string>& names,
+                               const std::vector<std::string>& texts) {
+  const auto name_count = names.size();
+  const auto text_count = texts.size();
+  if (name_count != text_count || name_count == 0UL || text_count == 0UL)
+    return SimSettingList{};
+
+  SimSettingList out;
+  out.reserve(name_count);
+  for (std::size_t i{}; i < name_count; ++i)
+    detail::AddSettingWithPrefix(out, prefix, names[i], texts[i]);
+  return out;
+}
+//----------------------------------------------------------------------------------------------
+
+//__Generate Indexed SimSettingList_____________________________________________________________
+inline SimSettingList IndexedSettings(const std::string& name,
+                                      const std::vector<std::string>& texts,
+                                      const std::size_t starting_index=0UL) {
+  const auto text_count = texts.size();
+  if (text_count == 0UL)
+    return SimSettingList{};
+
+  SimSettingList out;
+  out.reserve(text_count);
+  for (std::size_t i{}; i < text_count; ++i)
+    detail::AddSetting(out, name + std::to_string(starting_index + i), texts[i]);
+  return out;
+}
+//----------------------------------------------------------------------------------------------
+
+//__Generate Indexed SimSettingList_____________________________________________________________
+inline SimSettingList IndexedSettings(const std::string& prefix,
+                                      const std::string& name,
+                                      const std::vector<std::string>& texts,
+                                      const std::size_t starting_index=0UL) {
+  const auto text_count = texts.size();
+  if (text_count == 0UL)
+    return SimSettingList{};
+
+  SimSettingList out;
+  out.reserve(text_count);
+  for (std::size_t i{}; i < text_count; ++i)
+    detail::AddSettingWithPrefix(out, prefix, name + std::to_string(starting_index + i), texts[i]);
   return out;
 }
 //----------------------------------------------------------------------------------------------
@@ -126,26 +192,67 @@ bool Open(const std::string& path);
 bool Save();
 //----------------------------------------------------------------------------------------------
 
+//__Data Entry Types____________________________________________________________________________
+using DataEntryValueType = double;
+using DataEntry = std::vector<DataEntryValueType>;
+using DataEntryList = std::vector<DataEntry>;
+using NameToDataMap = std::unordered_map<std::string, DataEntryValueType>;
+using DataKey = std::string;
+using DataKeyList = std::vector<DataKey>;
+enum class DataKeyType { Single, Vector };
+using DataKeyTypeList = std::vector<DataKeyType>;
+static const DataKeyList DefaultDataKeyList{
+  "N_HITS",
+  "Deposit", "Time", "Detector",
+  "PDG", "Track", "Parent", "X", "Y", "Z", "E", "PX", "PY", "PZ",
+  "N_GEN",
+  "GEN_PDG", "GEN_Track", "GEN_Parent",
+  "GEN_T", "GEN_X", "GEN_Y", "GEN_Z", "GEN_E", "GEN_PX", "GEN_PY", "GEN_PZ"
+};
+static const DataKeyTypeList DefaultDataKeyTypeList{
+  DataKeyType::Single,
+
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+
+  DataKeyType::Single,
+
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector
+};
+//----------------------------------------------------------------------------------------------
+
 //__NTuple Initializer__________________________________________________________________________
 bool CreateNTuple(const std::string& name,
-                  const std::vector<std::string>& columns);
+                  const DataKeyList& columns,
+                  const DataKeyTypeList& types);
 //----------------------------------------------------------------------------------------------
 
 //__Add Data to NTuple__________________________________________________________________________
 bool FillNTuple(const std::string& name,
-                const std::vector<double>& values);
-//----------------------------------------------------------------------------------------------
-
-//__Add Data to NTuple__________________________________________________________________________
-bool FillNTuple(const std::string& prefix,
-                const size_t id,
-                const std::vector<double>& values);
-//----------------------------------------------------------------------------------------------
-
-//__NTuple Collection Initializer_______________________________________________________________
-bool GenerateNTupleCollection(const size_t count,
-                              const std::string& prefix,
-                              const std::vector<std::string>& columns);
+                const DataKeyTypeList& types,
+                const DataEntry& single_values,
+                const DataEntryList& vector_values);
 //----------------------------------------------------------------------------------------------
 
 } /* namespace ROOT */ /////////////////////////////////////////////////////////////////////////

@@ -19,7 +19,10 @@
 
 #include <unordered_map>
 
+#include <Geant4/tls.hh>
+
 #include "physics/PythiaGenerator.hh"
+#include "physics/HepMCGenerator.hh"
 #include "physics/Units.hh"
 
 namespace MATHUSLA { namespace MU {
@@ -50,7 +53,8 @@ GeneratorAction::GeneratorAction(const std::string& generator)
       13, 60*GeVperC, 0.1, 5*deg);
 
   _gen_map["pythia"] = new Physics::PythiaGenerator(
-      -13, 60*GeVperC, 0.5, 10*deg, {
+      {},
+      {
           "Print:quiet = on",
           "Next:numberCount = 10000",
           "Stat:showErrors = off",
@@ -59,6 +63,10 @@ GeneratorAction::GeneratorAction(const std::string& generator)
           "24:onMode = off",
           "24:onIfAny = 13"
       });
+
+  _gen_map["hepmc"] = new Physics::HepMCGenerator(
+      {{13, {0, 0, 0},
+            {0, 0, 0}}});
 
   std::string generators;
   for (const auto& element : _gen_map) {
@@ -89,7 +97,8 @@ void GeneratorAction::GeneratePrimaries(G4Event* event) {
 //----------------------------------------------------------------------------------------------
 
 //__Generator Action Messenger Set Value________________________________________________________
-void GeneratorAction::SetNewValue(G4UIcommand* command, G4String value) {
+void GeneratorAction::SetNewValue(G4UIcommand* command,
+                                  G4String value) {
   if (command == _select) {
     SetGenerator(value);
   } else if (command == _list) {

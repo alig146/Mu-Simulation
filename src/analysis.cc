@@ -17,7 +17,7 @@
 
 #include "analysis.hh"
 
-#include <unordered_map>
+#include <Geant4/tls.hh>
 
 #include <ROOT/TFile.h>
 #include <ROOT/TNamed.h>
@@ -58,16 +58,22 @@ bool Save(const std::string& path,
 namespace ROOT { ///////////////////////////////////////////////////////////////////////////////
 
 namespace { ////////////////////////////////////////////////////////////////////////////////////
+
 //__NTuple Name-Id Map__________________________________________________________________________
 G4ThreadLocal std::unordered_map<std::string, int> _ntuple;
 //----------------------------------------------------------------------------------------------
+
+//__NTuple Data Storage_________________________________________________________________________
+G4ThreadLocal std::unordered_map<std::string, DataEntryList> _ntuple_data;
+//----------------------------------------------------------------------------------------------
+
 } /* anonymous namespace */ ////////////////////////////////////////////////////////////////////
 
 //__Setup ROOT Analysis Tool____________________________________________________________________
 void Setup() {
   _ntuple.clear();
   delete G4AnalysisManager::Instance();
-  G4AnalysisManager::Instance()->SetNtupleMerging(true);
+  G4AnalysisManager::Instance()->SetNtupleMerging(false);
   G4AnalysisManager::Instance()->SetVerboseLevel(0);
 }
 //----------------------------------------------------------------------------------------------
@@ -86,11 +92,31 @@ bool Save() {
 
 //__Create ROOT NTuple__________________________________________________________________________
 bool CreateNTuple(const std::string& name,
-                  const std::vector<std::string>& columns) {
+                  const DataKeyList& columns,
+                  const DataKeyTypeList& types) {
   const auto manager = G4AnalysisManager::Instance();
   const auto id = manager->CreateNtuple(name, name);
-  for (const auto& column : columns)
-    manager->CreateNtupleDColumn(id, column);
+  const auto size = columns.size();
+
+  std::size_t vector_count{};
+  for (const auto& type : types) {
+    if (type == DataKeyType::Vector)
+      ++vector_count;
+  }
+
+  DataEntryList data;
+  data.resize(vector_count, {});
+  _ntuple_data.insert({name, data});
+  auto& list = _ntuple_data[name];
+
+  for (std::size_t index{}, vector_index{}; index < size; ++index) {
+    if (types[index] == DataKeyType::Vector) {
+      manager->CreateNtupleDColumn(id, columns[index], list[vector_index++]);
+    } else {
+      manager->CreateNtupleDColumn(id, columns[index]);
+    }
+  }
+
   manager->FinishNtuple(id);
   return _ntuple.insert({name, id}).second;
 }
@@ -98,42 +124,33 @@ bool CreateNTuple(const std::string& name,
 
 //__Fill ROOT NTuple____________________________________________________________________________
 bool FillNTuple(const std::string& name,
-                const std::vector<double>& values) {
-  const auto size = values.size();
-  if (!size)
-    return false;
+                const DataKeyTypeList& types,
+                const DataEntry& single_values,
+                const DataEntryList& vector_values) {
 
   const auto search = _ntuple.find(name);
-  if (search == _ntuple.end())
+  if (search == _ntuple.cend())
     return false;
 
+  auto& data = _ntuple_data[name];
+  const auto vector_size = vector_values.size();
+  if (data.size() != vector_size)
+    return false;
+
+  for (std::size_t i{}; i < vector_size; ++i)
+    data[i] = vector_values[i];
+
+  const auto id = search->second;
   const auto manager = G4AnalysisManager::Instance();
-  const auto ntuple_id = search->second;
-  const auto iter = values.begin();
-  for (size_t i = 0; i < size; ++i)
-    if (!manager->FillNtupleDColumn(ntuple_id, i, iter[i]))
-      return false;
-  manager->AddNtupleRow(ntuple_id);
+  const auto size = types.size();
+  for (std::size_t index{}, single_index{}; index < size; ++index) {
+    if (types[index] == DataKeyType::Single) {
+      manager->FillNtupleDColumn(id, index, single_values[single_index++]);
+    }
+  }
+
+  manager->AddNtupleRow(id);
   return true;
-}
-//----------------------------------------------------------------------------------------------
-
-//__Add Data to NTuple__________________________________________________________________________
-bool FillNTuple(const std::string& prefix,
-                const size_t id,
-                const std::vector<double>& values) {
-  return FillNTuple(prefix + std::to_string(id), values);
-}
-//----------------------------------------------------------------------------------------------
-
-//__NTuple Collection Initializer_______________________________________________________________
-bool GenerateNTupleCollection(const size_t count,
-                              const std::string& prefix,
-                              const std::vector<std::string>& columns) {
-  bool pass = true;
-  for (size_t i = 0; i < count; ++i)
-    pass = pass && CreateNTuple(prefix + std::to_string(i), columns);
-  return pass;
 }
 //----------------------------------------------------------------------------------------------
 

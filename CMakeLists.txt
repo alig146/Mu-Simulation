@@ -56,19 +56,30 @@ add_executable(simulation
     src/physics/Generator.cc
     src/physics/HepMCGenerator.cc
     src/physics/PythiaGenerator.cc
+    src/physics/RangeGenerator.cc
 
     src/tracking.cc
 
     src/util/command_line_parser.cc
 )
 
-target_link_libraries(simulation
+target_compile_features(simulation PUBLIC cxx_std_14)
+target_compile_options(simulation PUBLIC -Wno-missing-braces
+                                         -pthread
+                                         -ftls-model=global-dynamic
+                                         -fPIC)
+
+target_link_libraries(simulation PUBLIC
     ${Geant4_LIBRARIES}
     ${PYTHIA8_LIBRARY}
     ${ROOT_LIBRARIES}
-    ${HEPMC_LIBRARY})
+    ${HEPMC_LIBRARIES})
 
-target_include_directories(simulation PRIVATE ${ROOT_INCLUDE_DIRS})
+target_include_directories(simulation PUBLIC
+    ${Geant4_INCLUDE_DIRS}
+    ${ROOT_INCLUDE_DIRS}
+    ${PYTHIA8_INCLUDE_DIR}
+    ${HEPMC_INCLUDE_DIR})
 
 target_include_directories(simulation PUBLIC
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>

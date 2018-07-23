@@ -17,6 +17,8 @@
 
 #include "geometry/Flat.hh"
 
+#include <Geant4/tls.hh>
+
 #include "geometry/Earth.hh"
 #include "tracking.hh"
 
@@ -37,10 +39,9 @@ G4ThreadLocal Tracking::HitCollection* _hit_collection;
 } /* anonymous namespace */ ////////////////////////////////////////////////////////////////////
 
 //__Flat Data Variables_________________________________________________________________________
-const std::string& Detector::DataPrefix = "event";
-const std::vector<std::string>& Detector::DataKeys = {
-  "Deposit", "Time", "Detector",
-  "PDG", "Track", "X", "Y", "Z", "E", "PX", "PY", "PZ"};
+const std::string& Detector::DataName = "flat_run";
+const Analysis::ROOT::DataKeyList Detector::DataKeys = Analysis::ROOT::DefaultDataKeyList;
+const Analysis::ROOT::DataKeyTypeList Detector::DataKeyTypes = Analysis::ROOT::DefaultDataKeyTypeList;
 //----------------------------------------------------------------------------------------------
 
 //__Detector Constructor________________________________________________________________________

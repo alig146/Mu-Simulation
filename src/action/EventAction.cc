@@ -17,7 +17,8 @@
 
 #include "action.hh"
 
-#include <unordered_set>
+#include <Geant4/G4MTRunManager.hh>
+#include <Geant4/tls.hh>
 
 namespace MATHUSLA { namespace MU {
 
@@ -39,6 +40,12 @@ void EventAction::BeginOfEventAction(const G4Event* event) {
   _event_id = event->GetEventID();
   if (_event_id && !(_event_id % _print_modulo))
     std::cout << "\n\n [ Starting Event " << _event_id << " ]\n\n";
+}
+//----------------------------------------------------------------------------------------------
+
+//__Get Current Event___________________________________________________________________________
+const G4Event* EventAction::GetEvent() {
+  return G4RunManager::GetRunManager()->GetCurrentEvent();
 }
 //----------------------------------------------------------------------------------------------
 

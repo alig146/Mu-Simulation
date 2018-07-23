@@ -1,6 +1,6 @@
-/det/select Prototype
-/gen/select basic
+/det/select Box
 
-/gen/basic/pT 80 GeV/c
+/gen/select pythia
+/gen/pythia/readFile .temp/mathusla_test.cmnd
 
-/run/beamOn 10000
+/run/beamOn {count}

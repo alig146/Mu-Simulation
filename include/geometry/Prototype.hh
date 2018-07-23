@@ -201,8 +201,9 @@ public:
   static const std::string DecodeDetector(int id);
 
   static const bool DataPerEvent = true;
-  static const std::string& DataPrefix;
-  static const std::vector<std::string>& DataKeys;
+  static const std::string& DataName;
+  static const Analysis::ROOT::DataKeyList DataKeys;
+  static const Analysis::ROOT::DataKeyTypeList DataKeyTypes;
 
   static G4VPhysicalVolume* Construct(G4LogicalVolume* world);
   static G4VPhysicalVolume* ConstructEarth(G4LogicalVolume* world);

@@ -1,0 +1,2 @@
+#!/bin/bash
+./studies/run $1 $2 $3 $4 studies/test_stand/$5.mac "${@:6}"

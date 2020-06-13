@@ -19,16 +19,17 @@
 #define MU__GEOMETRY_CONSTRUCTION_HH
 #pragma once
 
-#include <Geant4/G4VSensitiveDetector.hh>
-#include <Geant4/G4VUserDetectorConstruction.hh>
-#include <Geant4/G4LogicalVolume.hh>
-#include <Geant4/G4VPhysicalVolume.hh>
-#include <Geant4/G4VisAttributes.hh>
-#include <Geant4/G4Transform3D.hh>
-#include <Geant4/G4Box.hh>
-#include <Geant4/G4Trap.hh>
-#include <Geant4/G4Material.hh>
-#include <Geant4/G4SystemOfUnits.hh>
+#include <G4VSensitiveDetector.hh>
+#include <G4VUserDetectorConstruction.hh>
+#include <G4LogicalVolume.hh>
+#include <G4VPhysicalVolume.hh>
+#include <G4VisAttributes.hh>
+#include <G4Transform3D.hh>
+#include <G4Box.hh>
+#include <G4Trap.hh>
+#include <G4Tubs.hh>
+#include <G4Material.hh>
+#include <G4SystemOfUnits.hh>
 
 #include "analysis.hh"
 #include "ui.hh"
@@ -43,17 +44,31 @@ extern G4Element* C;
 extern G4Element* N;
 extern G4Element* O;
 extern G4Element* F;
+extern G4Element* Al;
+extern G4Element* Si;
 extern G4Element* S;
 extern G4Element* Ar;
+extern G4Element* Ca;
 extern G4Material* Air;
 extern G4Material* Aluminum;
+extern G4Material* Bakelite;
+extern G4Material* Copper;
+extern G4Material* Concrete;
 extern G4Material* Iron;
+extern G4Material* PolystyreneFoam;
+extern G4Material* Polyvinyltoluene;
 } /* namespace Material */ /////////////////////////////////////////////////////////////////////
+
+//__Size of The World___________________________________________________________________________
+static constexpr const auto WorldLength = 1600*m;
+//----------------------------------------------------------------------------------------------
 
 //__Geometry Builder Class______________________________________________________________________
 class Builder : public G4VUserDetectorConstruction, public G4UImessenger {
 public:
-  Builder(const std::string& detector);
+  Builder(const std::string& detector,
+          const std::string& export_dir,
+          const bool save_option);
   G4VPhysicalVolume* Construct();
   void ConstructSDandField();
 
@@ -62,6 +77,7 @@ public:
   static const std::string MessengerDirectory;
 
   static void SetDetector(const std::string& detector);
+  static void SetSaveOption(const bool option);
 
   static const std::string& GetDetectorName();
   static bool IsDetectorDataPerEvent();
@@ -78,6 +94,9 @@ private:
 
 //__Sensitive Material Attribute Definition_____________________________________________________
 const G4VisAttributes SensitiveAttributes();
+const G4VisAttributes SensitiveAttributes2();
+const G4VisAttributes HighlightRed();
+
 //----------------------------------------------------------------------------------------------
 
 //__Casing Material Attribute Definition________________________________________________________
@@ -87,7 +106,13 @@ const G4VisAttributes CasingAttributes();
 //__Border Attribute Definition_________________________________________________________________
 const G4VisAttributes BorderAttributes();
 //----------------------------------------------------------------------------------------------
+//__Iron and Aluminum Material Attribute Defintions
 
+const G4VisAttributes AlAttributes();
+//----------------------------------------------------------------------------------------------
+const G4VisAttributes IronAttributes();
+
+//----------------------------------------------------------------------------------------------
 //__Box Builder_________________________________________________________________________________
 G4Box* Box(const std::string& name,
            const double width,
@@ -101,6 +126,13 @@ G4Trap* Trap(const std::string& name,
              const double minwidth,
              const double maxwidth,
              const double depth);
+//----------------------------------------------------------------------------------------------
+
+//__Cylinder Builder____________________________________________________________________________
+G4Tubs* Cylinder(const std::string& name,
+                 const double height,
+                 const double inner_radius,
+                 const double outer_radius);
 //----------------------------------------------------------------------------------------------
 
 //__Volume Builder______________________________________________________________________________
@@ -258,12 +290,14 @@ G4RotationMatrix Matrix(const double mxx,
 
 //__GDML File Export____________________________________________________________________________
 void Export(const G4LogicalVolume* volume,
+            const std::string& dir,
             const std::string& file,
             const std::string& schema="");
 //----------------------------------------------------------------------------------------------
 
 //__GDML File Export____________________________________________________________________________
 void Export(const G4VPhysicalVolume* volume,
+            const std::string& dir,
             const std::string& file,
             const std::string& schema="");
 //----------------------------------------------------------------------------------------------

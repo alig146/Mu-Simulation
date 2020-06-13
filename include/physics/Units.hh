@@ -20,9 +20,9 @@
 #define MU__PHYSICS_UNITS_HH
 #pragma once
 
-#include <Geant4/G4UnitsTable.hh>
-#include <Geant4/G4SystemOfUnits.hh>
-#include <Geant4/G4PhysicalConstants.hh>
+#include <G4UnitsTable.hh>
+#include <G4SystemOfUnits.hh>
+#include <G4PhysicalConstants.hh>
 
 namespace MATHUSLA { namespace MU {
 
@@ -57,6 +57,14 @@ inline void Define() {
   new G4UnitDefinition("MeV/c", "MeV/c", "Momentum", MeVperC);
   new G4UnitDefinition("keV/c", "keV/c", "Momentum", keVperC);
   new G4UnitDefinition( "eV/c",  "eV/c", "Momentum",  eVperC);
+}
+//----------------------------------------------------------------------------------------------
+
+//__Convert Unit To String______________________________________________________________________
+inline std::string to_string(double value,
+                             double unit,
+                             const std::string& string) {
+  return std::to_string(value / unit) + " " + string;
 }
 //----------------------------------------------------------------------------------------------
 

@@ -1,0 +1,21 @@
+/det/select Prototype
+
+/vis/filtering/trajectories/create/chargeFilter
+/vis/filtering/trajectories/chargeFilter-0/add 0
+/vis/filtering/trajectories/chargeFilter-0/invert true
+/vis/filtering/trajectories/chargeFilter-0/verbose false
+/vis/filtering/trajectories/chargeFilter-0/active true
+
+/gen/select range
+
+/gen/range/id 13
+/gen/range/p_unit 0 0 -1
+
+/gen/range/phi_min -0.1 rad
+/gen/range/phi_max  0.1 rad
+/gen/range/eta_min -0.25
+/gen/range/eta_max  0.25
+
+/gen/range/p_mag {pmag} GeV/c
+
+/run/beamOn {count}

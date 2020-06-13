@@ -17,9 +17,11 @@
 
 #include "action.hh"
 
-#include <Geant4/tls.hh>
+#include <tls.hh>
 
 namespace MATHUSLA { namespace MU {
+
+bool ActionInitialization::Debug = false;
 
 namespace { ////////////////////////////////////////////////////////////////////////////////////
 //__Generator Name______________________________________________________________________________
@@ -48,6 +50,7 @@ void ActionInitialization::Build() const {
   SetUserAction(new RunAction(_data_dir));
   SetUserAction(new EventAction(100));
   SetUserAction(new GeneratorAction(_generator));
+  if (Debug) SetUserAction(new StepAction());
 }
 //----------------------------------------------------------------------------------------------
 

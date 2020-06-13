@@ -17,8 +17,8 @@
 
 #include "action.hh"
 
-#include <Geant4/G4MTRunManager.hh>
-#include <Geant4/tls.hh>
+#include <G4MTRunManager.hh>
+#include <tls.hh>
 
 namespace MATHUSLA { namespace MU {
 
@@ -38,8 +38,15 @@ EventAction::EventAction(const size_t print_modulo) : G4UserEventAction() {
 //__Event Initialization________________________________________________________________________
 void EventAction::BeginOfEventAction(const G4Event* event) {
   _event_id = event->GetEventID();
-  if (_event_id && !(_event_id % _print_modulo))
-    std::cout << "\n\n [ Starting Event " << _event_id << " ]\n\n";
+  std::cout << "\r  Event [ "
+             + std::to_string(_event_id)
+             + " ] @ ("
+             + std::to_string(event->GetNumberOfPrimaryVertex())
+             + " primaries)"
+             + (!(_event_id % _print_modulo) ? "\n\n" : "");
+
+  if (ActionInitialization::Debug) StepDataStore::Initialize(_event_id);
+
 }
 //----------------------------------------------------------------------------------------------
 
@@ -54,5 +61,12 @@ size_t EventAction::EventID() {
   return _event_id;
 }
 //----------------------------------------------------------------------------------------------
+
+//__Event Initialization________________________________________________________________________
+void EventAction::EndOfEventAction(const G4Event* event) {
+  if (ActionInitialization::Debug) StepAction::WriteTree(event->GetEventID());
+}
+//--
+
 
 } } /* namespace MATHUSLA::MU */

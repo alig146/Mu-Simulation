@@ -46,27 +46,28 @@ public:
   PythiaGenerator(const std::string& path);
 
   void GeneratePrimaryVertex(G4Event* event);
+  ParticleVector GetLastEvent() const;
   void SetNewValue(G4UIcommand* command, G4String value);
   void SetPythia(Pythia8::Pythia* pythia);
   void SetPythia(const std::vector<std::string>& settings);
   void SetPythia(const std::string& path);
 
-  static std::vector<Pythia8::Particle> FindParticles(Pythia8::Event& event,
-                                                      const PropagationList& list);
-
   virtual const Analysis::SimSettingList GetSpecification() const;
 
 private:
-  Pythia8::Pythia* _pythia;
+  static G4ThreadLocal Pythia8::Pythia* _pythia;
+  static G4ThreadLocal std::vector<std::string>* _pythia_settings;
+  static G4ThreadLocal bool _settings_on;
   PropagationList _propagation_list;
-  std::vector<std::string> _pythia_settings;
-  bool _settings_on;
-  std::string _path;
+  ParticleVector _last_event;
   std::uint_fast64_t _counter;
+  std::string _path;
+  std::string _process_string;
   Command::StringArg* _add_cut;
   Command::NoArg*     _clear_cuts;
   Command::StringArg* _read_string;
   Command::StringArg* _read_file;
+  Command::StringArg* _process;
 };
 //----------------------------------------------------------------------------------------------
 

@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-#include <Geant4/G4MTRunManager.hh>
-#include <Geant4/FTFP_BERT.hh>
-#include <Geant4/G4StepLimiterPhysics.hh>
-#include <Geant4/G4UIExecutive.hh>
-#include <Geant4/G4VisExecutive.hh>
-#include <Geant4/tls.hh>
-
-#include <ROOT/TApplication.h>
+#include <G4MTRunManager.hh>
+#include <Shielding.hh>
+#include <G4StepLimiterPhysics.hh>
+#include <G4UIExecutive.hh>
+#include <G4VisExecutive.hh>
+#include <tls.hh>
 
 #include "action.hh"
 #include "geometry/Construction.hh"
+#include "geometry/Earth.hh"
 #include "physics/Units.hh"
 #include "ui.hh"
 
@@ -37,26 +36,28 @@ int main(int argc, char* argv[]) {
   using namespace MATHUSLA;
   using namespace MATHUSLA::MU;
 
-  // FIXME: TApplication app("app", 0, 0);
-
   using util::cli::option;
 
-  option help_opt   ('h', "help",   "MATHUSLA Muon Simulation", option::no_arguments);
-  option gen_opt    ('g', "gen",    "Generator",                option::required_arguments);
-  option det_opt    ('d', "det",    "Detector",                 option::required_arguments);
-  option data_opt   ('o' ,"out",    "Data Output Directory",    option::required_arguments);
-  option script_opt ('s', "script", "Custom Script",            option::required_arguments);
-  option events_opt ('e', "events", "Event Count",              option::required_arguments);
-  option vis_opt    ('v', "vis",    "Visualization",            option::no_arguments);
-  option quiet_opt  ('q', "quiet",  "Quiet Mode",               option::no_arguments);
-  option thread_opt ('j', "threads",
+  option help_opt    ('h', "help",     "MATHUSLA Muon Simulation",  option::no_arguments);
+  option gen_opt     ('g', "gen",      "Generator",                 option::required_arguments);
+  option det_opt     ('d', "det",      "Detector",                  option::required_arguments);
+  option shift_opt   (0,   "shift",    "Shift Last Earth Layer",    option::required_arguments);
+  option data_opt    ('o' ,"out",      "Data Output Directory",     option::required_arguments);
+  option export_opt  ('E', "export",   "Export Output Directory",   option::required_arguments);
+  option script_opt  ('s', "script",   "Custom Script",             option::required_arguments);
+  option events_opt  ('e', "events",   "Event Count",               option::required_arguments);
+  option save_all_opt(0,   "save_all", "Save All Generator Events", option::no_arguments);
+  option vis_opt     ('v', "vis",      "Visualization",             option::no_arguments);
+  option quiet_opt   ('q', "quiet",    "Quiet Mode",                option::no_arguments);
+  option thread_opt  ('j', "threads",
     "Multi-Threading Mode: Specify Optional number of threads (default: 2)",
     option::optional_arguments);
 
   //TODO: pass quiet argument to builder and action initiaization to improve quietness
 
   const auto script_argc = -1 + util::cli::parse(argv,
-    {&help_opt, &gen_opt, &det_opt, &data_opt, &script_opt, &events_opt, &vis_opt, &quiet_opt, &thread_opt});
+    {&help_opt, &gen_opt, &det_opt, &shift_opt, &data_opt, &export_opt, &script_opt, &events_opt,
+     &save_all_opt, &vis_opt, &quiet_opt, &thread_opt});
 
   util::error::exit_when(script_argc && !script_opt.argument,
     "[FATAL ERROR] Illegal Forwarding Arguments:\n"
@@ -75,43 +76,42 @@ int main(int argc, char* argv[]) {
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
   G4Random::setTheSeed(time(nullptr));
 
-  #ifdef G4MULTITHREADED
-    if (thread_opt.argument) {
-      auto opt = std::string(thread_opt.argument);
-      if (opt == "on") {
-        thread_opt.count = 2;
-      } else if (opt == "off" || opt == "0") {
-        thread_opt.count = 1;
-      } else {
-        try {
-          thread_opt.count = std::stoi(opt);
-        } catch (...) {
-          thread_opt.count = 2;
-        }
-      }
-    } else if (!thread_opt.count) {
+  if (thread_opt.argument) {
+    auto opt = std::string(thread_opt.argument);
+    if (opt == "on") {
       thread_opt.count = 2;
+    } else if (opt == "off" || opt == "0") {
+      thread_opt.count = 1;
+    } else {
+      try {
+        thread_opt.count = std::stoi(opt);
+      } catch (...) {
+        thread_opt.count = 2;
+      }
     }
-    auto run = new G4MTRunManager;
-    run->SetNumberOfThreads(thread_opt.count);
-    std::cout << "Running " << thread_opt.count
-              << (thread_opt.count > 1 ? " Threads" : " Thread") << "\n";
-  #else
-    auto run = new G4RunManager;
-    std::cout << "Running in Single Threaded Mode.\n";
-  #endif
+  } else if (!thread_opt.count) {
+    thread_opt.count = 2;
+  }
+  auto run = new G4MTRunManager;
+  run->SetNumberOfThreads(thread_opt.count);
+  std::cout << "Running " << thread_opt.count
+            << (thread_opt.count > 1 ? " Threads" : " Thread") << "\n";
 
   run->SetPrintProgress(1000);
   run->SetRandomNumberStore(false);
 
   Units::Define();
 
-  auto physics = new FTFP_BERT;
+  if (shift_opt.argument)
+    Earth::LastShift(std::stold(shift_opt.argument) * m);
+
+  auto physics = new Shielding;
   physics->RegisterPhysics(new G4StepLimiterPhysics);
   run->SetUserInitialization(physics);
 
-  const auto detector = det_opt.argument ? det_opt.argument : "Prototype";
-  run->SetUserInitialization(new Construction::Builder(detector));
+  const auto detector = det_opt.argument ? det_opt.argument : "Box";
+  const auto export_dir = export_opt.argument ? export_opt.argument : "";
+  run->SetUserInitialization(new Construction::Builder(detector, export_dir, save_all_opt.count));
 
   const auto generator = gen_opt.argument ? gen_opt.argument : "basic";
   const auto data_dir = data_opt.argument ? data_opt.argument : "data";
@@ -140,8 +140,8 @@ int main(int argc, char* argv[]) {
 
     const auto script_path = std::string(script_opt.argument);
     if (script_argc) {
-      for (size_t i = 0; i < script_argc; i+=2) {
-        Command::Execute("/control/alias " + std::string(argv[i+1]) + " " + argv[i+2]);
+      for (std::size_t i{}; i < script_argc; i += 2) {
+        Command::Execute("/control/alias " + std::string(argv[i + 1]) + " " + std::string(argv[i + 2]));
       }
       Command::Execute("/control/execute " + script_path);
     } else {

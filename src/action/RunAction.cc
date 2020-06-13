@@ -20,16 +20,17 @@
 
 #include <fstream>
 #include <ostream>
+#include <thread>
 
-#include <Geant4/G4Threading.hh>
-#include <Geant4/G4AutoLock.hh>
-#include <Geant4/G4MTRunManager.hh>
-#include <Geant4/tls.hh>
+#include <G4Threading.hh>
+#include <G4AutoLock.hh>
+#include <G4MTRunManager.hh>
+#include <tls.hh>
 
-#include <ROOT/TFile.h>
-#include <ROOT/TNamed.h>
-#include <ROOT/TTree.h>
-#include <ROOT/TChain.h>
+#include <TFile.h>
+#include <TNamed.h>
+#include <TTree.h>
+#include <TChain.h>
 
 #include "analysis.hh"
 #include "geometry/Construction.hh"
@@ -44,17 +45,18 @@ namespace MATHUSLA { namespace MU {
 namespace { ////////////////////////////////////////////////////////////////////////////////////
 
 //__Data Directory Variables____________________________________________________________________
-G4ThreadLocal std::string _data_dir{};
-G4ThreadLocal std::string _prefix{};
-G4ThreadLocal std::string _path{};
+std::string _data_dir{};
+std::string _prefix{};
+std::string _path{};
 const std::string _temp_path = ".temp.root";
 std::vector<std::string> _worker_tags;
+bool _prefix_loaded = false;
 //----------------------------------------------------------------------------------------------
 
 //__Environment Counters________________________________________________________________________
-G4ThreadLocal std::size_t _worker_count{};
-G4ThreadLocal std::size_t _event_count{};
-G4ThreadLocal std::size_t _run_count{};
+std::size_t _worker_count{};
+std::size_t _event_count{};
+std::size_t _run_count{};
 //----------------------------------------------------------------------------------------------
 
 //__Mutex for ROOT Interface____________________________________________________________________
@@ -74,6 +76,22 @@ void _write_entry(TFile* file,
 }
 //----------------------------------------------------------------------------------------------
 
+//__Make DateTime Directories___________________________________________________________________
+std::string _make_directories(std::string prefix) {
+  util::io::create_directory(prefix);
+  util::io::create_directory(prefix += '/' + util::time::GetDate());
+  std::string time_path;
+  do {
+    using namespace std::chrono_literals;
+    std::this_thread::sleep_for(1s);
+    const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    time_path = '/' + util::time::GetTime(&now);
+  } while (util::io::path_exists(prefix + time_path));
+  util::io::create_directory(prefix += time_path);
+  return prefix;
+}
+//----------------------------------------------------------------------------------------------
+
 } /* anonymous namespace */ ////////////////////////////////////////////////////////////////////
 
 //__RunAction Constructor_______________________________________________________________________
@@ -89,16 +107,14 @@ RunAction::RunAction(const std::string& data_dir) : G4UserRunAction() {
 
 //__Run Initialization__________________________________________________________________________
 void RunAction::BeginOfRunAction(const G4Run* run) {
-  _prefix = _data_dir;
-  util::io::create_directory(_prefix);
-  _prefix += '/' + util::time::GetDate();
-  util::io::create_directory(_prefix);
-  _prefix += '/' + util::time::GetTime();
-  util::io::create_directory(_prefix);
-  _prefix += "/run";
-  _path = _prefix + std::to_string(_run_count) + ".root";
-
-  _event_count = run->GetNumberOfEventToBeProcessed();
+  G4AutoLock lock(&_mutex);
+  if (!G4Threading::IsWorkerThread()) {
+    if (_prefix.find("/run") == std::string::npos)
+      _prefix = _make_directories(_data_dir) + "/run";
+    _path = _prefix + std::to_string(_run_count) + ".root";
+    _event_count = run->GetNumberOfEventToBeProcessed();
+  }
+  lock.unlock();
 
   Analysis::ROOT::Setup();
   Analysis::ROOT::Open(_prefix + _temp_path);
@@ -106,6 +122,9 @@ void RunAction::BeginOfRunAction(const G4Run* run) {
     Construction::Builder::GetDetectorDataName(),
     Construction::Builder::GetDetectorDataKeys(),
     Construction::Builder::GetDetectorDataKeyTypes());
+
+  if (!G4Threading::IsWorkerThread())
+    std::cout << "\n\n";
 }
 //----------------------------------------------------------------------------------------------
 
@@ -118,6 +137,8 @@ void RunAction::EndOfRunAction(const G4Run*) {
 
   G4AutoLock lock(&_mutex);
   if (!G4Threading::IsWorkerThread()) {
+    if (util::io::path_exists(_path))
+      return;
     auto file = TFile::Open(_path.c_str(), "UPDATE");
     if (file && !file->IsZombie()) {
       file->cd();
@@ -128,11 +149,8 @@ void RunAction::EndOfRunAction(const G4Run*) {
       TTree* tree = chain;
       file->cd();
       auto clone_tree = tree->CloneTree();
-      if (clone_tree) {
+      if (clone_tree)
         clone_tree->Write();
-      } else {
-
-      }
       delete chain;
 
       util::io::remove_file(_prefix + _temp_path);
@@ -154,10 +172,11 @@ void RunAction::EndOfRunAction(const G4Run*) {
       file->Close();
 
       ++_run_count;
-      std::cout << "\nEnd of Run\nData File: " << _path << "\n\n";
+      std::cout << "\n\n\nEnd of Run\nData File: " << _path << "\n\n";
     }
   }
   lock.unlock();
+  _prefix_loaded = false;
 }
 //----------------------------------------------------------------------------------------------
 
@@ -168,13 +187,13 @@ const G4Run* RunAction::GetRun() {
 //----------------------------------------------------------------------------------------------
 
 //__Get Current RunID___________________________________________________________________________
-size_t RunAction::RunID() {
+std::size_t RunAction::RunID() {
   return _run_count;
 }
 //----------------------------------------------------------------------------------------------
 
 //__Get Current EventCount______________________________________________________________________
-size_t RunAction::EventCount() {
+std::size_t RunAction::EventCount() {
   return _event_count;
 }
 //----------------------------------------------------------------------------------------------

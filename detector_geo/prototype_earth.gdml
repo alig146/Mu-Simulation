@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/Schema/gdml.xsd">
+
+  <define/>
+
+  <materials>
+    <isotope N="27" Z="13" name="Al270x558cc253b7b0">
+      <atom unit="g/mole" value="26.9815"/>
+    </isotope>
+    <element name="Al0x558cc253b800">
+      <fraction n="1" ref="Al270x558cc253b7b0"/>
+    </element>
+    <isotope N="28" Z="14" name="Si280x558cc253ba20">
+      <atom unit="g/mole" value="27.9769"/>
+    </isotope>
+    <isotope N="29" Z="14" name="Si290x558cc253ba70">
+      <atom unit="g/mole" value="28.9765"/>
+    </isotope>
+    <isotope N="30" Z="14" name="Si300x558cc253bae0">
+      <atom unit="g/mole" value="29.9738"/>
+    </isotope>
+    <element name="Si0x558cc253bb30">
+      <fraction n="0.922296077703922" ref="Si280x558cc253ba20"/>
+      <fraction n="0.0468319531680468" ref="Si290x558cc253ba70"/>
+      <fraction n="0.0308719691280309" ref="Si300x558cc253bae0"/>
+    </element>
+    <isotope N="16" Z="8" name="O160x558cc253b1a0">
+      <atom unit="g/mole" value="15.9949"/>
+    </isotope>
+    <isotope N="17" Z="8" name="O170x558cc253b1f0">
+      <atom unit="g/mole" value="16.9991"/>
+    </isotope>
+    <isotope N="18" Z="8" name="O180x558cc253b260">
+      <atom unit="g/mole" value="17.9992"/>
+    </isotope>
+    <element name="O0x558cc253b370">
+      <fraction n="0.99757" ref="O160x558cc253b1a0"/>
+      <fraction n="0.00038" ref="O170x558cc253b1f0"/>
+      <fraction n="0.00205" ref="O180x558cc253b260"/>
+    </element>
+    <isotope N="1" Z="1" name="H10x558cc25366f0">
+      <atom unit="g/mole" value="1.00782503081372"/>
+    </isotope>
+    <isotope N="2" Z="1" name="H20x558cc253a9b0">
+      <atom unit="g/mole" value="2.01410199966617"/>
+    </isotope>
+    <element name="H0x558cc253aa40">
+      <fraction n="0.999885" ref="H10x558cc25366f0"/>
+      <fraction n="0.000115" ref="H20x558cc253a9b0"/>
+    </element>
+    <isotope N="40" Z="20" name="Ca400x558cc253b6c0">
+      <atom unit="g/mole" value="39.9626"/>
+    </isotope>
+    <isotope N="42" Z="20" name="Ca420x558cc253c4c0">
+      <atom unit="g/mole" value="41.9586"/>
+    </isotope>
+    <isotope N="43" Z="20" name="Ca430x558cc253c530">
+      <atom unit="g/mole" value="42.9588"/>
+    </isotope>
+    <isotope N="44" Z="20" name="Ca440x558cc253c580">
+      <atom unit="g/mole" value="43.9555"/>
+    </isotope>
+    <isotope N="46" Z="20" name="Ca460x558cc253c5d0">
+      <atom unit="g/mole" value="45.9537"/>
+    </isotope>
+    <isotope N="48" Z="20" name="Ca480x558cc253c670">
+      <atom unit="g/mole" value="47.9525"/>
+    </isotope>
+    <element name="Ca0x558cc253c6c0">
+      <fraction n="0.96941" ref="Ca400x558cc253b6c0"/>
+      <fraction n="0.00647" ref="Ca420x558cc253c4c0"/>
+      <fraction n="0.00135" ref="Ca430x558cc253c530"/>
+      <fraction n="0.02086" ref="Ca440x558cc253c580"/>
+      <fraction n="4e-05" ref="Ca460x558cc253c5d0"/>
+      <fraction n="0.00187" ref="Ca480x558cc253c670"/>
+    </element>
+    <isotope N="12" Z="6" name="C120x558cc253ac40">
+      <atom unit="g/mole" value="12"/>
+    </isotope>
+    <isotope N="13" Z="6" name="C130x558cc253ac90">
+      <atom unit="g/mole" value="13.0034"/>
+    </isotope>
+    <element name="C0x558cc253ace0">
+      <fraction n="0.9893" ref="C120x558cc253ac40"/>
+      <fraction n="0.0107" ref="C130x558cc253ac90"/>
+    </element>
+    <material name="Mix0x558cc2a14ad0" state="solid">
+      <T unit="K" value="293.15"/>
+      <MEE unit="eV" value="122.944478738747"/>
+      <D unit="g/cm3" value="2.54"/>
+      <fraction n="0.0365801247825901" ref="Al0x558cc253b800"/>
+      <fraction n="0.271793604053028" ref="Si0x558cc253bb30"/>
+      <fraction n="0.519751797332044" ref="O0x558cc253b370"/>
+      <fraction n="0.00273302807523293" ref="H0x558cc253aa40"/>
+      <fraction n="0.130140459688445" ref="Ca0x558cc253c6c0"/>
+      <fraction n="0.0390009860686593" ref="C0x558cc253ace0"/>
+    </material>
+    <material name="Marl0x558cc2a14690" state="solid">
+      <T unit="K" value="293.15"/>
+      <MEE unit="eV" value="120.293509284117"/>
+      <D unit="g/cm3" value="2.46"/>
+      <fraction n="0.0731602495651802" ref="Al0x558cc253b800"/>
+      <fraction n="0.0761533663145301" ref="Si0x558cc253bb30"/>
+      <fraction n="0.506937436455616" ref="O0x558cc253b370"/>
+      <fraction n="0.00546605615046586" ref="H0x558cc253aa40"/>
+      <fraction n="0.260280919376889" ref="Ca0x558cc253c6c0"/>
+      <fraction n="0.0780019721373185" ref="C0x558cc253ace0"/>
+    </material>
+    <material name="Quartz0x558cc2a132d0" state="solid">
+      <T unit="K" value="293.15"/>
+      <MEE unit="eV" value="125.663004061076"/>
+      <D unit="g/cm3" value="2.445"/>
+      <fraction n="0.467433841791527" ref="Si0x558cc253bb30"/>
+      <fraction n="0.532566158208473" ref="O0x558cc253b370"/>
+    </material>
+    <isotope N="23" Z="11" name="Na230x558cc2545f50">
+      <atom unit="g/mole" value="22.9898"/>
+    </isotope>
+    <element name="Na0x558cc2545fa0">
+      <fraction n="1" ref="Na230x558cc2545f50"/>
+    </element>
+    <isotope N="24" Z="12" name="Mg240x558cc2546110">
+      <atom unit="g/mole" value="23.985"/>
+    </isotope>
+    <isotope N="25" Z="12" name="Mg250x558cc2546160">
+      <atom unit="g/mole" value="24.9858"/>
+    </isotope>
+    <isotope N="26" Z="12" name="Mg260x558cc25461b0">
+      <atom unit="g/mole" value="25.9826"/>
+    </isotope>
+    <element name="Mg0x558cc253be70">
+      <fraction n="0.7899" ref="Mg240x558cc2546110"/>
+      <fraction n="0.1" ref="Mg250x558cc2546160"/>
+      <fraction n="0.1101" ref="Mg260x558cc25461b0"/>
+    </element>
+    <isotope N="39" Z="19" name="K390x558cc25464c0">
+      <atom unit="g/mole" value="38.9637"/>
+    </isotope>
+    <isotope N="40" Z="19" name="K400x558cc2546510">
+      <atom unit="g/mole" value="39.964"/>
+    </isotope>
+    <isotope N="41" Z="19" name="K410x558cc2546560">
+      <atom unit="g/mole" value="40.9618"/>
+    </isotope>
+    <element name="K0x558cc254a640">
+      <fraction n="0.932581" ref="K390x558cc25464c0"/>
+      <fraction n="0.000117" ref="K400x558cc2546510"/>
+      <fraction n="0.067302" ref="K410x558cc2546560"/>
+    </element>
+    <isotope N="54" Z="26" name="Fe540x558cc254a780">
+      <atom unit="g/mole" value="53.9396"/>
+    </isotope>
+    <isotope N="56" Z="26" name="Fe560x558cc254a7d0">
+      <atom unit="g/mole" value="55.9349"/>
+    </isotope>
+    <isotope N="57" Z="26" name="Fe570x558cc254a820">
+      <atom unit="g/mole" value="56.9354"/>
+    </isotope>
+    <isotope N="58" Z="26" name="Fe580x558cc254a870">
+      <atom unit="g/mole" value="57.9333"/>
+    </isotope>
+    <element name="Fe0x558cc254a8c0">
+      <fraction n="0.05845" ref="Fe540x558cc254a780"/>
+      <fraction n="0.91754" ref="Fe560x558cc254a7d0"/>
+      <fraction n="0.02119" ref="Fe570x558cc254a820"/>
+      <fraction n="0.00282" ref="Fe580x558cc254a870"/>
+    </element>
+    <material name="G4_CONCRETE0x558cc2545d20" state="solid">
+      <T unit="K" value="293.15"/>
+      <MEE unit="eV" value="135.2"/>
+      <D unit="g/cm3" value="2.3"/>
+      <fraction n="0.01" ref="H0x558cc253aa40"/>
+      <fraction n="0.001" ref="C0x558cc253ace0"/>
+      <fraction n="0.529107" ref="O0x558cc253b370"/>
+      <fraction n="0.016" ref="Na0x558cc2545fa0"/>
+      <fraction n="0.002" ref="Mg0x558cc253be70"/>
+      <fraction n="0.033872" ref="Al0x558cc253b800"/>
+      <fraction n="0.337021" ref="Si0x558cc253bb30"/>
+      <fraction n="0.013" ref="K0x558cc254a640"/>
+      <fraction n="0.044" ref="Ca0x558cc253c6c0"/>
+      <fraction n="0.014" ref="Fe0x558cc254a8c0"/>
+    </material>
+    <material name="G4_Fe0x558cc254acc0" state="solid">
+      <T unit="K" value="293.15"/>
+      <MEE unit="eV" value="286"/>
+      <D unit="g/cm3" value="7.874"/>
+      <fraction n="1" ref="Fe0x558cc254a8c0"/>
+    </material>
+    <isotope N="14" Z="7" name="N140x558cc253aec0">
+      <atom unit="g/mole" value="14.0031"/>
+    </isotope>
+    <isotope N="15" Z="7" name="N150x558cc253af60">
+      <atom unit="g/mole" value="15.0001"/>
+    </isotope>
+    <element name="N0x558cc253afd0">
+      <fraction n="0.99632" ref="N140x558cc253aec0"/>
+      <fraction n="0.00368" ref="N150x558cc253af60"/>
+    </element>
+    <isotope N="36" Z="18" name="Ar360x558cc253c0f0">
+      <atom unit="g/mole" value="35.9675"/>
+    </isotope>
+    <isotope N="38" Z="18" name="Ar380x558cc253c160">
+      <atom unit="g/mole" value="37.9627"/>
+    </isotope>
+    <isotope N="40" Z="18" name="Ar400x558cc253c1d0">
+      <atom unit="g/mole" value="39.9624"/>
+    </isotope>
+    <element name="Ar0x558cc253c220">
+      <fraction n="0.003365" ref="Ar360x558cc253c0f0"/>
+      <fraction n="0.000632" ref="Ar380x558cc253c160"/>
+      <fraction n="0.996003" ref="Ar400x558cc253c1d0"/>
+    </element>
+    <material name="G4_AIR0x558cc253c8d0" state="gas">
+      <T unit="K" value="293.15"/>
+      <MEE unit="eV" value="85.7"/>
+      <D unit="g/cm3" value="0.00120479"/>
+      <fraction n="0.000124000124000124" ref="C0x558cc253ace0"/>
+      <fraction n="0.755267755267755" ref="N0x558cc253afd0"/>
+      <fraction n="0.231781231781232" ref="O0x558cc253b370"/>
+      <fraction n="0.0128270128270128" ref="Ar0x558cc253c220"/>
+    </material>
+  </materials>
+
+  <solids>
+    <box lunit="mm" name="Mix0x558cc2a16a70" x="825000" y="825000" z="36450"/>
+    <box lunit="mm" name="VaultIntersectionBox0x558cc2a16cd0" x="53000" y="30000" z="34890"/>
+    <tube aunit="deg" deltaphi="360" lunit="mm" name="VaultIntersectionCylinder0x558cc2a16db0" rmax="20000" rmin="0" startphi="0" z="53000"/>
+    <intersection name="CavernVault0x558cc2a16ed0">
+      <first ref="VaultIntersectionBox0x558cc2a16cd0"/>
+      <second ref="VaultIntersectionCylinder0x558cc2a16db0"/>
+      <position name="CavernVault0x558cc2a16ed0_pos" unit="mm" x="0" y="0" z="2555"/>
+      <rotation name="CavernVault0x558cc2a16ed0_rot" unit="deg" x="0" y="90" z="0"/>
+    </intersection>
+    <box lunit="mm" name="CavernBox0x558cc2a16c50" x="53000" y="30000" z="14890"/>
+    <union name="Cavern0x558cc2a170c0">
+      <first ref="CavernVault0x558cc2a16ed0"/>
+      <second ref="CavernBox0x558cc2a16c50"/>
+      <position name="Cavern0x558cc2a170c0_pos" unit="mm" x="0" y="0" z="10000"/>
+    </union>
+    <subtraction name="modified_mix0x558cc2a17440">
+      <first ref="Mix0x558cc2a16a70"/>
+      <second ref="Cavern0x558cc2a170c0"/>
+      <position name="modified_mix0x558cc2a17440_pos" unit="mm" x="0" y="1700" z="-6639"/>
+    </subtraction>
+    <box lunit="mm" name="Marl0x558cc2a177f0" x="825000" y="825000" z="18250"/>
+    <box lunit="mm" name="VaultIntersectionBox0x558cc2a17a70" x="53000" y="30000" z="34890"/>
+    <tube aunit="deg" deltaphi="360" lunit="mm" name="VaultIntersectionCylinder0x558cc2a17b40" rmax="20000" rmin="0" startphi="0" z="53000"/>
+    <intersection name="CavernVault0x558cc2a17c60">
+      <first ref="VaultIntersectionBox0x558cc2a17a70"/>
+      <second ref="VaultIntersectionCylinder0x558cc2a17b40"/>
+      <position name="CavernVault0x558cc2a17c60_pos" unit="mm" x="0" y="0" z="2555"/>
+      <rotation name="CavernVault0x558cc2a17c60_rot" unit="deg" x="0" y="90" z="0"/>
+    </intersection>
+    <box lunit="mm" name="CavernBox0x558cc2a179d0" x="53000" y="30000" z="14890"/>
+    <union name="Cavern0x558cc2a17e50">
+      <first ref="CavernVault0x558cc2a17c60"/>
+      <second ref="CavernBox0x558cc2a179d0"/>
+      <position name="Cavern0x558cc2a17e50_pos" unit="mm" x="0" y="0" z="10000"/>
+    </union>
+    <subtraction name="modified_marl0x558cc2a181d0">
+      <first ref="Marl0x558cc2a177f0"/>
+      <second ref="Cavern0x558cc2a17e50"/>
+      <position name="modified_marl0x558cc2a181d0_pos" unit="mm" x="0" y="1700" z="20711"/>
+    </subtraction>
+    <box lunit="mm" name="0x558cc2a18580" x="825000" y="825000" z="45300"/>
+    <box lunit="mm" name="0x558cc2a18600" x="13760" y="15000" z="2001"/>
+    <subtraction name="Sandstone0x558cc2a18680">
+      <first ref="0x558cc2a18580"/>
+      <second ref="0x558cc2a18600"/>
+      <position name="Sandstone0x558cc2a18680_pos" unit="mm" x="-3387" y="0" z="-21650.5"/>
+    </subtraction>
+    <box lunit="mm" name="0x558cc2a18a60" x="13760" y="15000" z="2000"/>
+    <box lunit="mm" name="0x558cc2a18ae0" x="13761" y="9000" z="1001"/>
+    <box lunit="mm" name="0x558cc2a18b60" x="13761" y="3000" z="600"/>
+    <union name="0x558cc2a18be0">
+      <first ref="0x558cc2a18ae0"/>
+      <second ref="0x558cc2a18b60"/>
+      <position name="0x558cc2a18be0_pos" unit="mm" x="0" y="0" z="800"/>
+    </union>
+    <subtraction name="SX1Slab0x558cc2a18e00">
+      <first ref="0x558cc2a18a60"/>
+      <second ref="0x558cc2a18be0"/>
+      <position name="SX1Slab0x558cc2a18e00_pos" unit="mm" x="0" y="0" z="-500"/>
+    </subtraction>
+    <tube aunit="deg" deltaphi="360" lunit="mm" name="DetectorRing0x558cc2a191e0" rmax="11000" rmin="9150" startphi="0" z="40000"/>
+    <box lunit="mm" name="0x558cc2a14090" x="825000" y="825000" z="100000"/>
+    <box lunit="mm" name="0x558cc2a14010" x="13761" y="9000" z="1001"/>
+    <box lunit="mm" name="0x558cc2a15960" x="13761" y="3000" z="600"/>
+    <union name="0x558cc2a159e0">
+      <first ref="0x558cc2a14010"/>
+      <second ref="0x558cc2a15960"/>
+      <position name="0x558cc2a159e0_pos" unit="mm" x="0" y="0" z="800"/>
+    </union>
+    <subtraction name="Earth0x558cc2a16720">
+      <first ref="0x558cc2a14090"/>
+      <second ref="0x558cc2a159e0"/>
+      <position name="Earth0x558cc2a16720_pos" unit="mm" x="-3387" y="0" z="-49500"/>
+    </subtraction>
+  </solids>
+
+  <structure>
+    <volume name="modified_mix0x558cc2a17630">
+      <materialref ref="Mix0x558cc2a14ad0"/>
+      <solidref ref="modified_mix0x558cc2a17440"/>
+    </volume>
+    <volume name="modified_marl0x558cc2a183c0">
+      <materialref ref="Marl0x558cc2a14690"/>
+      <solidref ref="modified_marl0x558cc2a181d0"/>
+    </volume>
+    <volume name="Sandstone0x558cc2a18870">
+      <materialref ref="Quartz0x558cc2a132d0"/>
+      <solidref ref="Sandstone0x558cc2a18680"/>
+    </volume>
+    <volume name="SX1Slab0x558cc2a18ff0">
+      <materialref ref="G4_CONCRETE0x558cc2545d20"/>
+      <solidref ref="SX1Slab0x558cc2a18e00"/>
+    </volume>
+    <volume name="DetectorRing0x558cc2a192d0">
+      <materialref ref="G4_Fe0x558cc254acc0"/>
+      <solidref ref="DetectorRing0x558cc2a191e0"/>
+    </volume>
+    <volume name="Earth0x558cc2a16910">
+      <materialref ref="G4_AIR0x558cc253c8d0"/>
+      <solidref ref="Earth0x558cc2a16720"/>
+      <physvol name="modified_mix0x558cc2a17790">
+        <volumeref ref="modified_mix0x558cc2a17630"/>
+        <position name="modified_mix0x558cc2a17790_pos" unit="mm" x="0" y="0" z="31775"/>
+      </physvol>
+      <physvol name="modified_marl0x558cc2a18520">
+        <volumeref ref="modified_marl0x558cc2a183c0"/>
+        <position name="modified_marl0x558cc2a18520_pos" unit="mm" x="0" y="0" z="4425"/>
+      </physvol>
+      <physvol name="Sandstone0x558cc2a189d0">
+        <volumeref ref="Sandstone0x558cc2a18870"/>
+        <position name="Sandstone0x558cc2a189d0_pos" unit="mm" x="0" y="0" z="-27350"/>
+      </physvol>
+      <physvol name="SX1Slab0x558cc2a19150">
+        <volumeref ref="SX1Slab0x558cc2a18ff0"/>
+        <position name="SX1Slab0x558cc2a19150_pos" unit="mm" x="-3387" y="0" z="-49000"/>
+      </physvol>
+      <physvol name="DetectorRing0x558cc2a19430">
+        <volumeref ref="DetectorRing0x558cc2a192d0"/>
+        <position name="DetectorRing0x558cc2a19430_pos" unit="mm" x="0" y="0" z="31211"/>
+        <rotation name="DetectorRing0x558cc2a19430_rot" unit="deg" x="0" y="-89.2918602244928" z="0"/>
+      </physvol>
+    </volume>
+  </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="Earth0x558cc2a16910"/>
+  </setup>
+
+</gdml>

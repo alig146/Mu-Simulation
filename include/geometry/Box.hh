@@ -18,7 +18,10 @@
 #ifndef MU__GEOMETRY_BOX_HH
 #define MU__GEOMETRY_BOX_HH
 #pragma once
-
+#include "TROOT.h"
+#include "TH1.h"
+#include "TTree.h"
+#include "TFile.h"
 #include "analysis.hh"
 #include "geometry/Construction.hh"
 
@@ -73,9 +76,15 @@ public:
   static const std::string& DataName;
   static const Analysis::ROOT::DataKeyList DataKeys;
   static const Analysis::ROOT::DataKeyTypeList DataKeyTypes;
+  static TTree* pre_data;
 
   static G4VPhysicalVolume* Construct(G4LogicalVolume* world);
   static G4VPhysicalVolume* ConstructEarth(G4LogicalVolume* world);
+  static G4VPhysicalVolume* ConstructModule(G4LogicalVolume* detector, int tag_number, double detector_x, double detector_y, double detector_z);
+  static G4VPhysicalVolume* ConstructScintillatorLayer(G4LogicalVolume* Module_volume, int module_number, int layer_number, double module_x_displacement, double module_y_displacement, double layer_z_displacement);
+  static bool SaveAll;
+
+  static void WritePreData();
 };
 
 } /* namespace Box */ //////////////////////////////////////////////////////////////////////////

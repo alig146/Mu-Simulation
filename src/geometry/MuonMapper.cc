@@ -1,8 +1,8 @@
 #include "geometry/MuonMapper.hh"
 
-#include <Geant4/G4NistManager.hh>
-#include <Geant4/G4VProcess.hh>
-#include <Geant4/tls.hh>
+#include <G4NistManager.hh>
+#include <G4VProcess.hh>
+#include <tls.hh>
 
 #include "action.hh"
 #include "analysis.hh"
@@ -28,6 +28,7 @@ const Analysis::ROOT::DataKeyList Detector::DataKeys{
   "R", "logB"};
 const Analysis::ROOT::DataKeyTypeList Detector::DataKeyTypes{
   Analysis::ROOT::DataKeyType::Single, Analysis::ROOT::DataKeyType::Single};
+bool Detector::SaveAll = false;
 //----------------------------------------------------------------------------------------------
 
 //__Detector Constructor________________________________________________________________________

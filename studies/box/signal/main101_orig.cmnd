@@ -1,0 +1,119 @@
+! File: muon.cmnd
+! This file contains commands to be read in for a Pythia8 run.
+! Lines not beginning with a letter or digit are comments.
+! Names are case-insensitive  -  but spellings-sensitive!
+! The changes here are illustrative, not always physics-motivated.
+
+! 1) Settings that are used in the main program.
+Main:numberOfEvents   = 10            ! number of events to generate
+Main:timesAllowErrors = 10           ! abort run after this many flawed events
+
+! 2) Settings related to output in init(), next() and stat().
+Init:showChangedSettings       = on  ! list changed settings
+Init:showChangedParticleData   = on  ! list changed particle data
+#Init:showChangedResonanceData = on  ! also print changed resonance data
+#Init:showOneParticleData      = 25  ! print data for this particular particle
+Next:numberCount               = 100 ! print message every n events
+Next:numberShowInfo            = 110 ! print event information n times
+Next:numberShowProcess         = 110 ! print process record n times
+Next:numberShowEvent           = 10  ! print event record n times
+Stat:showPartonLevel           = on  ! more statistics on MPI
+Print:quiet                    = off
+Stat:showErrors                = off
+
+! 3) Beam settings.
+Beams:idA = 2212                     ! first beam,  p = 2212, pbar = -2212
+Beams:idB = 2212                     ! second beam, p = 2212, pbar = -2212
+Beams:eCM = 14000.                   ! CM energy of collision, LHC
+
+! 4) Settings for hard-process generation internal to Pythia8.
+Higgs:useBSM   = on
+HiggsBSM:gg2H2 = on                  ! Higgs production by gluon-gluon fusion
+HiggsBSM:allH2 = on
+
+! 5) Set Higgs mass, width and branching ratios by hand.
+! Values for 125 GeV SM Higgs taken from
+! Handbook of LHC Higgs Cross Sections: 1. Inclusive Observables,
+! S. Dittmaier et al., CERN-2011-002 [arXiv:1101.0593].
+! Note: sum is not quite unity, and so BR's are rescaled accordingly.
+25:isResonance = 1
+25:m0        = 2.0                   ! Light Higgs mass [15,30,60]
+25:mMin      = 1.99597
+25:mWidth    = 1.9732698E-17         ! Higgs width
+25:tau0      = 10000                 ! Life time of light higgs = [0,10,50]
+25:0:onMode  = 0                 ! H -> d dbar
+25:1:onMode  = 0                 ! H -> u ubar
+25:2:onMode  = 0                 ! H -> s sbar
+25:3:onMode  = 0                 ! H -> c cbar
+25:4:onMode  = 0                 ! H -> b bbar
+25:5:onMode  = 0                 ! H -> t tbar
+25:6:onMode  = 0                 ! H -> e+ e-
+25:7:onMode  = 1                 ! H -> mu+ mu-
+25:8:onMode  = 0                 ! H -> tau+ tau-
+25:9:onMode  = 0                 ! H -> g g
+25:10:onMode = 0                 ! H -> gamma gamma
+25:11:onMode = 0                 ! H -> gamma Z
+25:12:onMode = 0                 ! H -> Z0 Z0
+25:13:onMode = 0                 ! H -> W+ W-
+25:0:meMode  = 100
+25:1:meMode  = 100
+25:2:meMode  = 100
+25:3:meMode  = 100
+25:4:meMode  = 100
+25:5:meMode  = 100
+25:6:meMode  = 100
+25:7:meMode  = 100
+25:8:meMode  = 100
+25:9:meMode  = 100
+25:10:meMode = 100
+25:11:meMode = 100
+25:12:meMode = 100
+25:13:meMode = 100
+
+
+35:m0        = 125.0                 !  Heavy Higgs mass [125,250]
+35:mWidth    = 0.00403               ! Higgs width
+35:0:onMode  = 0
+35:1:onMode  = 0
+35:2:onMode  = 0
+35:3:onMode  = 0
+35:4:onMode  = 0
+35:5:onMode  = 0
+35:6:onMode  = 0
+35:7:onMode  = 0
+35:8:onMode  = 0
+35:9:onMode  = 0
+35:10:onMode = 0
+35:11:onMode = 0
+35:12:onMode = 0
+35:13:onMode = 0
+35:14:onMode = 0
+35:15:onMode = 1                 ! hh
+35:16:onMode = 0
+35:17:onMode = 0
+35:18:onMode = 0
+35:19:onMode = 0
+35:20:onMode = 0
+35:0:meMode  = 100
+35:1:meMode  = 100
+35:2:meMode  = 100
+35:3:meMode  = 100
+35:4:meMode  = 100
+35:5:meMode  = 100
+35:6:meMode  = 100
+35:7:meMode  = 100
+35:8:meMode  = 100
+35:9:meMode  = 100
+35:10:meMode = 100
+35:11:meMode = 100
+35:12:meMode = 100
+35:13:meMode = 100
+35:14:meMode = 100
+35:15:meMode = 100
+35:16:meMode = 100
+35:17:meMode = 100
+35:18:meMode = 100
+35:19:meMode = 100
+35:20:meMode = 100
+
+

@@ -1,0 +1,17 @@
+/det/select Box
+
+/vis/filtering/trajectories/create/chargeFilter
+/vis/filtering/trajectories/chargeFilter-0/add 0
+/vis/filtering/trajectories/chargeFilter-0/invert true
+/vis/filtering/trajectories/chargeFilter-0/verbose false
+/vis/filtering/trajectories/chargeFilter-0/active true
+
+/gen/select pythia
+/gen/pythia/read_file studies/box/signal/{particle}_to_muon.cmnd
+/gen/pythia/process {process}
+
+/gen/pythia/cuts/clear
+/gen/pythia/cuts/add 13 | | 0.6:1.9 | -0.695:0.695 rad
+/gen/pythia/cuts/add 14 | | 0.6:1.9 | -0.695:0.695 rad
+
+/run/beamOn {count}

@@ -19,7 +19,7 @@
 #define MU__GEOMETRY_MUONMAPPER_HH
 #pragma once
 
-#include "Geant4/G4VSensitiveDetector.hh"
+#include "G4VSensitiveDetector.hh"
 
 #include "geometry/Construction.hh"
 
@@ -46,6 +46,8 @@ public:
 
   static G4VPhysicalVolume* Construct(G4LogicalVolume* world);
   static G4VPhysicalVolume* ConstructEarth(G4LogicalVolume* world);
+
+  static bool SaveAll;
 };
 
 } /* namespace MuonMapper */ ///////////////////////////////////////////////////////////////////

@@ -20,51 +20,21 @@
 #define MU__PHYSICS_GENERATOR_HH
 #pragma once
 
-#include <Geant4/G4Event.hh>
-#include <Geant4/G4PrimaryVertex.hh>
-#include <Geant4/G4PrimaryParticle.hh>
+#include <G4Event.hh>
+#include <G4PrimaryVertex.hh>
+#include <G4PrimaryParticle.hh>
 
 #include "analysis.hh"
 #include "ui.hh"
+
+#include "physics/Particle.hh"
 
 namespace MATHUSLA { namespace MU {
 
 namespace Physics { ////////////////////////////////////////////////////////////////////////////
 
-//__Pseudo-Lorentz Invariant Triplet____________________________________________________________
-struct PseudoLorentzTriplet { double pT, eta, phi; };
-//----------------------------------------------------------------------------------------------
-
-//__Equality Between Pseudo Lorentz Triplet_____________________________________________________
-constexpr bool operator==(const PseudoLorentzTriplet& left,
-                          const PseudoLorentzTriplet& right) {
-  return left.pT == right.pT && left.eta == right.eta && left.phi == right.phi;
-}
-//----------------------------------------------------------------------------------------------
-
 //__Cut on Particle_____________________________________________________________________________
-struct ParticleCut {
-  int id;
-  PseudoLorentzTriplet min, max;
-
-  ParticleCut() = default;
-  ParticleCut(const int particle_id,
-              const PseudoLorentzTriplet& min_value,
-              const PseudoLorentzTriplet& max_value)
-    : id(particle_id), min(min_value), max(max_value) {}
-  ParticleCut(const PseudoLorentzTriplet& min_value,
-              const PseudoLorentzTriplet& max_value)
-    : ParticleCut(-1, min_value, max_value) {}
-
-  const std::string to_string() const;
-
-  bool matches(const int particle_id,
-               const G4ThreeVector& momentum) const;
-  bool matches(const G4ThreeVector& momentum) const;
-  bool matches(const int particle_id,
-               const PseudoLorentzTriplet& triplet) const;
-  bool matches(const PseudoLorentzTriplet& triplet) const;
-};
+using ParticleCut = Filter::All<Filter::Id, Filter::PseudoLorentz>;
 //----------------------------------------------------------------------------------------------
 
 //__Equality Between Cuts_______________________________________________________________________
@@ -74,10 +44,14 @@ constexpr bool operator==(const ParticleCut& left,
 }
 //----------------------------------------------------------------------------------------------
 
+//__Get ParticleCut String______________________________________________________________________
+const std::string GetParticleCutString(const ParticleCut& cut);
+//----------------------------------------------------------------------------------------------
+
 //__Stream Cut Object___________________________________________________________________________
 inline std::ostream& operator<<(std::ostream& os,
                                 const ParticleCut& cut) {
-  return os << cut.to_string();
+  return os << GetParticleCutString(cut);
 }
 //----------------------------------------------------------------------------------------------
 
@@ -85,82 +59,17 @@ inline std::ostream& operator<<(std::ostream& os,
 using PropagationList = std::vector<ParticleCut>;
 //----------------------------------------------------------------------------------------------
 
-//__Check if Particle Matches Any Cut in PropagationList________________________________________
-bool InPropagationList(const PropagationList& list,
-                       const int particle_id,
-                       const G4ThreeVector& momentum);
-bool InPropagationList(const PropagationList& list,
-                       const G4ThreeVector& momentum);
-bool InPropagationList(const PropagationList& list,
-                       const int particle_id,
-                       const PseudoLorentzTriplet& triplet);
-bool InPropagationList(const PropagationList& list,
-                       const PseudoLorentzTriplet& triplet);
-//----------------------------------------------------------------------------------------------
-
 //__Parse Propagation List from String__________________________________________________________
 const PropagationList ParsePropagationList(const std::string& cut_string);
 //----------------------------------------------------------------------------------------------
 
-//__Get Mass of Particle from ID________________________________________________________________
-double GetMass(const int id);
-//----------------------------------------------------------------------------------------------
-
-//__Get Momentum from Mass and Kinetic Energy___________________________________________________
-const G4ThreeVector GetMomentum(const double mass,
-                                const double ke,
-                                const G4ThreeVector& p_unit);
-//----------------------------------------------------------------------------------------------
-
-//__Convert Momentum to Pseudo-Lorentz Triplet__________________________________________________
-const PseudoLorentzTriplet Convert(const G4ThreeVector& momentum);
-//----------------------------------------------------------------------------------------------
-
-//__Convert Pseudo-Lorentz Triplet to Momentum__________________________________________________
-const G4ThreeVector Convert(const PseudoLorentzTriplet& triplet);
+//__Check if Particle Matches Any Cut in PropagationList________________________________________
+bool InPropagationList(const PropagationList& list,
+                       const BasicParticle& particle);
 //----------------------------------------------------------------------------------------------
 
 //__Default Vertex for IP_______________________________________________________________________
 G4PrimaryVertex* DefaultVertex();
-//----------------------------------------------------------------------------------------------
-
-//__Generate Primary Vertex_____________________________________________________________________
-G4PrimaryVertex* Vertex(const double x,
-                        const double y,
-                        const double z);
-//----------------------------------------------------------------------------------------------
-
-//__Generate Primary Vertex_____________________________________________________________________
-G4PrimaryVertex* Vertex(const double t,
-                        const double x,
-                        const double y,
-                        const double z);
-//----------------------------------------------------------------------------------------------
-
-//__Generate Primary Vertex_____________________________________________________________________
-G4PrimaryVertex* Vertex(const G4ThreeVector& vertex);
-//----------------------------------------------------------------------------------------------
-
-//__Generate Primary Vertex_____________________________________________________________________
-G4PrimaryVertex* Vertex(const double t,
-                        const G4ThreeVector& vertex);
-//----------------------------------------------------------------------------------------------
-
-//__Create Particle from ID and Momentum________________________________________________________
-G4PrimaryParticle* CreateParticle(const int id,
-                                  const G4ThreeVector& p);
-//----------------------------------------------------------------------------------------------
-
-//__Create Particle from ID and Pseudo-Lorentz Triplet__________________________________________
-G4PrimaryParticle* CreateParticle(const int id,
-                                  const double pT,
-                                  const double eta,
-                                  const double phi);
-//----------------------------------------------------------------------------------------------
-
-//__Create Particle from ID and Pseudo-Lorentz Triplet__________________________________________
-G4PrimaryParticle* CreateParticle(const int id,
-                                  const PseudoLorentzTriplet& triplet);
 //----------------------------------------------------------------------------------------------
 
 //__Default Particle Generator__________________________________________________________________
@@ -168,66 +77,21 @@ class Generator : public G4UImessenger {
 public:
   Generator(const std::string& name,
             const std::string& description,
-            const int id,
-            const double pT,
-            const double eta,
-            const double phi);
-
-  Generator(const std::string& name,
-            const std::string& description,
-            const int id,
-            const double ke,
-            const G4ThreeVector& p_unit);
-
-  Generator(const std::string& name,
-            const std::string& description,
-            const int id,
-            const double pT,
-            const double eta,
-            const double phi,
-            const G4ThreeVector& vertex);
-
-  Generator(const std::string& name,
-            const std::string& description,
-            const int id,
-            const double ke,
-            const G4ThreeVector& p_unit,
-            const G4ThreeVector& vertex);
-
-  Generator(const std::string& name,
-            const std::string& description,
-            const int id,
-            const double pT,
-            const double eta,
-            const double phi,
-            const double t0,
-            const G4ThreeVector& vertex);
-
-  Generator(const std::string& name,
-            const std::string& description,
-            const int id,
-            const double ke,
-            const G4ThreeVector& p_unit,
-            const double t0,
-            const G4ThreeVector& vertex);
+            const Particle& particle);
 
   virtual ~Generator() = default;
 
   virtual void GeneratePrimaryVertex(G4Event* event);
+  virtual ParticleVector GetLastEvent() const;
   virtual void SetNewValue(G4UIcommand* command,
                            G4String value);
-
-  int    id()  const { return _id;  }
-  double pT()  const { return _pT;  }
-  double eta() const { return _eta; }
-  double phi() const { return _phi; }
-  double ke()  const { return _ke;  }
-  const G4ThreeVector& p_unit() const { return _p_unit; }
-  const G4ThreeVector p() const;
-  const std::string& GetName() const { return _name; }
-
   virtual std::ostream& Print(std::ostream& os=std::cout) const;
   virtual const Analysis::SimSettingList GetSpecification() const;
+  virtual const std::vector<std::vector<double>> ExtraDetails() const;
+
+  const Particle& particle() const { return _particle; }
+  const std::string& name() const { return _name; }
+  const std::string& description() const { return _description; }
 
   static const std::string MessengerDirectory;
   static const std::string SimSettingPrefix;
@@ -235,32 +99,18 @@ public:
 protected:
   Generator(const std::string& name,
             const std::string& description);
-
-  std::string _name;
-  std::string _description;
-
-  int    _id;
-  double _pT;
-  double _eta;
-  double _phi;
-
-  double _ke;
-  G4ThreeVector _p_unit;
-  double _mass;
-
-  bool _using_pt_eta_phi;
-
-  double _t0;
-  G4ThreeVector _vertex;
-
   virtual void GenerateCommands();
 
+  std::string _name, _description;
+  Particle _particle;
   Command::IntegerArg*         _ui_id;
   Command::DoubleUnitArg*      _ui_pT;
   Command::DoubleArg*          _ui_eta;
   Command::DoubleUnitArg*      _ui_phi;
   Command::DoubleUnitArg*      _ui_ke;
-  Command::ThreeVectorArg*     _ui_p;
+  Command::ThreeVectorUnitArg* _ui_p;
+  Command::ThreeVectorArg*     _ui_p_unit;
+  Command::DoubleUnitArg*      _ui_p_mag;
   Command::DoubleUnitArg*      _ui_t0;
   Command::ThreeVectorUnitArg* _ui_vertex;
 };
@@ -271,94 +121,29 @@ class RangeGenerator : public Generator {
 public:
   RangeGenerator(const std::string& name,
                  const std::string& description,
-                 const int id,
-                 const double pT,
-                 const double eta,
-                 const double phi);
-
+                 const Particle& particle);
   RangeGenerator(const std::string& name,
                  const std::string& description,
-                 const int id,
-                 const double pT_min,
-                 const double pT_max,
-                 const double eta_min,
-                 const double eta_max,
-                 const double phi_min,
-                 const double phi_max);
-
-  RangeGenerator(const std::string& name,
-                 const std::string& description,
-                 const int id,
-                 const double pT,
-                 const double eta,
-                 const double phi,
-                 const G4ThreeVector& vertex);
-
-  RangeGenerator(const std::string& name,
-                 const std::string& description,
-                 const int id,
-                 const double pT_min,
-                 const double pT_max,
-                 const double eta_min,
-                 const double eta_max,
-                 const double phi_min,
-                 const double phi_max,
-                 const G4ThreeVector& vertex);
-
-  RangeGenerator(const std::string& name,
-                 const std::string& description,
-                 const int id,
-                 const double pT,
-                 const double eta,
-                 const double phi,
-                 const double t0,
-                 const G4ThreeVector& vertex);
-
-  RangeGenerator(const std::string& name,
-                 const std::string& description,
-                 const int id,
-                 const double pT_min,
-                 const double pT_max,
-                 const double eta_min,
-                 const double eta_max,
-                 const double phi_min,
-                 const double phi_max,
-                 const double t0,
-                 const G4ThreeVector& vertex);
+                 const Particle& min,
+                 const Particle& max);
 
   virtual ~RangeGenerator() = default;
 
   virtual void GeneratePrimaryVertex(G4Event* event);
+  virtual ParticleVector GetLastEvent() const;
   virtual void SetNewValue(G4UIcommand* command,
                            G4String value);
-
-  double pT_min()  const { return _pT_min;  }
-  double pT_max()  const { return _pT_max;  }
-  double eta_min() const { return _eta_min; }
-  double eta_max() const { return _eta_max; }
-  double phi_min() const { return _phi_min; }
-  double phi_max() const { return _phi_max; }
-  double ke_min()  const { return _ke_min;  }
-  double ke_max()  const { return _ke_max;  }
-
   virtual std::ostream& Print(std::ostream& os=std::cout) const;
   virtual const Analysis::SimSettingList GetSpecification() const;
 
+  const Particle& min() const { return _min; }
+  const Particle& max() const { return _max; }
+
 protected:
-  double _pT_min;
-  double _pT_max;
-  double _eta_min;
-  double _eta_max;
-  double _phi_min;
-  double _phi_max;
-
-  double _ke_min;
-  double _ke_max;
-
-  bool _using_range_ke;
-
   virtual void GenerateCommands();
 
+  Particle _min, _max;
+  bool _using_range_ke;
   Command::DoubleUnitArg* _ui_pT_min;
   Command::DoubleUnitArg* _ui_pT_max;
   Command::DoubleArg*     _ui_eta_min;

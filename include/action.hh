@@ -20,12 +20,15 @@
 #define MU__ACTION_HH
 #pragma once
 
-#include <Geant4/G4VUserActionInitialization.hh>
-#include <Geant4/G4UserEventAction.hh>
-#include <Geant4/G4UserRunAction.hh>
-#include <Geant4/G4VUserPrimaryGeneratorAction.hh>
-#include <Geant4/G4Event.hh>
-#include <Geant4/G4Run.hh>
+#include <G4VUserActionInitialization.hh>
+#include <G4UserEventAction.hh>
+#include <G4UserRunAction.hh>
+#include <G4UserSteppingAction.hh>
+#include <G4VUserPrimaryGeneratorAction.hh>
+#include <G4Event.hh>
+#include <G4Run.hh>
+#include "TROOT.h"
+#include "TTree.h"
 
 #include "physics/Generator.hh"
 #include "ui.hh"
@@ -39,6 +42,7 @@ public:
                        const std::string& data_dir="");
   void BuildForMaster() const;
   void Build() const;
+  static bool Debug;
 };
 //----------------------------------------------------------------------------------------------
 
@@ -47,6 +51,7 @@ class EventAction : public G4UserEventAction {
 public:
   EventAction(const size_t print_modulo);
   void BeginOfEventAction(const G4Event* event);
+  void EndOfEventAction(const G4Event* event);
   static const G4Event* GetEvent();
   static size_t EventID();
 };
@@ -71,6 +76,7 @@ public:
   void GeneratePrimaries(G4Event* event);
   void SetNewValue(G4UIcommand* command, G4String value);
   static const Physics::Generator* GetGenerator();
+  static Physics::ParticleVector GetLastEvent();
   static void SetGenerator(const std::string& generator);
 
 private:
@@ -79,6 +85,33 @@ private:
   Command::StringArg* _select;
 };
 //----------------------------------------------------------------------------------------------
+
+class StepAction : public G4UserSteppingAction {
+public:
+
+  StepAction();
+  void UserSteppingAction( const G4Step* aStep);
+  static void WriteTree(int);
+  static TTree* _step_data;
+
+};
+
+class StepDataStore {
+public:
+  static double _step_x;
+  static double _step_y;
+  static double _step_z;
+  static double _step_px;
+  static double _step_py;
+  static double _step_pz;
+  static double _energy_loss;
+  static double _deposit;
+  static int _pdg;
+  static int _material_index;
+
+  static void Initialize(int id);
+
+};
 
 } } /* namespace MATHUSLA::MU */
 

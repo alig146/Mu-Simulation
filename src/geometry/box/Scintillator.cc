@@ -1,26 +1,31 @@
 #include "geometry/Box.hh"
 
-#include <Geant4/G4SubtractionSolid.hh>
-#include <Geant4/tls.hh>
+#include <G4SubtractionSolid.hh>
+#include <tls.hh>
 
 namespace MATHUSLA { namespace MU {
 
 namespace Box { ////////////////////////////////////////////////////////////////////////////////
 
+
 Scintillator::Scintillator(const std::string& name,
                            const double length,
-                           const double height,
                            const double width,
+                           const double height,
                            const double thickness)
     : _name(name), _length(length), _height(height), _width(width), _thickness(thickness) {
 
   const auto border = 2 * _thickness;
 
-  auto outer = Construction::Box("", _length, _height, _width);
-  auto inner = Construction::Box("", _length - border, _height - border, _width - border);
+  auto outer = Construction::Box("", _length, _width, _height);
+  auto inner = Construction::Box("", _length - border, _width - border, _height - border);
+
+
+ // auto outer = Construction::Box("", _length, _height, _width);
+ // auto inner = Construction::Box("", _length - border, _height - border, _width - border);
 
   auto casing = new G4SubtractionSolid(name + "_C", outer, inner);
-
+  
   _lvolume = Construction::Volume(name, outer, Construction::BorderAttributes());
   _sensitive = Construction::PlaceVolume(name,
     inner, Material::Scintillator, Construction::SensitiveAttributes(), _lvolume);
@@ -61,6 +66,8 @@ void Scintillator::Register(G4VSensitiveDetector* detector) {
 //__Place Scintillator in World_____________________________________________________________________
 G4VPhysicalVolume* Scintillator::PlaceIn(G4LogicalVolume* parent,
                                          const G4Transform3D& transform) {
+
+  //return Construction::PlaceVolume(_sensitive, parent, transform);
   return Construction::PlaceVolume(_lvolume, parent, transform);
 }
 //----------------------------------------------------------------------------------------------

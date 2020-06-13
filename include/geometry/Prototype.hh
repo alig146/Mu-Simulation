@@ -21,7 +21,7 @@
 
 #include <vector>
 
-#include "Geant4/G4VSensitiveDetector.hh"
+#include "G4VSensitiveDetector.hh"
 
 #include "geometry/Construction.hh"
 
@@ -31,10 +31,10 @@ namespace Prototype { //////////////////////////////////////////////////////////
 
 class Scintillator {
 public:
-  Scintillator(const std::string& name,
-               const double height,
-               const double minwidth,
-               const double maxwidth);
+  Scintillator(const std::string& input_name,
+               const double input_height,
+               const double input_minwidth,
+               const double input_maxwidth);
 
   struct Material {
     static G4Material* PMT;
@@ -66,11 +66,38 @@ public:
 
   static Scintillator* Clone(const Scintillator* other);
 
-  constexpr static auto Depth     =  2.0*cm;
-  constexpr static auto Thickness =  0.1*cm;
-  constexpr static auto Spacing   =  0.1*cm;
-  constexpr static auto PMTRadius =  2.1*cm;
-  constexpr static auto PMTLength = 19.3*cm;
+  struct Info {
+    std::string name;
+    double x;
+    double y;
+    double z;
+    double z_rotation_angle;
+    double long_base;
+    double short_base;
+    double trapezoid_height;
+  };
+
+  constexpr static auto Count = 59u;
+
+  const static Info InfoArray[Count];
+
+  constexpr static auto Depth = 12.7 * mm;
+
+  constexpr static auto PlateDepth   = 1.0  * mm;
+  constexpr static auto PlateSpacing = 0.15 * mm;
+
+  constexpr static auto HorizontalEdgeSpacing   = 4.3 * mm;
+  constexpr static auto HorizontalEdgeThickness = 1.8 * mm;
+
+  constexpr static auto VerticalEdgeSpacing   = 0.0 * mm;
+  constexpr static auto VerticalEdgeThickness = 1.0 * mm;
+
+  constexpr static auto EdgeOverlap = 18.7 * mm - HorizontalEdgeThickness - HorizontalEdgeSpacing;
+
+  constexpr static auto PMTRadius  =  2.1 * cm;
+  constexpr static auto PMTLength  = 19.3 * cm;
+  constexpr static auto PMTSpacing =  3.0 * cm;
+  constexpr static auto PMTAngle   = 46.1 * deg;
 
   constexpr static auto MinDeposit =  0*keV;
   constexpr static auto MaxDeposit = 10*MeV;
@@ -84,47 +111,10 @@ using ScintillatorList = std::vector<Scintillator*>;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-class Envelope {
-public:
-  enum class LayerType { TopFirst, BottomFirst };
-  enum class Alignment : signed char { Left = -1, Center = 0, Right = 1 };
-  enum class Rotation { NoFlip, Flip };
-
-  Envelope(const std::string& name,
-           const LayerType layer_type,
-           const Alignment alignment,
-           const Rotation rotation,
-           std::initializer_list<Scintillator*> scintillators);
-
-  const std::string& GetName()             const { return _name;          }
-  double             GetHeight()           const { return _height;        }
-  double             GetTopWidth()         const { return _top_width;     }
-  double             GetBottomWidth()      const { return _bottom_width;  }
-  G4LogicalVolume*   GetVolume()           const { return _volume;        }
-  G4VPhysicalVolume* GetPlacement()        const { return _placement;     }
-  ScintillatorList   GetScintillatorList() const { return _scintillators; }
-
-  G4VPhysicalVolume* PlaceIn(G4LogicalVolume* parent,
-                             const G4Transform3D& transform=G4Transform3D());
-
-  constexpr static auto LayerSpacing = 5*cm;
-
-private:
-  std::string        _name;
-  double             _height;
-  double             _top_width;
-  double             _bottom_width;
-  ScintillatorList   _scintillators;
-  G4LogicalVolume*   _volume;
-  G4VPhysicalVolume* _placement;
-};
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-
 class RPC {
 public:
   struct Pad {
-    Pad(int id);
+    Pad(int input_id);
     G4LogicalVolume* lvolume;
     G4VPhysicalVolume* pvolume;
     std::vector<G4LogicalVolume*> lvolume_strips;
@@ -133,15 +123,14 @@ public:
   };
 
   struct Material {
-    static G4Material* Casing;
-    static G4Material* Pad;
     static G4Material* Gas;
+    static G4Material* PET;
     static void Define();
   private:
     Material();
   };
 
-  RPC(int id);
+  RPC(int input_id);
 
   int                GetID()        const { return _id;        }
   const std::string& GetName()      const { return _name;      }
@@ -154,27 +143,62 @@ public:
   G4VPhysicalVolume* PlaceIn(G4LogicalVolume* parent,
                              const G4Transform3D& transform=G4Transform3D());
 
-  constexpr static auto Width     = 1257*mm;
-  constexpr static auto Height    = 2854*mm;
-  constexpr static auto Depth     =   60*mm;   // what is true value?
-  constexpr static auto Thickness =   10*mm;   // what is true value?
-  constexpr static auto Angle     =   12*deg;  // what is true value?
+  struct Info {
+    double x;
+    double y;
+    double z;
+    double z_rotation_angle;
+  };
 
-  constexpr static auto PadWidth     = 618*mm;
-  constexpr static auto PadHeight    = 556*mm;
-  constexpr static auto PadDepth     =  55*mm;  // what is true value?
-  constexpr static auto PadThickness =  10*mm;  // what is true value?
-  constexpr static auto PadStartX    = 318*mm;
-  constexpr static auto PadStartY    = 312*mm;
-  constexpr static auto PadSpacingX  = 620*mm;
-  constexpr static auto PadSpacingY  = 557*mm;
+  constexpr static auto Count = 12u;
 
-  constexpr static auto StripWidth     =  618*mm;
-  constexpr static auto StripHeight    = 67.5*mm;
-  constexpr static auto StripDepth     =   50*mm;  // what is true value?
-  constexpr static auto StripThickness =    2*mm;  // what is true value?
-  constexpr static auto StripTopGap    =    1*mm;
-  constexpr static auto StripYGap      =    2*mm;
+  const static Info InfoArray[Count];
+
+  constexpr static auto Height = 2800*mm;
+  constexpr static auto Width  = 1248*mm;
+  constexpr static auto Depth  =   44*mm;
+
+  constexpr static auto OuterCasingThickness   = 2.35*mm;
+  constexpr static auto OuterCasingHeight      = 2850*mm;
+  constexpr static auto OuterCasingWidth       = 1257*mm;
+  constexpr static auto OuterCasingDepth       = Depth + 2.0 * OuterCasingThickness;
+  constexpr static auto OuterCasingCornerDepth = 5*mm;
+
+  constexpr static auto CasingGap = 4*mm;
+
+  constexpr static auto InnerCasingThickness = 1*mm;
+  constexpr static auto InnerCasingHeight    = Height + 2.0 * InnerCasingThickness;
+  constexpr static auto InnerCasingWidth     = 1120*mm;
+  constexpr static auto InnerCasingDepth     = Depth + 2.0 * InnerCasingThickness;
+  constexpr static auto InnerCasingOverlap   = 25*mm;
+
+  constexpr static auto AluminumDepth  = 200*um;
+  constexpr static auto BakeliteDepth  =   2*mm;
+  constexpr static auto CopperDepth    =  17*um;
+  constexpr static auto ThickFoamDepth =  15*mm;
+  constexpr static auto ThinFoamDepth  =   3*mm;
+  constexpr static auto ThickPETDepth  = 250*um;
+  constexpr static auto MediumPETDepth = 190*um;
+  constexpr static auto ThinPETDepth   =  50*um;
+
+  constexpr static auto PadHeight    = 556.8*mm;
+  constexpr static auto PadWidth     = 616.5*mm;
+  constexpr static auto PadDepth     =     2*mm;
+
+  constexpr static auto PadsPerRow    = 2u;
+  constexpr static auto PadsPerColumn = 5u;
+  constexpr static auto PadsPerRPC = PadsPerRow * PadsPerColumn;
+
+  constexpr static auto PadSpacingX = PadWidth + 1*mm;
+  constexpr static auto PadSpacingY = PadHeight;
+
+  constexpr static auto StripHeight     =  69.6*mm;
+  constexpr static auto StripWidth      = 616.5*mm;
+  constexpr static auto StripDepth      =     2*mm;
+
+  constexpr static auto StripsPerPad = 8u;
+
+  constexpr static auto StripSpacingY = 69.6*mm;
 
   constexpr static auto MinDeposit =  0*keV;
   constexpr static auto MaxDeposit = 10*MeV;
@@ -188,6 +212,37 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
+
+class UChannel {
+public:
+  UChannel(const std::string &name, const double length);
+  G4LogicalVolume *getLogicalVolume() { return m_logical_volume; }
+
+  struct Info {
+    std::string name;
+    double x;
+    double y;
+    double z;
+    double length;
+    double z_rotation_angle;
+  };
+
+  constexpr static auto Count = 12u;
+
+  const static Info InfoArray[Count];
+
+  constexpr static auto Height = 5.0 * cm;
+  constexpr static auto Width = 9.0 * cm;
+  constexpr static auto VerticalThickness = 6.85 * mm;
+  constexpr static auto HorizontalThickness = 7.75 * mm;
+
+  constexpr static auto RPCUChannelLength = 2.8 * m;
+
+private:
+  std::string m_name;
+  double m_length = 0.0;
+  G4LogicalVolume *m_logical_volume = nullptr;
+};
 
 class Detector : public G4VSensitiveDetector {
 public:
@@ -207,6 +262,8 @@ public:
 
   static G4VPhysicalVolume* Construct(G4LogicalVolume* world);
   static G4VPhysicalVolume* ConstructEarth(G4LogicalVolume* world);
+
+  static bool SaveAll;
 };
 
 } /* namespace Prototype */ ////////////////////////////////////////////////////////////////////

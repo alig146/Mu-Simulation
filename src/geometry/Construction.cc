@@ -17,18 +17,18 @@
 
 #include "geometry/Construction.hh"
 
-#include <Geant4/G4SubtractionSolid.hh>
-#include <Geant4/G4GeometryManager.hh>
-#include <Geant4/G4GeometryTolerance.hh>
-#include <Geant4/G4LogicalVolumeStore.hh>
-#include <Geant4/G4PhysicalVolumeStore.hh>
-#include <Geant4/G4SDManager.hh>
-#include <Geant4/G4Colour.hh>
-#include <Geant4/G4SolidStore.hh>
-#include <Geant4/G4PVPlacement.hh>
-#include <Geant4/G4NistManager.hh>
-#include <Geant4/G4GDMLParser.hh>
-#include <Geant4/tls.hh>
+#include <G4SubtractionSolid.hh>
+#include <G4GeometryManager.hh>
+#include <G4GeometryTolerance.hh>
+#include <G4LogicalVolumeStore.hh>
+#include <G4PhysicalVolumeStore.hh>
+#include <G4SDManager.hh>
+#include <G4Colour.hh>
+#include <G4SolidStore.hh>
+#include <G4PVPlacement.hh>
+#include <G4NistManager.hh>
+#include <G4GDMLParser.hh>
+#include <tls.hh>
 
 #include "geometry/Box.hh"
 #include "geometry/Prototype.hh"
@@ -47,10 +47,12 @@ const auto _nist = G4NistManager::Instance();
 
 //__Detector Details for Builder________________________________________________________________
 std::string _detector;
+std::string _export_dir;
 bool _data_per_event;
 std::string _data_name;
 const Analysis::ROOT::DataKeyList* _data_keys;
 const Analysis::ROOT::DataKeyTypeList* _data_key_types;
+bool _save_option;
 //----------------------------------------------------------------------------------------------
 
 //__Detector List_______________________________________________________________________________
@@ -67,11 +69,19 @@ G4Element* Material::C = _nist->FindOrBuildElement("C");
 G4Element* Material::N = _nist->FindOrBuildElement("N");
 G4Element* Material::O = _nist->FindOrBuildElement("O");
 G4Element* Material::F = _nist->FindOrBuildElement("F");
+G4Element* Material::Al = _nist->FindOrBuildElement("Al");
+G4Element* Material::Si = _nist->FindOrBuildElement("Si");
 G4Element* Material::S = _nist->FindOrBuildElement("S");
 G4Element* Material::Ar = _nist->FindOrBuildElement("Ar");
+G4Element* Material::Ca = _nist->FindOrBuildElement("Ca");
 G4Material* Material::Air = _nist->FindOrBuildMaterial("G4_AIR");
 G4Material* Material::Aluminum = _nist->FindOrBuildMaterial("G4_Al");
+G4Material* Material::Bakelite = _nist->FindOrBuildMaterial("G4_BAKELITE");
+G4Material* Material::Copper = _nist->FindOrBuildMaterial("G4_Cu");
+G4Material* Material::Concrete = _nist->FindOrBuildMaterial("G4_CONCRETE");
 G4Material* Material::Iron = _nist->FindOrBuildMaterial("G4_Fe");
+G4Material* Material::PolystyreneFoam = _nist->BuildMaterialWithNewDensity("PolystyreneFoam", "G4_POLYSTYRENE", 32.0*kg/m3);
+G4Material* Material::Polyvinyltoluene = _nist->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
 //----------------------------------------------------------------------------------------------
 
 //__Detector Messenger Directory Path___________________________________________________________
@@ -79,9 +89,13 @@ const std::string Builder::MessengerDirectory = "/det/";
 //----------------------------------------------------------------------------------------------
 
 //__Builder Constructor_________________________________________________________________________
-Builder::Builder(const std::string& detector)
+Builder::Builder(const std::string& detector,
+                 const std::string& export_dir,
+                 const bool save_option)
     : G4VUserDetectorConstruction(), G4UImessenger(MessengerDirectory, "Particle Detectors.") {
   _detector = detector;
+  _export_dir = export_dir;
+  _save_option = save_option;
 
   _select = CreateCommand<Command::StringArg>("select", "Select Detector.");
   _select->SetParameterName("detector", false);
@@ -99,8 +113,6 @@ Builder::Builder(const std::string& detector)
 
 //__Build World and Detector Geometry___________________________________________________________
 G4VPhysicalVolume* Builder::Construct() {
-  constexpr static auto WorldLength = 1000*m;
-
   G4GeometryManager::GetInstance()->OpenGeometry();
   G4PhysicalVolumeStore::GetInstance()->Clean();
   G4LogicalVolumeStore::GetInstance()->Clean();
@@ -113,35 +125,58 @@ G4VPhysicalVolume* Builder::Construct() {
 
   auto worldLV = BoxVolume("World", WorldLength, WorldLength, WorldLength - 700*m);
 
-  // Export(Earth::Construct(worldLV), "earth.gdml");
-
-  if (_detector == "Flat") {
-    Export(Flat::Detector::Construct(worldLV), "flat.gdml");
-    Export(Flat::Detector::ConstructEarth(worldLV), "flat.earth.gdml");
-  } else if (_detector == "Box") {
-    Export(Box::Detector::Construct(worldLV), "box.gdml");
-    Export(Box::Detector::ConstructEarth(worldLV), "box.earth.gdml");
-  } else if (_detector == "MuonMapper") {
-    Export(MuonMapper::Detector::Construct(worldLV), "muon_mapper.gdml");
-    Export(MuonMapper::Detector::ConstructEarth(worldLV), "muon_mapper.earth.gdml");
+  if (!_export_dir.empty()) {
+    if (_detector == "Flat") {
+      Export(Flat::Detector::Construct(worldLV), _export_dir, "flat.gdml");
+      Export(Flat::Detector::ConstructEarth(worldLV), _export_dir, "flat.earth.gdml");
+    } else if (_detector == "Box") {
+      Export(Box::Detector::Construct(worldLV), _export_dir, "box.gdml");
+      Export(Box::Detector::ConstructEarth(worldLV), _export_dir, "box.earth.gdml");
+    } else if (_detector == "MuonMapper") {
+      Export(MuonMapper::Detector::Construct(worldLV), _export_dir, "muon_mapper.gdml");
+      Export(MuonMapper::Detector::ConstructEarth(worldLV), _export_dir, "muon_mapper.earth.gdml");
+    } else {
+      Export(Prototype::Detector::Construct(worldLV), _export_dir, "prototype.gdml");
+      Export(Prototype::Detector::ConstructEarth(worldLV), _export_dir, "prototype.earth.gdml");
+    }
   } else {
-    Export(Prototype::Detector::Construct(worldLV), "prototype.gdml");
-    Export(Prototype::Detector::ConstructEarth(worldLV), "prototype.earth.gdml");
+    if (_detector == "Flat") {
+      Flat::Detector::Construct(worldLV);
+      Flat::Detector::ConstructEarth(worldLV);
+    } else if (_detector == "Box") {
+      Box::Detector::Construct(worldLV);
+      Box::Detector::ConstructEarth(worldLV);
+    } else if (_detector == "MuonMapper") {
+      MuonMapper::Detector::Construct(worldLV);
+      MuonMapper::Detector::ConstructEarth(worldLV);
+    } else {
+      Prototype::Detector::Construct(worldLV);
+      Prototype::Detector::ConstructEarth(worldLV);
+    }
   }
 
+  Builder::SetSaveOption(_save_option);
+
   auto world = PlaceVolume(worldLV, nullptr);
-  if (_detector == "Flat") {
-    Export(world, "world.flat.gdml");
-  } else if (_detector == "Box") {
-    Export(world, "world.box.gdml");
-  } else if (_detector == "MuonMapper") {
-    Export(world, "world.muon_mapper.gdml");
-  } else {
-    Export(world, "world.prototype.gdml");
+  if (!_export_dir.empty()) {
+    if (_detector == "Flat") {
+      Export(world, _export_dir, "world.flat.gdml");
+    } else if (_detector == "Box") {
+      Export(world, _export_dir, "world.box.gdml");
+    } else if (_detector == "MuonMapper") {
+      Export(world, _export_dir, "world.muon_mapper.gdml");
+    } else {
+      Export(world, _export_dir, "world.prototype.gdml");
+    }
   }
 
   std::cout << "Materials: "
             << *G4Material::GetMaterialTable() << '\n';
+  const std::string folder = "detector_geo";
+  const std::string file = "world.gdml";  
+  const std::string arg4 = "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/Schema/gdml.xsd";
+
+  Construction::Export(world, folder, file, arg4);
 
   return world;
 }
@@ -199,6 +234,20 @@ void Builder::SetDetector(const std::string& detector) {
 }
 //----------------------------------------------------------------------------------------------
 
+//__Set Current Detector Save Option____________________________________________________________
+void Builder::SetSaveOption(bool option) {
+  if (_detector == "Flat") {
+    Flat::Detector::SaveAll = option;
+  } else if (_detector == "Box") {
+    Box::Detector::SaveAll = option;
+  } else if (_detector == "MuonMapper") {
+    MuonMapper::Detector::SaveAll = option;
+  } else {
+    Prototype::Detector::SaveAll = option;
+  }
+}
+//----------------------------------------------------------------------------------------------
+
 //__Get Current Detector Name___________________________________________________________________
 const std::string& Builder::GetDetectorName() {
   return _detector;
@@ -237,12 +286,41 @@ const G4VisAttributes SensitiveAttributes() {
   attr.SetForceSolid(true);
   return attr;
 }
+
+const G4VisAttributes SensitiveAttributes2() {
+  auto attr = G4VisAttributes(G4Colour(1., 0., 0., 1.0));
+  attr.SetForceSolid(true);
+  return attr;
+}
+
+const G4VisAttributes HighlightRed() {
+  auto attr = G4VisAttributes(G4Colour(1., 0., 0.));
+  attr.SetForceSolid(true);
+  return attr;
+}
+
+
 //----------------------------------------------------------------------------------------------
+
+//__Iron Plating Attributes
+//
+const G4VisAttributes IronAttributes() {
+  auto attr = G4VisAttributes(G4Colour(0.5, 0.5, 0.5));
+  attr.SetForceSolid(true);
+  return attr;
+}
+
+const G4VisAttributes AlAttributes() {
+  auto attr = G4VisAttributes(G4Colour(0.4, 0.6, 0.7));
+  attr.SetForceSolid(true);
+  return attr;
+}
+
 
 //__Casing Material Attribute Definition________________________________________________________
 const G4VisAttributes CasingAttributes() {
   auto attr = G4VisAttributes(G4Colour(0., 0., 1., 0.2));
-  attr.SetForceSolid(true);
+  attr.SetForceWireframe(true);
   return attr;
 }
 //----------------------------------------------------------------------------------------------
@@ -272,6 +350,15 @@ G4Trap* Trap(const std::string& name,
     0.5 * height, 0, 0,
     0.5 * depth, 0.5 * minwidth, 0.5 * minwidth, 0,
     0.5 * depth, 0.5 * maxwidth, 0.5 * maxwidth, 0);
+}
+//----------------------------------------------------------------------------------------------
+
+//__Cylinder Builder____________________________________________________________________________
+G4Tubs* Cylinder(const std::string& name,
+                 const double height,
+                 const double inner_radius,
+                 const double outer_radius) {
+  return new G4Tubs(name, inner_radius, outer_radius, 0.5 * height, 0, 360*deg);
 }
 //----------------------------------------------------------------------------------------------
 
@@ -498,10 +585,11 @@ G4RotationMatrix Matrix(const double mxx,
 
 //__GDML File Export____________________________________________________________________________
 void Export(const G4LogicalVolume* volume,
+            const std::string& dir,
             const std::string& file,
             const std::string& schema) {
-  util::io::create_directory("export");
-  auto path = "export/" + file;
+  util::io::create_directory(dir);
+  auto path = dir + "/" + file;
   if (util::io::path_exists(path))
     util::io::remove_file(path);
 
@@ -513,10 +601,11 @@ void Export(const G4LogicalVolume* volume,
 
 //__GDML File Export____________________________________________________________________________
 void Export(const G4VPhysicalVolume* volume,
+            const std::string& dir,
             const std::string& file,
             const std::string& schema) {
-  util::io::create_directory("export");
-  auto path = "export/" + file;
+  util::io::create_directory(dir);
+  auto path = dir + "/" + file;
   if (util::io::path_exists(path))
     util::io::remove_file(path);
 

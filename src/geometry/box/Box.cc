@@ -85,8 +85,13 @@ constexpr auto x_edge_length = 99.0*m;
 constexpr auto y_edge_length = 99.0*m;
 constexpr auto x_displacement = 70*m;//00*m;
 constexpr auto y_displacement = -49.5*m;//l50*m;
-constexpr auto z_displacement = 60*m;//l50*m;
+constexpr auto z_displacement = 20*m;//l50*m;
 constexpr auto steel_thickness = 0.02*m;
+
+
+constexpr auto x_division = 500.0*cm;
+constexpr auto y_division = 5.0*cm;
+
 
 constexpr auto layer_x_edge_length = 9.0*m;
 constexpr auto layer_y_edge_length = 9.0*m;
@@ -214,12 +219,11 @@ void Detector::Initialize(G4HCofThisEvent* event) {
 //__Hit Processing______________________________________________________________________________
 G4bool Detector::ProcessHits(G4Step* step, G4TouchableHistory*) {
   const auto deposit = step->GetTotalEnergyDeposit();
-  const auto step_point = step->GetPreStepPoint();
-  const auto position   = G4LorentzVector(step_point->GetGlobalTime(), step_point->GetPosition());
 
+  //const auto step_point = step->GetPreStepPoint();
+  //const auto position   = G4LorentzVector(step_point->GetGlobalTime(), step_point->GetPosition());
   // X_POS_STEP = position.x();
   // Y_POS_STEP = position.y();
-
   // X_POS_HIT = 0.0;
   // Y_POS_HIT = 0.0;
 
@@ -231,20 +235,25 @@ G4bool Detector::ProcessHits(G4Step* step, G4TouchableHistory*) {
   // X_POS_HIT = position.x();
   // Y_POS_HIT = position.y();
   // pre_data->Fill();
-  
+  // const auto track      = step->GetTrack();
+  // const auto particle   = track->GetParticleDefinition();
+  // const auto trackID    = track->GetTrackID();
+  // const auto parentID   = track->GetParentID();
+  // const auto momentum   = G4LorentzVector(step_point->GetTotalEnergy(), step_point->GetMomentum());
 
+  //orginally defined variables 
   const auto track      = step->GetTrack();
+  const auto step_point = step->GetPostStepPoint();
   const auto particle   = track->GetParticleDefinition();
   const auto trackID    = track->GetTrackID();
   const auto parentID   = track->GetParentID();
- // const auto position   = G4LorentzVector(step_point->GetGlobalTime(), step_point->GetPosition());
+  const auto position   = G4LorentzVector(step_point->GetGlobalTime(), step_point->GetPosition());
   const auto momentum   = G4LorentzVector(step_point->GetTotalEnergy(), step_point->GetMomentum());
-
   
-  const auto local_position = position.vect() - G4ThreeVector(x_displacement, y_displacement, 0);
+  const auto local_position = position.vect() - G4ThreeVector(x_displacement, y_displacement, z_displacement);
 
-  const auto x_index = static_cast<size_t>(std::floor(+local_position.x() / scint_x_edge_length));
-  const auto y_index = static_cast<size_t>(std::floor(+local_position.y() / scint_y_edge_length));
+  const auto x_index = static_cast<size_t>(std::floor(+local_position.x() / (x_division)  ));
+  const auto y_index = static_cast<size_t>(std::floor(+local_position.y() / (y_division)  ));
   const auto z_index = static_cast<size_t>(std::floor(-local_position.z() / (layer_spacing + scintillator_height)));
 
   const auto x_name = std::to_string(x_index);
@@ -255,8 +264,8 @@ G4bool Detector::ProcessHits(G4Step* step, G4TouchableHistory*) {
     trackID,
     parentID,
     std::to_string(1UL + z_index)
-      + (x_index < 10UL ? "00" + x_name : (x_index < 100UL ? "0" + x_name : x_name))
-      + (y_index < 10UL ? "00" + y_name : (y_index < 100UL ? "0" + y_name : y_name)),
+    + (x_index < 10UL ? "000" + x_name : (x_index < 100UL ? "00" + x_name : (x_index < 1000UL ? "0" + x_name : x_name)))
+    + (y_index < 10UL ? "000" + y_name : (y_index < 100UL ? "00" + y_name : (y_index < 1000UL ? "0" + y_name : y_name))),
     deposit / Units::Energy,
     G4LorentzVector(position.t() / Units::Time,   position.vect() / Units::Length),
     G4LorentzVector(momentum.e() / Units::Energy, momentum.vect() / Units::Momentum)));
@@ -564,14 +573,12 @@ G4VPhysicalVolume* Detector::ConstructEarth(G4LogicalVolume* world){
 	const auto marl_top = mix_top - Earth::MarlDepth();
 	const auto sandstone_top = marl_top - Earth::SandstoneDepth();
 
-	Construction::PlaceVolume(
-							  CMS::_calculate_modification("modified_mix", Earth::MixVolume(),
-														   mix_top + Earth::MixDepth(), mix_top),
+   	Construction::PlaceVolume(CMS::_calculate_modification("modified_mix", Earth::MixVolume(),
+							  mix_top + Earth::MixDepth(), mix_top),
 							  earth, Earth::MixTransform());
    
-	Construction::PlaceVolume(
-							  CMS::_calculate_modification("modified_marl", Earth::MarlVolume(),
-														   marl_top + Earth::MarlDepth(), marl_top),
+  	Construction::PlaceVolume(CMS::_calculate_modification("modified_marl", Earth::MarlVolume(),
+							  marl_top + Earth::MarlDepth(), marl_top),
 							  earth, Earth::MarlTransform());
      
      

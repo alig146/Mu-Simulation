@@ -202,7 +202,7 @@ using DataKeyList = std::vector<DataKey>;
 enum class DataKeyType { Single, Vector };
 using DataKeyTypeList = std::vector<DataKeyType>;
 static const DataKeyList DefaultDataKeyList{
-  "N_HITS",
+  "NumHits",
 
   "Deposit", "Time", "Detector",
   "PDG", "Track", "Parent",

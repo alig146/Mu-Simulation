@@ -168,33 +168,29 @@ ParticleVector _convert_pythia_event(Pythia8::Pythia* pythia,
 		  //out.push_back(next);
 
 
-		  //      out.push_back(_convert_particle(event[event[i].mother1()]));
-		  // add mothers
-		  // if(event[i].statusAbs() == 23){
-		  //  int index = event[i].mother1();
-		  //  out.push_back(_convert_particle(event[index]));
-		  // }
-
 		  
           if(event[i].idAbs()==13) {
 			  if (event[i].zProd()>69500 && event[i].zProd()<169500 && event[i].yProd()>-50000 && event[i].yProd()<50000 && event[i].xProd()>59500 && event[i].xProd()<89650){
 				  int hh = event[i].mother1();
 				  if(event[hh].idAbs()==25) { 
 					  out.push_back(_convert_particle(event[i]));
-					  //					  out.push_back(_convert_particle(event[hh]));
+		  			  //					  out.push_back(_convert_particle(event[hh]));
 				  }
-
 			  }
           }
 
 
-		  // if(event[i].id()==25) { // it's an h0
-		  // 	  int did = event[i].daughter1();
-		  // 	  if(did>=0 && event[did].idAbs()==13) { // and it's daughter is a muon
-		  // 		  //  out.push_back(_convert_particle(event[i]));
-		  // 		  out.push_back(_convert_particle(event[did]));
-		  // 	  }
-		  // }
+		  //W
+          // if(event[i].idAbs()==13) {
+		  // 	  int w = event[i].mother1();
+		  // 	  if(event[w].idAbs()==24) {
+		  // 	  //if (event[w].pAbs2()>=40) {
+		  // 		  out.push_back(_convert_particle(event[i]));
+		  // 		  //                      out.push_back(_convert_particle(event[hh]));
+		  // 		  ///}
+		  // 	  }   
+          // }
+
 
 
 

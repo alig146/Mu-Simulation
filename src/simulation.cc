@@ -76,6 +76,7 @@ int main(int argc, char* argv[]) {
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
   G4Random::setTheSeed(time(nullptr));
 
+
   if (thread_opt.argument) {
     auto opt = std::string(thread_opt.argument);
     if (opt == "on") {

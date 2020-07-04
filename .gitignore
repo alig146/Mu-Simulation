@@ -33,5 +33,6 @@ G4History*
 /cmake-build*
 /data
 /export
+/detector_geo
 
 simulation

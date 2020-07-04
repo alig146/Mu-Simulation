@@ -205,14 +205,14 @@ static const DataKeyList DefaultDataKeyList{
   "NumHits",
 
   "Hit_energy", "Hit_time", "Hit_detId",
-  "Hit_particlePdgId", "Hit_G4trackId", "Hit_G4parentId",
+  "Hit_particlePdgId", "Hit_G4TrackId", "Hit_G4ParentTrackId",
   "Hit_x", "Hit_y", "Hit_z",
   "Hit_ParticleEnergy", "Hit_particlePx", "Hit_particlePy", "Hit_particlePz",
   "Hit_weight",
 
   "NumGenParticles",
 
-  "GenParticle_pdgId", "GenParticle_G4trackId", "GenParticle_G4parentId",
+  "GenParticle_pdgId", "GenParticle_G4TrackId", "GenParticle_G4ParentTrackId",
   "GenParticle_time", "GenParticle_x", "GenParticle_y", "GenParticle_z",
   "GenParticle_energy", "GenParticle_px", "GenParticle_py", "GenParticle_pz",
   "GenParticle_weight",

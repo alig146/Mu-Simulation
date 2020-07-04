@@ -29,7 +29,7 @@ namespace Box { ////////////////////////////////////////////////////////////////
 // TTree* Detector::pre_data = new TTree("pre_data", "pre_data");
 
 // void Detector::WritePreData(){
-    
+
 //   TFile* f = new TFile("box_pre_data.root", "RECREATE");
 //   f->cd();
 
@@ -122,19 +122,19 @@ constexpr auto layer_w_case = full_layer_height;
 constexpr auto full_module_height =  25.0*m + 5.0*(layer_w_case) + 4.0*layer_spacing ;
 constexpr auto scintillator_z_position = 0.00;
 
-constexpr int NBEAMLAYERS = 8; 
+constexpr int NBEAMLAYERS = 8;
 constexpr auto beam_x_edge_length = 0.10*m;
 constexpr auto beam_y_edge_length = 0.10*m;
 constexpr auto beam_thickness = 0.02*m;
 
-constexpr double layer_z_displacement[9] = {-0.5*full_module_height + 0.5*layer_w_case, 
+constexpr double layer_z_displacement[9] = {-0.5*full_module_height + 0.5*layer_w_case,
                                             -0.5*full_module_height + 1.5*layer_w_case + layer_spacing,
                                             -0.5*full_module_height + 20.0*m + 0.5*layer_w_case,
                                             -0.5*full_module_height + 20.0*m + layer_spacing + 1.5*layer_w_case,
                                             -0.5*full_module_height + 25.0*m + 0.5*layer_w_case,
                                             -0.5*full_module_height + 25.0*m + layer_spacing + 1.5*layer_w_case,
                                             -0.5*full_module_height + 25.0*m + 2*layer_spacing + 2.5*layer_w_case,
-                                            -0.5*full_module_height + 25.0*m + 3*layer_spacing + 3.5*layer_w_case, 
+                                            -0.5*full_module_height + 25.0*m + 3*layer_spacing + 3.5*layer_w_case,
                                             -0.5*full_module_height + 25.0*m + 4*layer_spacing + 4.5*layer_w_case};
 
 constexpr double module_beam_heights[8] = {layer_spacing,
@@ -168,7 +168,7 @@ const std::string file3 ="layer.gdml";
 const std::string file4 ="earth.gdml";
 const std::string file5 ="modified.gdml";
 const std::string arg4 = "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/Schema/gdml.xsd";
-  
+
 
 auto get_module_x_displacement(int tag_number){
   if (tag_number < 10) return -0.5 * x_edge_length + 0.5*module_x_edge_length;
@@ -241,7 +241,7 @@ G4bool Detector::ProcessHits(G4Step* step, G4TouchableHistory*) {
   // const auto parentID   = track->GetParentID();
   // const auto momentum   = G4LorentzVector(step_point->GetTotalEnergy(), step_point->GetMomentum());
 
-  //orginally defined variables 
+////////////////////////
   const auto track      = step->GetTrack();
   const auto step_point = step->GetPostStepPoint();
   const auto particle   = track->GetParticleDefinition();
@@ -249,7 +249,7 @@ G4bool Detector::ProcessHits(G4Step* step, G4TouchableHistory*) {
   const auto parentID   = track->GetParentID();
   const auto position   = G4LorentzVector(step_point->GetGlobalTime(), step_point->GetPosition());
   const auto momentum   = G4LorentzVector(step_point->GetTotalEnergy(), step_point->GetMomentum());
-  
+
   const auto local_position = position.vect() - G4ThreeVector(x_displacement, y_displacement, z_displacement);
 
   const auto x_index = static_cast<size_t>(std::floor(+local_position.x() / (x_division)  ));
@@ -318,86 +318,71 @@ void Detector::EndOfEvent(G4HCofThisEvent*) {
 //Build 1 Module for detector
 G4VPhysicalVolume* Detector::ConstructScintillatorLayer(G4LogicalVolume* ModuleVolume, int module_number, int layer_number, dimension module_x_displacement, dimension module_y_displacement, dimension layer_z_displacement){
 
-
     auto current = new Scintillator("M" + std::to_string(module_number) + "L" + std::to_string(layer_number),
       layer_x_edge_length,
       layer_y_edge_length,
       full_layer_height,
       scintillator_casing_thickness);
- 
+
       _scintillators.push_back(current);
 
-
   return current->PlaceIn(ModuleVolume, G4Translate3D(0.0, 0.0, layer_z_displacement) );
-                                     
   //G4Translate3D(0.5*layer_x_edge_length, 0.5*layer_y_edge_length, layer_z_displacement)
 }
 
 G4VPhysicalVolume* Detector::ConstructModule(G4LogicalVolume* DetectorVolume, int tag_number, dimension detector_x, dimension detector_y, dimension detector_z){
 
   auto ModuleVolume = Construction::BoxVolume("Module" + std::to_string(tag_number), module_x_edge_length + module_case_thickness, module_y_edge_length + module_case_thickness,
-                                               full_module_height); 
+                                               full_module_height);
 
- // auto ModuleCaseVolume = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "_Case", module_x_edge_length, module_y_edge_length, full_module_height, 
+ // auto ModuleCaseVolume = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "_Case", module_x_edge_length, module_y_edge_length, full_module_height,
  //                                                 module_case_thickness, Construction::Material::Iron, *ModuleVisAttr());
 
  // Construction::PlaceVolume(ModuleCaseVolume, ModuleVolume, Construction::Transform(0.0, 0.0, 0.0));
-
-
-  
-  for (std::size_t layer{}; layer < layer_count; ++layer) { 
-
-    auto current = Detector::ConstructScintillatorLayer(ModuleVolume, tag_number, layer, 
+  for (std::size_t layer{}; layer < layer_count; ++layer) {
+    auto current = Detector::ConstructScintillatorLayer(ModuleVolume, tag_number, layer,
                                                         0*m,
                                                         0*m,
-                                                        get_layer_z_displacement(layer)); //DELETE THIS 
-
+                                                        get_layer_z_displacement(layer)); //DELETE THIS?
   }
 
 
   //CONSTRUCTING AND INSERTING STEEL BEAMS
 
   for (int beam_layer = 0; beam_layer < NBEAMLAYERS; beam_layer++){
+    auto BeamL1 = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "BL" + std::to_string(beam_layer) + "PL1", beam_x_edge_length, beam_y_edge_length, module_beam_heights[beam_layer],
+                                              beam_thickness, Construction::Material::Iron, Construction::CasingAttributes());
+    auto BeamL2 = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "BL" + std::to_string(beam_layer) + "PL2", beam_x_edge_length, beam_y_edge_length, module_beam_heights[beam_layer],
+                                              beam_thickness, Construction::Material::Iron, Construction::CasingAttributes());
+    auto BeamR1 = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "BL" + std::to_string(beam_layer) + "PR1", beam_x_edge_length, beam_y_edge_length, module_beam_heights[beam_layer],
+                                              beam_thickness, Construction::Material::Iron, Construction::CasingAttributes());
+    auto BeamR2 = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "BL" + std::to_string(beam_layer) + "PR2", beam_x_edge_length, beam_y_edge_length, module_beam_heights[beam_layer],
+                                              beam_thickness, Construction::Material::Iron, Construction::CasingAttributes());
 
-    auto BeamL1 = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "BL" + std::to_string(beam_layer) + "PL1", beam_x_edge_length, beam_y_edge_length, module_beam_heights[beam_layer], 
-                                                  beam_thickness, Construction::Material::Iron, Construction::CasingAttributes());
-    auto BeamL2 = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "BL" + std::to_string(beam_layer) + "PL2", beam_x_edge_length, beam_y_edge_length, module_beam_heights[beam_layer], 
-                                                  beam_thickness, Construction::Material::Iron, Construction::CasingAttributes());
-    auto BeamR1 = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "BL" + std::to_string(beam_layer) + "PR1", beam_x_edge_length, beam_y_edge_length, module_beam_heights[beam_layer], 
-                                                  beam_thickness, Construction::Material::Iron, Construction::CasingAttributes());
-    auto BeamR2 = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "BL" + std::to_string(beam_layer) + "PR2", beam_x_edge_length, beam_y_edge_length, module_beam_heights[beam_layer], 
-                                                  beam_thickness, Construction::Material::Iron, Construction::CasingAttributes());
-
-    Construction::PlaceVolume(BeamL1, ModuleVolume, Construction::Transform(-0.50*module_x_edge_length  + 0.50*beam_x_edge_length, 
-                                                                            -0.50*module_y_edge_length  + 0.50*beam_y_edge_length, 
+    Construction::PlaceVolume(BeamL1, ModuleVolume, Construction::Transform(-0.50*module_x_edge_length  + 0.50*beam_x_edge_length,
+                                                                            -0.50*module_y_edge_length  + 0.50*beam_y_edge_length,
                                                                             -1.0*module_beam_z_pos[beam_layer]));
-    Construction::PlaceVolume(BeamL2, ModuleVolume, Construction::Transform(-0.50*module_x_edge_length  + 0.50*beam_x_edge_length, 
-                                                                             0.50*module_y_edge_length  - 0.50*beam_y_edge_length, 
+    Construction::PlaceVolume(BeamL2, ModuleVolume, Construction::Transform(-0.50*module_x_edge_length  + 0.50*beam_x_edge_length,
+                                                                             0.50*module_y_edge_length  - 0.50*beam_y_edge_length,
                                                                             module_beam_z_pos[beam_layer]));
-    Construction::PlaceVolume(BeamR1, ModuleVolume, Construction::Transform( 0.50*module_x_edge_length  - 0.50*beam_x_edge_length, 
-                                                                            -0.50*module_y_edge_length  + 0.50*beam_y_edge_length, 
+    Construction::PlaceVolume(BeamR1, ModuleVolume, Construction::Transform( 0.50*module_x_edge_length  - 0.50*beam_x_edge_length,
+                                                                            -0.50*module_y_edge_length  + 0.50*beam_y_edge_length,
                                                                            -1.0* module_beam_z_pos[beam_layer]));
-    Construction::PlaceVolume(BeamR2, ModuleVolume, Construction::Transform(0.50*module_x_edge_length   - 0.50*beam_x_edge_length, 
-                                                                            0.50*module_y_edge_length   - 0.50*beam_y_edge_length, 
+    Construction::PlaceVolume(BeamR2, ModuleVolume, Construction::Transform(0.50*module_x_edge_length   - 0.50*beam_x_edge_length,
+                                                                            0.50*module_y_edge_length   - 0.50*beam_y_edge_length,
                                                                            -1.0* module_beam_z_pos[beam_layer]));
-
-
   }
 
 
-
-
   if (tag_number == 0) {
-
     std::cout << "ABOUT TO WRITE GDML FOR MODULE" << std::endl;
-
     Construction::Export(ModuleVolume, folder, file2, arg4 );
   }
 
 
     return Construction::PlaceVolume(ModuleVolume, DetectorVolume,
                     Construction::Transform(get_module_x_displacement(tag_number),
-                    get_module_y_displacement(tag_number), 
+                    get_module_y_displacement(tag_number),
                     0.00,
                     0.0, 0.0, 1.0, 0.00));
 
@@ -419,27 +404,25 @@ G4VPhysicalVolume* Detector::Construct(G4LogicalVolume* world) {
 	//DetectorVolume->SetVisAttributes(G4VisAttributes::Invisible);
 
 	for (int module_number = 0; module_number < NMODULES; module_number++){
-		auto current = Detector::ConstructModule(DetectorVolume, module_number, 
-												 0.5L*x_edge_length + x_displacement, //add extra terms for displacement from center here
-												 0.5L*y_edge_length + y_displacement , 
-												 -half_detector_height + steel_height);
-
-  
+		auto current = Detector::ConstructModule(DetectorVolume, module_number,
+					   0.5L*x_edge_length + x_displacement, //add extra terms for displacement from center here
+					   0.5L*y_edge_length + y_displacement,
+					   -half_detector_height + steel_height);
 	}
 
- 
+
 	_steel = Construction::BoxVolume("SteelPlate",
-									 x_edge_length, y_edge_length, steel_height,
-									 Construction::Material::Iron,
-									 Construction::CasingAttributes());
-    
+			 x_edge_length, y_edge_length, steel_height,
+			 Construction::Material::Iron,
+			 Construction::CasingAttributes());
+
 	Construction::PlaceVolume(_steel, DetectorVolume, Construction::Transform(0, 0, half_detector_height + 0.5L*steel_height));
 
 	Construction::Export(DetectorVolume, folder, file, arg4 );
 
 	return Construction::PlaceVolume(DetectorVolume, world,
-									 Construction::Transform(0.5L*x_edge_length + x_displacement, 0.5L*y_edge_length + y_displacement, -0.50*full_detector_height + 20*m));
-                            
+		   Construction::Transform(0.5L*x_edge_length + x_displacement, 0.5L*y_edge_length + y_displacement, -0.50*full_detector_height + 20*m));
+
 }
 
 
@@ -448,27 +431,27 @@ G4VPhysicalVolume* Detector::Construct(G4LogicalVolume* world) {
 
 namespace CMS{
 
-  constexpr auto ____DEFINE_ME____ = 0.0*m;
+  constexpr auto ____DEFINE_ME____   = 0.0*m;
 
-  constexpr auto earth_total_depth  = 4530.0L*cm + 1825.0L*cm + 3645.0L*cm;
+  constexpr auto earth_total_depth   = 4530.0L*cm + 1825.0L*cm + 3645.0L*cm;
 
   constexpr auto uxc55_cavern_length = 53.0*m;
-  constexpr auto uxc55_inner_radius =  13.250*m;
-  constexpr auto uxc55_outer_radius =  14.530*m;
-  constexpr auto IPDepth           =   earth_total_depth - uxc55_outer_radius;
-  constexpr auto _base_depth       =   earth_total_depth;
-  constexpr auto access_shaft_x     =  -14.00*m;
-  constexpr auto access_shaft_y     =  0.00*m;
-  constexpr auto access_shaft_z     =  -1.0* uxc55_outer_radius;
-  
-  constexpr auto CMSSteelThickness   =  1.48L*m;
-  constexpr auto CMSDetectorLength   =  20.00L*m;
-  constexpr auto CMSDetectorRadius   =  8.00L*m;
+  constexpr auto uxc55_inner_radius  = 13.250*m;
+  constexpr auto uxc55_outer_radius  = 14.530*m;
+  constexpr auto IPDepth             = earth_total_depth - uxc55_outer_radius;
+  constexpr auto _base_depth         = earth_total_depth;
+  constexpr auto access_shaft_x      = -14.00*m;
+  constexpr auto access_shaft_y      = 0.00*m;
+  constexpr auto access_shaft_z      = -1.0* uxc55_outer_radius;
 
-  constexpr auto AS_Depth = 20.50*m;
-  constexpr auto AS_Width = 20.50*m;
-  constexpr auto AS_Height = earth_total_depth - 2 * uxc55_outer_radius;
-  constexpr auto AS_Thickness = 1.5*m;
+  constexpr auto CMSSteelThickness   = 1.48L*m;
+  constexpr auto CMSDetectorLength   = 20.00L*m;
+  constexpr auto CMSDetectorRadius   = 8.00L*m;
+
+  constexpr auto AS_Depth            = 20.50*m;
+  constexpr auto AS_Width            = 20.50*m;
+  constexpr auto AS_Height           = earth_total_depth - 2 * uxc55_outer_radius;
+  constexpr auto AS_Thickness        = 1.5*m;
 
 
   G4LogicalVolume* EarthVolume() {
@@ -529,13 +512,13 @@ namespace CMS{
     auto cavern = Cylinder("cavern", uxc55_cavern_length, 0.0*m, uxc55_outer_radius);
 
     auto access_shaft = Construction::Box("shaft", AS_Width, AS_Depth, AS_Height );
-                        
+
     return Construction::Volume(new G4UnionSolid("fake_cms",
                     access_shaft,
                     cavern,
                     Construction::Rotate(1, 0, 0, 90*deg)
                     *G4Translate3D(0.0, -1.0*static_cast<long double>(uxc55_outer_radius + 0.5*AS_Height), -0.5*uxc55_cavern_length + 0.5*AS_Width) ));
-                    
+
   }
 
   //__Calculate Subtraction of Volumes____________________________________________________________
@@ -576,17 +559,17 @@ G4VPhysicalVolume* Detector::ConstructEarth(G4LogicalVolume* world){
    	Construction::PlaceVolume(CMS::_calculate_modification("modified_mix", Earth::MixVolume(),
 							  mix_top + Earth::MixDepth(), mix_top),
 							  earth, Earth::MixTransform());
-   
+
   	Construction::PlaceVolume(CMS::_calculate_modification("modified_marl", Earth::MarlVolume(),
 							  marl_top + Earth::MarlDepth(), marl_top),
 							  earth, Earth::MarlTransform());
-     
-     
-        
+
+
+
 	auto sandstone = CMS::_calculate_modification("modified_sandstone", CMS::SandstoneVolume(),
 												  sandstone_top + Earth::SandstoneDepth(), sandstone_top);
 
-      
+
 
 	/////////////// UXC55 AND CMS DETECTOR CONSTRUCTION ////////////////////////////////////////
 
@@ -605,7 +588,7 @@ G4VPhysicalVolume* Detector::ConstructEarth(G4LogicalVolume* world){
 
 	Construction::PlaceVolume(UXC55_outer_logical, earth, Cavern_Transform()*Construction::Rotate(0, 1, 0, 90*deg) );
 	Construction::PlaceVolume(CMS_Detector_logical, earth, Cavern_Transform()*Construction::Rotate(0, 1, 0, 90*deg) );
-	Construction::PlaceVolume(UXC55_air_logical, earth, Cavern_Transform()*Construction::Rotate(0, 1, 0, 90*deg) ); 
+	Construction::PlaceVolume(UXC55_air_logical, earth, Cavern_Transform()*Construction::Rotate(0, 1, 0, 90*deg) );
 
 
 	/////////////// ACCESS SHAFT CONSTRUCTION ////////////////////////////////////////
@@ -613,7 +596,7 @@ G4VPhysicalVolume* Detector::ConstructEarth(G4LogicalVolume* world){
 	//MAKE WHOLE SHAFT HERE
 
 	auto Access_Shaft_outer_logical = OpenBoxVolume("Access_Shaft_outer",
-													AS_Width,
+                                                    AS_Width,
 													AS_Depth,
 													AS_Height,
 													AS_Thickness,
@@ -645,12 +628,12 @@ G4VPhysicalVolume* Detector::ConstructEarth(G4LogicalVolume* world){
 	//auto mod = CMS::_calculate_modification("modified_marl", Earth::MarlVolume(),
 	//                      marl_top + Earth::MarlDepth(), marl_top);
 	Construction::Export(CMSVolume(), folder, file5, arg4 );
-      
+
 	Construction::Export(earth, folder, file4, arg4 );
 
 	return Construction::PlaceVolume(earth, world, Earth::Transform());
 
-     
+
 }
 
 
@@ -662,5 +645,3 @@ G4VPhysicalVolume* Detector::ConstructEarth(G4LogicalVolume* world){
 
 
 } } /* namespace MATHUSLA::MU */
-
-

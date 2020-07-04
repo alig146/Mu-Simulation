@@ -204,18 +204,18 @@ using DataKeyTypeList = std::vector<DataKeyType>;
 static const DataKeyList DefaultDataKeyList{
   "NumHits",
 
-  "Deposit", "Time", "Detector",
-  "PDG", "Track", "Parent",
-  "X", "Y", "Z",
-  "E", "PX", "PY", "PZ",
-  "WEIGHT",
+  "Hit_energy", "Hit_time", "Hit_detId",
+  "Hit_particlePdgId", "Hit_trackId", "Hit_parentId",
+  "Hit_x", "Hit_y", "Hit_z",
+  "Hit_ParticleEnergy", "Hit_particlePx", "Hit_particlePy", "Hit_particlePz",
+  "Hit_weight",
 
-  "N_GEN",
+  "NumGenParticles",
 
-  "GEN_PDG", "GEN_Track", "GEN_Parent",
-  "GEN_T", "GEN_X", "GEN_Y", "GEN_Z",
-  "GEN_E", "GEN_PX", "GEN_PY", "GEN_PZ",
-  "GEN_WEIGHT",
+  "GenParticle_pdgId", "GenParticle_track", "GenParticle_parent",
+  "GenParticle_time", "GenParticle_x", "GenParticle_y", "GenParticle_z",
+  "GenParticle_energy", "GenParticle_px", "GenParticle_py", "GenParticle_pz",
+  "GenParticle_weight",
 
   "COSMIC_EVENT_ID",
 

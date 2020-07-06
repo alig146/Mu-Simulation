@@ -56,7 +56,8 @@ long double CMSIP();
 //----------------------------------------------------------------------------------------------
 
 //__Cavern Rotation_____________________________________________________________________________
-constexpr auto P1ForwardTilt = std::atan(0.01236) * rad;
+//constexpr auto P1ForwardTilt = std::atan(0.01236) * rad;
+constexpr auto P1ForwardTilt = 0.012359370646934603 * rad;
 long double cosP1Tilt();
 long double sinP1Tilt();
 long double rotate_from_P1_x(long double x, long double z);

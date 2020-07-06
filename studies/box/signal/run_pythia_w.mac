@@ -7,9 +7,11 @@
 /vis/filtering/trajectories/chargeFilter-0/active true
 
 /gen/select pythia
-/gen/pythia/read_file studies/box/signal/hh_to_muon.cmnd
+/gen/pythia/read_file studies/box/signal/w_to_muon.cmnd
 /gen/pythia/process all
 
 /gen/pythia/cuts/clear
+/gen/pythia/cuts/add 13 | | 0.6:1.9 | -0.695:0.695 rad
+/gen/pythia/cuts/add 14 | | 0.6:1.9 | -0.695:0.695 rad
 
 /run/beamOn 1000

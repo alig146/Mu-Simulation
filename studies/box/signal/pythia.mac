@@ -11,7 +11,7 @@
 /gen/pythia/process {process}
 
 /gen/pythia/cuts/clear
-/gen/pythia/cuts/add 13 | | 0.0:5.0 | -3.14:3.14 rad
-/gen/pythia/cuts/add 14 | | 0.0:5.0 | -3.14:3.14 rad
+/gen/pythia/cuts/add 13 | | 0.6:1.9 | -0.695:0.695 rad
+/gen/pythia/cuts/add 14 | | 0.6:1.9 | -0.695:0.695 rad
 
 /run/beamOn {count}

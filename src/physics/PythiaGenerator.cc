@@ -169,27 +169,27 @@ ParticleVector _convert_pythia_event(Pythia8::Pythia* pythia,
 
 
 		  
-          if(event[i].idAbs()==13) {
-			  if (event[i].zProd()>69500 && event[i].zProd()<169500 && event[i].yProd()>-50000 && event[i].yProd()<50000 && event[i].xProd()>59500 && event[i].xProd()<89650){
-				  int hh = event[i].mother1();
-				  if(event[hh].idAbs()==25) { 
-					  out.push_back(_convert_particle(event[i]));
-		  			  //					  out.push_back(_convert_particle(event[hh]));
-				  }
-			  }
-          }
+          // if(event[i].idAbs()==13) {
+		  // 	  if (event[i].zProd()>69500 && event[i].zProd()<169500 && event[i].yProd()>-50000 && event[i].yProd()<50000 && event[i].xProd()>59500 && event[i].xProd()<89650){
+		  // 		  int hh = event[i].mother1();
+		  // 		  if(event[hh].idAbs()==25) { 
+		  // 			  out.push_back(_convert_particle(event[i]));
+		  // 			  //					  out.push_back(_convert_particle(event[hh]));
+		  // 		  }
+		  // 	  }
+          // }
 
 
 		  //W
-          // if(event[i].idAbs()==13) {
-		  // 	  int w = event[i].mother1();
-		  // 	  if(event[w].idAbs()==24) {
-		  // 	  //if (event[w].pAbs2()>=40) {
-		  // 		  out.push_back(_convert_particle(event[i]));
-		  // 		  //                      out.push_back(_convert_particle(event[hh]));
-		  // 		  ///}
-		  // 	  }   
-          // }
+          if(event[i].idAbs()==13) {
+		  	  int w = event[i].mother1();
+		  	  if(event[w].idAbs()==24) {
+				  if (event[w].pAbs2()>=40) {
+					  out.push_back(_convert_particle(event[i]));
+		  		  //                      out.push_back(_convert_particle(event[hh]));
+				  }
+		  	  }   
+          }
 
 
 

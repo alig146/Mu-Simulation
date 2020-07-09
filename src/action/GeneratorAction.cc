@@ -58,7 +58,6 @@ GeneratorAction::GeneratorAction(const std::string& generator)
       "file_reader", "File Reader Generator.");
 
   _gen_map["pythia"] = new Physics::PythiaGenerator(
-      {},
       {
           "Print:quiet = on",
           "Next:numberCount = 10000",
@@ -68,6 +67,8 @@ GeneratorAction::GeneratorAction(const std::string& generator)
           "24:onMode = off",
           "24:onIfAny = 13"
       });
+
+  
 
   // _gen_map["hepmc"] = new Physics::HepMCGenerator({});
 
@@ -97,7 +98,9 @@ GeneratorAction::GeneratorAction(const std::string& generator)
 
 //__Create Initial Vertex_______________________________________________________________________
 void GeneratorAction::GeneratePrimaries(G4Event* event) {
+  std::cout << "GenAction start" << std::endl;
   _gen->GeneratePrimaryVertex(event);
+  std::cout << "GenAction end" << std::endl;
 }
 //----------------------------------------------------------------------------------------------
 

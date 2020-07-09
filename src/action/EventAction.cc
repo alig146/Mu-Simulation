@@ -41,8 +41,7 @@ void EventAction::BeginOfEventAction(const G4Event* event) {
   std::cout << "\r  Event [ "
              + std::to_string(_event_id)
              + " ] @ ("
-             + std::to_string(event->GetNumberOfPrimaryVertex())
-             + " primaries)"
+             + std::to_string(event->GetNumberOfPrimaryVertex()) + " primaries)"
              + (!(_event_id % _print_modulo) ? "\n\n" : "");
 
   if (ActionInitialization::Debug) StepDataStore::Initialize(_event_id);

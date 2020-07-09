@@ -33,39 +33,6 @@ namespace MATHUSLA { namespace MU {
 
 namespace Physics { ////////////////////////////////////////////////////////////////////////////
 
-//__Cut on Particle_____________________________________________________________________________
-using ParticleCut = Filter::All<Filter::Id, Filter::PseudoLorentz>;
-//----------------------------------------------------------------------------------------------
-
-//__Equality Between Cuts_______________________________________________________________________
-constexpr bool operator==(const ParticleCut& left,
-                          const ParticleCut& right) {
-  return left.id == right.id && left.min == right.min && left.max == right.max;
-}
-//----------------------------------------------------------------------------------------------
-
-//__Get ParticleCut String______________________________________________________________________
-const std::string GetParticleCutString(const ParticleCut& cut);
-//----------------------------------------------------------------------------------------------
-
-//__Stream Cut Object___________________________________________________________________________
-inline std::ostream& operator<<(std::ostream& os,
-                                const ParticleCut& cut) {
-  return os << GetParticleCutString(cut);
-}
-//----------------------------------------------------------------------------------------------
-
-//__List of Particles to Propagate______________________________________________________________
-using PropagationList = std::vector<ParticleCut>;
-//----------------------------------------------------------------------------------------------
-
-//__Parse Propagation List from String__________________________________________________________
-const PropagationList ParsePropagationList(const std::string& cut_string);
-//----------------------------------------------------------------------------------------------
-
-//__Check if Particle Matches Any Cut in PropagationList________________________________________
-bool InPropagationList(const PropagationList& list,
-                       const BasicParticle& particle);
 //----------------------------------------------------------------------------------------------
 
 //__Default Vertex for IP_______________________________________________________________________

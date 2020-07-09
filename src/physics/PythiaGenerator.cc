@@ -33,12 +33,12 @@ namespace Physics { ////////////////////////////////////////////////////////////
 G4ThreadLocal Pythia8::Pythia* PythiaGenerator::_pythia = nullptr;
 G4ThreadLocal std::vector<std::string>* PythiaGenerator::_pythia_settings = nullptr;
 G4ThreadLocal bool PythiaGenerator::_settings_on = false;
+G4ThreadLocal PythiaFilter* PythiaGenerator::_filter = nullptr;
 //----------------------------------------------------------------------------------------------
 
 //__Pythia Generator Construction_______________________________________________________________
-PythiaGenerator::PythiaGenerator(const PropagationList& propagation,
-                                 Pythia8::Pythia* pythia)
-    : Generator("pythia", "Pythia8 Generator."), _propagation_list(propagation) {
+PythiaGenerator::PythiaGenerator(Pythia8::Pythia* pythia)
+    : Generator("pythia", "Pythia8 Generator.") {
   _pythia_settings = new std::vector<std::string>();
   SetPythia(pythia);
 
@@ -50,45 +50,28 @@ PythiaGenerator::PythiaGenerator(const PropagationList& propagation,
   _read_file->SetParameterName("file", false);
   _read_file->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-  _add_cut = CreateCommand<Command::StringArg>("cuts/add", "Add Cut to Pythia Filter");
-  _add_cut->SetParameterName("cut", false);
-  _add_cut->AvailableForStates(G4State_PreInit, G4State_Idle);
+  _add_filter = CreateCommand<Command::StringArg>("add_filter", "Add a Pythia Filter.");
+  _add_filter->SetParameterName("filter", false);
+  _add_filter->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-  _clear_cuts = CreateCommand<Command::NoArg>("cuts/clear", "Clear Cuts from Pythia Filter");
-  _clear_cuts->AvailableForStates(G4State_PreInit, G4State_Idle);
+  _add_filter_cut = CreateCommand<Command::StringArg>("add_filter_cut", "Add a Pythia Filter cut.");
+  _add_filter_cut->SetParameterName("filter_cut", false);
+  _add_filter_cut->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-  _process = CreateCommand<Command::StringArg>("process", "Specify Pythia Process.");
-  _process->SetParameterName("process", false);
-  _process->AvailableForStates(G4State_PreInit, G4State_Idle);
 }
 //----------------------------------------------------------------------------------------------
 
+
 //__Pythia Generator Construction_______________________________________________________________
-PythiaGenerator::PythiaGenerator(const PropagationList& propagation,
-                                 const std::vector<std::string>& settings)
-    : PythiaGenerator(propagation) {
-  SetPythia(settings);
-}
+  PythiaGenerator::PythiaGenerator(const std::vector<std::string>& settings) : PythiaGenerator() {
+    SetPythia(settings);
+  }
 //----------------------------------------------------------------------------------------------
 
 //__Pythia Generator Construction_______________________________________________________________
-PythiaGenerator::PythiaGenerator(const PropagationList& propagation,
-                                 const std::string& path)
-    : PythiaGenerator(propagation) {
-  SetPythia(path);
-}
-//----------------------------------------------------------------------------------------------
-
-//__Pythia Generator Construction_______________________________________________________________
-PythiaGenerator::PythiaGenerator(Pythia8::Pythia* pythia) : PythiaGenerator({}, pythia) {}
-//----------------------------------------------------------------------------------------------
-
-//__Pythia Generator Construction_______________________________________________________________
-PythiaGenerator::PythiaGenerator(const std::vector<std::string>& settings) : PythiaGenerator({}, settings) {}
-//----------------------------------------------------------------------------------------------
-
-//__Pythia Generator Construction_______________________________________________________________
-PythiaGenerator::PythiaGenerator(const std::string& path) : PythiaGenerator({}, path) {}
+  PythiaGenerator::PythiaGenerator(const std::string& path) : PythiaGenerator() {
+    SetPythia(path);
+  }
 //----------------------------------------------------------------------------------------------
 
 namespace { ////////////////////////////////////////////////////////////////////////////////////
@@ -128,7 +111,7 @@ Pythia8::Pythia* _create_pythia(std::vector<std::string>* settings,
 //----------------------------------------------------------------------------------------------
 
 //__Convert Pythia Particle to Particle_________________________________________________________
-Particle _convert_particle(Pythia8::Particle& particle) {
+Particle _convert_particle(const Pythia8::Particle& particle) {
   const auto xz = Cavern::rotate_from_P1(particle.zProd() * mm, -particle.xProd() * mm);
   Particle out{particle.id(),
                particle.tProd() * mm / c_light,
@@ -140,76 +123,10 @@ Particle _convert_particle(Pythia8::Particle& particle) {
 }
 //----------------------------------------------------------------------------------------------
 
-//__Convert and Pushback Pythia8 Particle if Predicate__________________________________________
-template<class Predicate>
-bool _push_back_convert_if(ParticleVector& out,
-                           Pythia8::Particle& particle,
-                           Predicate predicate) {
-  const auto next = _convert_particle(particle);
-  const auto passed_selection = predicate(next);
-  if (passed_selection)
-    out.push_back(next);
-  return passed_selection;
-}
-//----------------------------------------------------------------------------------------------
-
-//__Convert Pythia Hard and Soft Processes______________________________________________________
-template<class Predicate>
-ParticleVector _convert_pythia_event(Pythia8::Pythia* pythia,
-                                     const std::string& type,
-                                     Predicate predicate) {
-  const auto type_string = util::string::strip(type);
-  auto& event = type_string == "hard" ? pythia->process : pythia->event;
-  const auto starting_index = type_string == "soft" ? pythia->process.size() : 0;
-  ParticleVector out;
-  for (int i = starting_index; i < event.size(); ++i) {
-	  const auto next = _convert_particle(event[i]);
-	  if (predicate(next)) {
-		  //out.push_back(next);
-
-
-		  
-          // if(event[i].idAbs()==13) {
-		  // 	  if (event[i].zProd()>69500 && event[i].zProd()<169500 && event[i].yProd()>-50000 && event[i].yProd()<50000 && event[i].xProd()>59500 && event[i].xProd()<89650){
-		  // 		  int hh = event[i].mother1();
-		  // 		  if(event[hh].idAbs()==25) { 
-		  // 			  out.push_back(_convert_particle(event[i]));
-		  // 			  //					  out.push_back(_convert_particle(event[hh]));
-		  // 		  }
-		  // 	  }
-          // }
-
-
-		  //W
-          if(event[i].idAbs()==13) {
-		  	  int w = event[i].mother1();
-		  	  if(event[w].idAbs()==24) {
-				  if (event[w].pAbs2()>=40) {
-					  out.push_back(_convert_particle(event[i]));
-		  		  //                      out.push_back(_convert_particle(event[hh]));
-				  }
-		  	  }   
-          }
-
-
-
-
-	  }
-
-
-  }
-  return out;
-
-
-
-
-}
-//----------------------------------------------------------------------------------------------
-
 } /* anonymous namespace */ ////////////////////////////////////////////////////////////////////
 
 //__Generate Initial Particles__________________________________________________________________
-void PythiaGenerator::GeneratePrimaryVertex(G4Event* event) {
+void PythiaGenerator::GeneratePrimaryVertex(G4Event* g4event) {
   if (!_settings_on && !_pythia_settings->empty()) {
     _pythia = _create_pythia(_pythia_settings, _settings_on);
   } else if (!_pythia) {
@@ -219,17 +136,13 @@ void PythiaGenerator::GeneratePrimaryVertex(G4Event* event) {
   ++_counter;
   _pythia->next();
 
-  _last_event = _convert_pythia_event(_pythia, _process_string, [&](const auto& next) {
-    for (const auto& entry : _propagation_list)
-      if (next.id == entry.id)
-        return true;
-    return false;
-  });
-
-  for (const auto& particle : _last_event)
-    if (InPropagationList(_propagation_list, particle))
-      AddParticle(particle, *event);
+  if(!_filter)
+    _filter=new PythiaFilter();
+   _last_event=_filter->GetParticles(_pythia->event);
+   for (const auto& particle : _last_event)
+     AddParticle(particle, *g4event);
 }
+  
 //----------------------------------------------------------------------------------------------
 
 //__Get Last Event Data_________________________________________________________________________
@@ -246,15 +159,43 @@ void PythiaGenerator::SetNewValue(G4UIcommand* command,
     _settings_on = true;
   } else if (command == _read_file) {
     SetPythia(value);
-  } else if (command == _add_cut) {
-    for (const auto& cut : ParsePropagationList(value))
-      _propagation_list.push_back(cut);
-  } else if (command == _clear_cuts) {
-    _propagation_list.clear();
-  } else if (command == _process) {
-    _process_string = value;
-  } else {
     Generator::SetNewValue(command, value);
+  } else if (command == _add_filter) {
+    value.toLower();
+    if(value.contains("promptmuon")) {
+      if(_filter) delete _filter;
+      _filter = new PythiaPromptMuonFilter();
+    }
+    if(value.contains("displaced")) {
+      if(_filter) delete _filter;
+      _filter = new PythiaDisplacedFilter();
+    }
+  } else if (command ==_add_filter_cut) {
+    std::vector<std::string> tokens;
+    util::string::split(util::string::strip(value), tokens, " ");
+    PythiaPromptMuonFilter *f1=dynamic_cast<PythiaPromptMuonFilter *>(_filter);
+    PythiaDisplacedFilter *f2=dynamic_cast<PythiaDisplacedFilter *>(_filter);
+
+    if(tokens.size()>=2) {
+      double val=std::atof(tokens[1].c_str());
+      if(f1) {
+	if(tokens[0].find("pcut")!=std::string::npos)          { f1->_pCut=val; }
+	else if(tokens[0].find("ptcut")!=std::string::npos)    { f1->_ptCut=val; }
+	else if(tokens[0].find("etalocut")!=std::string::npos) { f1->_etaLoCut=val; }
+	else if(tokens[0].find("etahicut")!=std::string::npos) { f1->_etaHiCut=val; }
+	else if(tokens[0].find("philocut")!=std::string::npos) { f1->_phiLoCut=val; }
+	else if(tokens[0].find("phihicut")!=std::string::npos) { f1->_phiHiCut=val; }
+      }
+      else if(f2) {
+	if(tokens[0].find("xlocut")!=std::string::npos)      { f2->_xLoCut=val; }
+	else if(tokens[0].find("xhicut")!=std::string::npos) { f2->_xHiCut=val; }
+	else if(tokens[0].find("ylocut")!=std::string::npos) { f2->_yLoCut=val; }
+	else if(tokens[0].find("yhicut")!=std::string::npos) { f2->_yHiCut=val; }
+	else if(tokens[0].find("zlocut")!=std::string::npos) { f2->_zLoCut=val; }
+	else if(tokens[0].find("zhicut")!=std::string::npos) { f2->_zHiCut=val; }
+      }      
+    }
+    
   }
 }
 //----------------------------------------------------------------------------------------------
@@ -293,38 +234,57 @@ void PythiaGenerator::SetPythia(const std::string& path) {
 //----------------------------------------------------------------------------------------------
 
 //__PythiaGenerator Specifications______________________________________________________________
-const Analysis::SimSettingList PythiaGenerator::GetSpecification() const {
-  Analysis::SimSettingList config;
-  if (_path.empty() && !_pythia_settings->empty()) {
-    config = Analysis::IndexedSettings(SimSettingPrefix, "_SETTING_", *_pythia_settings);
-  } else if (!_path.empty()) {
-    config.emplace_back(SimSettingPrefix, "_CONFIG", _path);
+  const Analysis::SimSettingList PythiaGenerator::GetSpecification() const {
+    Analysis::SimSettingList config;
+    if (_path.empty() && !_pythia_settings->empty()) {
+      config = Analysis::IndexedSettings(SimSettingPrefix, "_SETTING_", *_pythia_settings);
+    } else if (!_path.empty()) {
+      config.emplace_back(SimSettingPrefix, "_CONFIG", _path);
+    }
+    
+    
+    Analysis::SimSettingList out;
+    out.reserve(2UL + config.size());
+    out.emplace_back(SimSettingPrefix, "", _name);
+    out.insert(out.cend(),
+	       std::make_move_iterator(config.begin()),
+	       std::make_move_iterator(config.end()));
+    
+    
+    out.emplace_back(SimSettingPrefix, "_EVENTS", std::to_string(_counter));
+    
+    return out;
   }
+  //----------------------------------------------------------------------------------------------
+  
+  ParticleVector PythiaFilter::GetParticles(const Pythia8::Event& event) {
+    ParticleVector out;
+    for (int i = 0; i < event.size(); ++i)
+      if(event[i].isFinal())
+	out.push_back(_convert_particle(event[i]));
+    return out;
+  }
+  
+  ParticleVector PythiaPromptMuonFilter::GetParticles(const Pythia8::Event& event) {
+    ParticleVector out;
+    for (int i = 0; i < event.size(); ++i)
+      if(event[i].isFinal() && event[i].idAbs()==13 && event[i].pAbs()>_pCut && event[i].pT()>_ptCut && event[i].eta()>_etaLoCut && event[i].eta()<_etaHiCut && event[i].phi()>_phiLoCut && event[i].phi()<_phiHiCut)
+	out.push_back(_convert_particle(event[i]));
+    return out;
+  }
+  
+  
+  ParticleVector PythiaDisplacedFilter::GetParticles(const Pythia8::Event& event) {
+    ParticleVector out;
+    for (int i = 0; i < event.size(); ++i)
+      if(event[i].isFinal() && event[i].zProd()>_zLoCut && event[i].zProd()<_zHiCut && event[i].yProd()>_yLoCut && event[i].yProd()<_yHiCut && event[i].xProd()>_xLoCut && event[i].xProd()<_xHiCut)
+	out.push_back(_convert_particle(event[i]));
+    return out;
+  }
+  
 
-  config.emplace_back(SimSettingPrefix, "_PROCESS", _process_string);
 
-  Analysis::SimSettingList out;
-  out.reserve(2UL + config.size() + _propagation_list.size());
-  out.emplace_back(SimSettingPrefix, "", _name);
-  out.insert(out.cend(),
-             std::make_move_iterator(config.begin()),
-             std::make_move_iterator(config.end()));
-
-  std::vector<std::string> cut_strings;
-  cut_strings.reserve(_propagation_list.size());
-  for (const auto& cut : _propagation_list)
-    cut_strings.push_back(GetParticleCutString(cut));
-
-  auto cuts = Analysis::IndexedSettings(SimSettingPrefix, "_CUTS_", cut_strings);
-  out.insert(out.cend(),
-             std::make_move_iterator(cuts.begin()),
-             std::make_move_iterator(cuts.end()));
-  out.emplace_back(SimSettingPrefix, "_EVENTS", std::to_string(_counter));
-
-  return out;
-}
-//----------------------------------------------------------------------------------------------
-
-} /* namespace Physics */ //////////////////////////////////////////////////////////////////////
-
+  
+  } /* namespace Physics */ //////////////////////////////////////////////////////////////////////
+  
 } } /* namespace MATHUSLA::MU */

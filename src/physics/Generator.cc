@@ -32,46 +32,8 @@
 
 namespace MATHUSLA { namespace MU {
 
-namespace Physics { ////////////////////////////////////////////////////////////////////////////
+    namespace Physics { ////////////////////////////////////////////////////////////////////////////
 
-namespace { ////////////////////////////////////////////////////////////////////////////////////
-
-//__Convert Particle Cut Part to String_________________________________________________________
-void _cut_values_to_string(std::string& out,
-                           const double min,
-                           const double max,
-                           const double unit,
-                           const std::string& unit_string) {
-  static const auto inf = std::numeric_limits<double>::infinity();
-  if ((min || max) && !(min == -inf && max == inf)) {
-    out.push_back(' ');
-    if (min != -inf)
-      out += std::to_string(min / unit);
-    out.push_back(':');
-    if (max != inf)
-      out += std::to_string(max / unit);
-    out += " " + unit_string;
-  } else {
-    out += " ";
-  }
-}
-//----------------------------------------------------------------------------------------------
-
-} /* anonymous namespace */ ////////////////////////////////////////////////////////////////////
-
-//__Get ParticleCut String______________________________________________________________________
-const std::string GetParticleCutString(const ParticleCut& cut) {
-  auto out = "[ " + std::to_string(cut.id) + " |";
-  _cut_values_to_string(out, cut.min.pT, cut.max.pT, Units::Momentum, Units::MomentumString);
-  out += "|";
-  _cut_values_to_string(out, cut.min.eta, cut.max.eta, 1, "");
-  out += "|";
-  _cut_values_to_string(out, cut.min.phi, cut.max.phi, Units::Angle, Units::AngleString);
-  return out + " ]";
-}
-//----------------------------------------------------------------------------------------------
-
-namespace { ////////////////////////////////////////////////////////////////////////////////////
 
 //__Check if String has Number__________________________________________________________________
 bool _has_digit(const std::string& s) {
@@ -79,100 +41,6 @@ bool _has_digit(const std::string& s) {
 }
 //----------------------------------------------------------------------------------------------
 
-//__Set the Propagation Variables_______________________________________________________________
-bool _set_propagation_limits(double& min,
-                             double& max,
-                             std::string substring,
-                             const std::vector<std::string>& possible_unit_strings,
-                             const std::vector<double>& possible_units) {
-  if (util::string::strip(substring).empty())
-    return true;
-
-  std::vector<std::string> cuts;
-  util::string::split(substring, cuts, ":");
-
-  double unit{1.0L};
-  for (std::size_t i{}; i < possible_unit_strings.size(); ++i) {
-    if (substring.rfind(possible_unit_strings[i]) != std::string::npos) {
-      unit = possible_units[i];
-      break;
-    }
-  }
-
-  try {
-    if (!_has_digit(cuts[0])) {
-      min = -std::numeric_limits<double>::infinity() * unit;
-      max = std::stold(cuts[1]) * unit;
-    } else if (!_has_digit(cuts[1])) {
-      min = std::stold(cuts[0]) * unit;
-      max = std::numeric_limits<double>::infinity() * unit;
-    } else {
-      min = std::stold(cuts[0]) * unit;
-      max = std::stold(cuts[1]) * unit;
-    }
-    return true;
-  } catch (...) {}
-  return false;
-}
-//----------------------------------------------------------------------------------------------
-
-} /* anonymous namespace */ ////////////////////////////////////////////////////////////////////
-
-//__Parse Propagation List from String__________________________________________________________
-const PropagationList ParsePropagationList(const std::string& cut_string) {
-  std::vector<std::string> tokens;
-  util::string::split(util::string::strip(cut_string), tokens, "|");
-
-  if (tokens.size() != 4)
-    return PropagationList{};
-
-  PropagationList out;
-  std::vector<std::string> particles;
-  util::string::split(util::string::strip(tokens[0]), particles, ",");
-  out.reserve(std::min(1UL, particles.size()));
-
-  static const std::vector<std::string> momentum_unit_strings{"GeV/c", "MeV/c", "keV/c", "eV/c" };
-  static const std::vector<double>      momentum_units{        GeVperC, MeVperC, keVperC, eVperC};
-  static const std::vector<std::string> angle_unit_strings{"rad", "deg"};
-  static const std::vector<double>      angle_units{        rad,   deg };
-
-  double min_pT{}, max_pT{}, min_eta{}, max_eta{}, min_phi{}, max_phi{};
-
-  try {
-    if (!_set_propagation_limits(min_pT,  max_pT,  tokens[1], momentum_unit_strings, momentum_units)
-        || !_set_propagation_limits(min_eta, max_eta, tokens[2], {}, {})
-        || !_set_propagation_limits(min_phi, max_phi, tokens[3], angle_unit_strings, angle_units))
-      return PropagationList{};
-
-    const PseudoLorentzTriplet min{min_pT, min_eta, min_phi};
-    const PseudoLorentzTriplet max{max_pT, max_eta, max_phi};
-
-    for (auto& particle : particles) {
-      util::string::strip(particle);
-      if (particle[0] == '-' || particle[0] == '+') {
-        out.push_back({{ std::stoi(particle)}, {min, max}});
-      } else {
-        out.push_back({{-std::stoi(particle)}, {min, max}});
-        out.push_back({{ std::stoi(particle)}, {min, max}});
-      }
-    }
-
-  } catch (...) {
-    return PropagationList{};
-  }
-
-  return out;
-}
-//----------------------------------------------------------------------------------------------
-
-//__Check if Particle Matches Any Cut in PropagationList________________________________________
-bool InPropagationList(const PropagationList& list,
-                       const BasicParticle& particle) {
-  for (const auto& cut : list)
-    if (cut(particle)) return true;
-  return false;
-}
-//----------------------------------------------------------------------------------------------
 
 //__Generator Messenger Directory Path__________________________________________________________
 const std::string Generator::MessengerDirectory = "/gen/";

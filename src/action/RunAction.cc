@@ -130,6 +130,7 @@ void RunAction::BeginOfRunAction(const G4Run* run) {
 
 //__Post-Run Processing_________________________________________________________________________
 void RunAction::EndOfRunAction(const G4Run*) {
+
   if (!_event_count)
     return;
 
@@ -163,7 +164,7 @@ void RunAction::EndOfRunAction(const G4Run*) {
       _write_entry(file, "DET", Construction::Builder::GetDetectorName());
 
       for (const auto& entry : GeneratorAction::GetGenerator()->GetSpecification())
-        _write_entry(file, entry.name, entry.text);
+	_write_entry(file, entry.name, entry.text);
 
       _write_entry(file, "RUN", _run_count);
       _write_entry(file, "EVENTS", _event_count);

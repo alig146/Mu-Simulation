@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+#include <sstream>
+
 #include "physics/PythiaGenerator.hh"
 
 #include <Pythia8/ParticleData.h>
@@ -94,8 +96,11 @@ namespace { ////////////////////////////////////////////////////////////////////
 
 //__Setup Pythia Randomness_____________________________________________________________________
 Pythia8::Pythia* _setup_random(Pythia8::Pythia* pythia) {
+  int threadno=G4Threading::G4GetThreadId();
   pythia->readString("Random:setSeed = on");
-  pythia->readString("Random:seed = 0");
+  std::ostringstream oss;
+  oss << "Random:seed = " << threadno;
+  pythia->readString(oss.str());
   pythia->readString("Next:showScaleAndVertex = on");
   return pythia;
 }

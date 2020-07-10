@@ -33,7 +33,23 @@ namespace Physics { ////////////////////////////////////////////////////////////
 G4ThreadLocal Pythia8::Pythia* PythiaGenerator::_pythia = nullptr;
 G4ThreadLocal std::vector<std::string>* PythiaGenerator::_pythia_settings = nullptr;
 G4ThreadLocal bool PythiaGenerator::_settings_on = false;
-G4ThreadLocal PythiaFilter* PythiaGenerator::_filter = nullptr;
+  
+G4ThreadLocal double PythiaPromptMuonFilter::_pCut=40.;
+G4ThreadLocal double PythiaPromptMuonFilter::_ptCut=-999.;
+G4ThreadLocal double PythiaPromptMuonFilter::_etaLoCut=0.6;
+G4ThreadLocal double PythiaPromptMuonFilter::_etaHiCut=1.9;
+G4ThreadLocal double PythiaPromptMuonFilter::_phiLoCut=-0.7;
+G4ThreadLocal double PythiaPromptMuonFilter::_phiHiCut=0.7;
+
+G4ThreadLocal double PythiaDisplacedFilter::_xLoCut=59500.;
+G4ThreadLocal double PythiaDisplacedFilter::_xHiCut=89650.;
+G4ThreadLocal double PythiaDisplacedFilter::_yLoCut=-50000.;
+G4ThreadLocal double PythiaDisplacedFilter::_yHiCut=50000.;
+G4ThreadLocal double PythiaDisplacedFilter::_zLoCut=69500.;
+G4ThreadLocal double PythiaDisplacedFilter::_zHiCut=169500.;
+
+  
+  
 //----------------------------------------------------------------------------------------------
 
 //__Pythia Generator Construction_______________________________________________________________
@@ -241,11 +257,13 @@ void PythiaGenerator::SetPythia(const std::string& path) {
     } else if (!_path.empty()) {
       config.emplace_back(SimSettingPrefix, "_CONFIG", _path);
     }
-    
-    
+
     Analysis::SimSettingList out;
     out.reserve(2UL + config.size());
     out.emplace_back(SimSettingPrefix, "", _name);
+    out.emplace_back(SimSettingPrefix, "_FILTER",_filter->GetName());
+    Analysis::SimSettingList filterspec=_filter->GetSpecification();
+    out.insert(out.cend(), filterspec.begin(), filterspec.end());
     out.insert(out.cend(),
 	       std::make_move_iterator(config.begin()),
 	       std::make_move_iterator(config.end()));
@@ -272,7 +290,17 @@ void PythiaGenerator::SetPythia(const std::string& path) {
 	out.push_back(_convert_particle(event[i]));
     return out;
   }
-  
+
+  const Analysis::SimSettingList PythiaPromptMuonFilter::GetSpecification(void) const {
+    Analysis::SimSettingList out;
+    out.emplace_back("FILTER_P", std::to_string(_pCut));
+    out.emplace_back("FILTER_PT", std::to_string(_ptCut));
+    out.emplace_back("FILTER_ETALO", std::to_string(_etaLoCut));
+    out.emplace_back("FILTER_ETALHI", std::to_string(_etaHiCut));
+    out.emplace_back("FILTER_PHILO", std::to_string(_phiLoCut));
+    out.emplace_back("FILTER_PHIHI", std::to_string(_phiHiCut));
+    return out;
+  }
   
   ParticleVector PythiaDisplacedFilter::GetParticles(const Pythia8::Event& event) {
     ParticleVector out;
@@ -281,7 +309,18 @@ void PythiaGenerator::SetPythia(const std::string& path) {
 	out.push_back(_convert_particle(event[i]));
     return out;
   }
-  
+
+  const Analysis::SimSettingList PythiaDisplacedFilter::GetSpecification(void) const {
+    Analysis::SimSettingList out;
+    out.emplace_back("FILTER_XLO",std::to_string(_xLoCut));
+    out.emplace_back("FILTER_XHI",std::to_string(_xHiCut));
+    out.emplace_back("FILTER_YLO",std::to_string(_yLoCut));
+    out.emplace_back("FILTER_YHI",std::to_string(_yHiCut));
+    out.emplace_back("FILTER_ZLO",std::to_string(_zLoCut));
+    out.emplace_back("FILTER_ZHI",std::to_string(_zHiCut));
+    return out;
+  }
+
 
 
   

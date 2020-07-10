@@ -38,32 +38,38 @@ namespace MATHUSLA { namespace MU {
 	virtual ~PythiaFilter() {}
 
 	virtual ParticleVector GetParticles(const Pythia8::Event& event);
+	virtual std::string GetName(void) { return  "PythiaFilter"; }
+	virtual const Analysis::SimSettingList GetSpecification(void) const { Analysis::SimSettingList l; return l; }
       };
 
       class PythiaPromptMuonFilter : public PythiaFilter {
       public:
-	PythiaPromptMuonFilter() : _pCut(40.), _ptCut(-999.), _etaLoCut(0.6), _etaHiCut(1.9), _phiLoCut(-0.7), _phiHiCut(0.7) {}
+	PythiaPromptMuonFilter() {}
 	~PythiaPromptMuonFilter() {}
 	
 	ParticleVector GetParticles(const Pythia8::Event& event);
-
-	double _pCut;
-	double _ptCut;
-	double _etaLoCut, _etaHiCut;
-	double _phiLoCut, _phiHiCut;
+	virtual std::string GetName(void) { return  "PythiaPromptMuonFilter"; }
+	virtual const Analysis::SimSettingList GetSpecification(void) const;
+	
+	static G4ThreadLocal double _pCut;
+	static G4ThreadLocal double _ptCut;
+	static G4ThreadLocal double _etaLoCut, _etaHiCut;
+	static G4ThreadLocal double _phiLoCut, _phiHiCut;
 	
       };
 
       class PythiaDisplacedFilter : public PythiaFilter {
       public:
-	PythiaDisplacedFilter() : _xLoCut(59500.), _xHiCut(89650), _yLoCut(-50000.), _yHiCut(50000.), _zLoCut(69500.), _zHiCut(169500.) {}
+	PythiaDisplacedFilter() {}
 	~PythiaDisplacedFilter() {}
 
 	ParticleVector GetParticles(const Pythia8::Event& event);
+	virtual std::string GetName(void) { return  "PythiaDisplacedFilter"; }
+	virtual const Analysis::SimSettingList GetSpecification(void) const;
 
-	double _xLoCut, _xHiCut;
-	double _yLoCut, _yHiCut;
-	double _zLoCut, _zHiCut;
+	static G4ThreadLocal double _xLoCut, _xHiCut;
+	static G4ThreadLocal double _yLoCut, _yHiCut;
+	static G4ThreadLocal double _zLoCut, _zHiCut;
       };
       
       
@@ -90,7 +96,7 @@ namespace MATHUSLA { namespace MU {
 	static G4ThreadLocal Pythia8::Pythia* _pythia;
 	static G4ThreadLocal std::vector<std::string>* _pythia_settings;
 	static G4ThreadLocal bool _settings_on;
-	static G4ThreadLocal PythiaFilter* _filter;
+	PythiaFilter* _filter;
 	ParticleVector _last_event;
 	std::uint_fast64_t _counter;
 	std::string _path;

@@ -80,7 +80,7 @@ void dump_volume(const G4VPhysicalVolume &physical_volume, const G4ThreeVector &
     }
     std::cout << std::endl;
   }
-  for (G4int daughter_index = 0; daughter_index < n_daughters; daughter_index++) {
+  for (unsigned long daughter_index = 0; daughter_index < n_daughters; daughter_index++) {
     const auto &daughter_volume = *(logical_volume.GetDaughter(daughter_index));
     dump_volume(daughter_volume, translation, rotation, dump_everything);
   }

@@ -77,7 +77,7 @@ public:
   CORSIKAReaderGenerator(const std::string& path);
 
   void GeneratePrimaryVertex(G4Event* event);
-  virtual ParticleVector GetLastEvent() const;
+  virtual GenParticleVector GetLastEvent() const;
   void SetNewValue(G4UIcommand* command,
                    G4String value);
   void SetFile(const std::string& path);
@@ -86,7 +86,7 @@ public:
   virtual const std::vector<std::vector<double>> ExtraDetails() const;
 
 private:
-  ParticleVector _last_event;
+  GenParticleVector _last_event;
   CORSIKAEvent _event;
   CORSIKAConfig _config;
   std::pair<double, double> _translation;

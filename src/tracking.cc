@@ -117,7 +117,7 @@ std::ostream& operator<<(std::ostream& os,
 std::ostream& operator<<(std::ostream& os,
                          const HitCollection& hits) {
   const auto event_id = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
-  const auto count = hits.entries();
+  unsigned long count = hits.entries();
   if (!count)
     return os;
 
@@ -132,7 +132,7 @@ std::ostream& operator<<(std::ostream& os,
   os << "\n\n" << box;
 
   auto trackID = -1;
-  for (auto i = 0; i < count; ++i) {
+  for (unsigned int i = 0; i < count; ++i) {
     const auto hit = dynamic_cast<Tracking::Hit*>(hits.GetHit(i));
     const auto new_trackID = hit->GetTrackID();
 
@@ -270,37 +270,55 @@ const Analysis::ROOT::DataEntryList ConvertToAnalysis(const G4Event* event) {
 //----------------------------------------------------------------------------------------------
 
 //__Convert ParticleVector to Analysis Form_____________________________________________________
-const Analysis::ROOT::DataEntryList ConvertToAnalysis(const Physics::ParticleVector& particles) {
-  constexpr const std::size_t column_count = 12UL;
+const Analysis::ROOT::DataEntryList ConvertToAnalysis(const Physics::GenParticleVector& particles, bool saveall) {
 
-  Analysis::ROOT::DataEntryList out;
-  out.reserve(column_count);
 
-  const auto size = particles.size();
+    // if we don't want to save everything, then select only those genparticles that were sent to Geant4
+    Physics::GenParticleVector pvec;
+    for (std::size_t index{}; index < particles.size(); ++index) {
+      if(saveall || particles[index].G4index>=0)
+	pvec.push_back(particles[index]);
+    }
+    
+    constexpr const std::size_t column_count = 20UL;
 
-  for (std::size_t i{}; i < column_count; ++i) {
-    Analysis::ROOT::DataEntry entry;
-    entry.reserve(size);
-    out.push_back(entry);
+    Analysis::ROOT::DataEntryList out;
+    out.reserve(column_count);
+
+    const auto size = pvec.size();
+  
+    for (std::size_t i{}; i < column_count; ++i) {
+      Analysis::ROOT::DataEntry entry;
+      entry.reserve(size);
+      out.push_back(entry);
+    }
+
+    for (std::size_t index{}; index < size; ++index) {
+      const auto& particle = pvec[index];
+      out[0].push_back(particle.index);
+      out[1].push_back(particle.G4index);
+      out[2].push_back(particle.pdgid);
+      out[3].push_back(particle.status);
+      out[4].push_back(particle.vertex.e());
+      out[5].push_back(particle.vertex.px());
+      out[6].push_back(particle.vertex.py());
+      out[7].push_back(particle.vertex.pz());
+      out[8].push_back(particle.mom.e());
+      out[9].push_back(particle.mom.px());
+      out[10].push_back(particle.mom.py());
+      out[11].push_back(particle.mom.pz());
+      out[12].push_back(particle.moid1);
+      out[13].push_back(particle.moid2);
+      out[14].push_back(particle.dau1);
+      out[15].push_back(particle.dau2);
+      out[16].push_back(particle.m);
+      out[17].push_back(particle.mom.pT());
+      out[18].push_back(particle.mom.eta());
+      out[19].push_back(particle.mom.phi());
+      
   }
-
-  for (std::size_t index{}; index < size; ++index) {
-    const auto& particle = particles[index];
-    out[0].push_back(particle.id);
-    out[1].push_back(index);
-    out[2].push_back(0);
-    out[3].push_back(particle.t / Units::Time);
-    out[4].push_back(particle.x / Units::Length);
-    out[5].push_back(particle.y / Units::Length);
-    out[6].push_back(particle.z / Units::Length);
-    out[7].push_back(particle.e() / Units::Energy);
-    out[8].push_back(particle.px / Units::Momentum);
-    out[9].push_back(particle.py / Units::Momentum);
-    out[10].push_back(particle.pz / Units::Momentum);
-    out[11].push_back(1);
-  }
-
-  return out;
+    
+    return out;
 }
 //----------------------------------------------------------------------------------------------
 

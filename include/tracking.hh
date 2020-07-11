@@ -129,8 +129,8 @@ const Analysis::ROOT::DataEntryList ConvertToAnalysis(const HitCollection* colle
 const Analysis::ROOT::DataEntryList ConvertToAnalysis(const G4Event* event);
 //----------------------------------------------------------------------------------------------
 
-//__Convert ParticleVector to Analysis Form_____________________________________________________
-const Analysis::ROOT::DataEntryList ConvertToAnalysis(const Physics::ParticleVector& particles);
+//__Convert GenParticleVector to Analysis Form_____________________________________________________
+const Analysis::ROOT::DataEntryList ConvertToAnalysis(const Physics::GenParticleVector& particles, bool saveall);
 //----------------------------------------------------------------------------------------------
 
 //__Convert Extra to Analysis Form______________________________________________________________

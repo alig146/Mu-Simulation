@@ -132,8 +132,8 @@ void Generator::GeneratePrimaryVertex(G4Event* event) {
 //----------------------------------------------------------------------------------------------
 
 //__Get Last Event Data_________________________________________________________________________
-ParticleVector Generator::GetLastEvent() const {
-  return ParticleVector{_particle};
+GenParticleVector Generator::GetLastEvent() const {
+  return GenParticleVector{_particle};
 }
 //----------------------------------------------------------------------------------------------
 

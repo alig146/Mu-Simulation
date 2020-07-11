@@ -212,10 +212,11 @@ static const DataKeyList DefaultDataKeyList{
 
   "NumGenParticles",
 
-  "GenParticle_pdgId", "GenParticle_G4TrackId", "GenParticle_G4ParentTrackId",
+  "GenParticle_index", "GenParticle_G4index", "GenParticle_pdgid", "GenParticle_status",
   "GenParticle_time", "GenParticle_x", "GenParticle_y", "GenParticle_z",
   "GenParticle_energy", "GenParticle_px", "GenParticle_py", "GenParticle_pz",
-  "GenParticle_weight",
+  "GenParticle_mo1", "GenParticle_mo2", "GenParticle_dau1", "GenParticle_dau2",
+  "GenParticle_mass", "GenParticle_pt", "GenParticle_eta", "GenParticle_phi",
 
   "COSMIC_EVENT_ID",
 
@@ -253,6 +254,14 @@ static const DataKeyTypeList DefaultDataKeyTypeList{
 
   DataKeyType::Single,
 
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
+  DataKeyType::Vector,
   DataKeyType::Vector,
   DataKeyType::Vector,
   DataKeyType::Vector,

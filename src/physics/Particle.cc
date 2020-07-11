@@ -145,7 +145,9 @@ double BasicParticle::ke() const {
 
 //__Get Basic Particle Total Energy_____________________________________________________________
 double BasicParticle::e() const {
-  return std::hypot(p_mag(), mass());
+  double pmag=p_mag();
+  if(pmag<0) return -999.;
+  else return std::hypot(p_mag(), mass());
 }
 //----------------------------------------------------------------------------------------------
 

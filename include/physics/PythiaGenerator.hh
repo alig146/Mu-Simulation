@@ -37,7 +37,7 @@ namespace MATHUSLA { namespace MU {
 	PythiaFilter() {}
 	virtual ~PythiaFilter() {}
 
-	virtual ParticleVector GetParticles(const Pythia8::Event& event);
+	virtual void GetParticles(const Pythia8::Event& event, std::vector<int>& indexlist);
 	virtual std::string GetName(void) { return  "PythiaFilter"; }
 	virtual const Analysis::SimSettingList GetSpecification(void) const { Analysis::SimSettingList l; return l; }
       };
@@ -47,7 +47,7 @@ namespace MATHUSLA { namespace MU {
 	PythiaPromptMuonFilter() {}
 	~PythiaPromptMuonFilter() {}
 	
-	ParticleVector GetParticles(const Pythia8::Event& event);
+	void GetParticles(const Pythia8::Event& event, std::vector<int>& indexlist);
 	virtual std::string GetName(void) { return  "PythiaPromptMuonFilter"; }
 	virtual const Analysis::SimSettingList GetSpecification(void) const;
 	
@@ -63,7 +63,8 @@ namespace MATHUSLA { namespace MU {
 	PythiaDisplacedFilter() {}
 	~PythiaDisplacedFilter() {}
 
-	ParticleVector GetParticles(const Pythia8::Event& event);
+	void GetParticles(const Pythia8::Event& event, std::vector<int>& indexlist);
+
 	virtual std::string GetName(void) { return  "PythiaDisplacedFilter"; }
 	virtual const Analysis::SimSettingList GetSpecification(void) const;
 
@@ -81,7 +82,7 @@ namespace MATHUSLA { namespace MU {
 	PythiaGenerator(const std::string& path);
 	
 	void GeneratePrimaryVertex(G4Event* event);
-	ParticleVector GetLastEvent() const;
+	GenParticleVector GetLastEvent() const;
 	void SetNewValue(G4UIcommand* command, G4String value);
 	void SetPythia(Pythia8::Pythia* pythia);
 	void SetPythia(const std::vector<std::string>& settings);
@@ -97,7 +98,7 @@ namespace MATHUSLA { namespace MU {
 	static G4ThreadLocal std::vector<std::string>* _pythia_settings;
 	static G4ThreadLocal bool _settings_on;
 	PythiaFilter* _filter;
-	ParticleVector _last_event;
+	GenParticleVector _last_event;
 	std::uint_fast64_t _counter;
 	std::string _path;
 	Command::StringArg* _read_string;

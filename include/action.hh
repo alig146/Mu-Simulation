@@ -76,7 +76,7 @@ public:
   void GeneratePrimaries(G4Event* event);
   void SetNewValue(G4UIcommand* command, G4String value);
   static const Physics::Generator* GetGenerator();
-  static Physics::ParticleVector GetLastEvent();
+  static Physics::GenParticleVector GetLastEvent();
   static void SetGenerator(const std::string& generator);
 
 private:

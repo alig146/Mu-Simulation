@@ -115,7 +115,7 @@ void CORSIKAEvent::push_back(const Particle& particle, double new_weight) {
 
 //__Particle Data Index Accessor Operator_______________________________________________________
 const Particle CORSIKAEvent::operator[](const std::size_t index) const {
-  return Particle{id[index], t[index], x[index], y[index], z[index], px[index], py[index], pz[index]};
+  return Particle{id[index], t[index], x[index], y[index], z[index], px[index], py[index], pz[index],(int)index};
 }
 //----------------------------------------------------------------------------------------------
 
@@ -378,7 +378,7 @@ void CORSIKAReaderGenerator::GeneratePrimaryVertex(G4Event* event) {
 //----------------------------------------------------------------------------------------------
 
 //__Get Previous Event__________________________________________________________________________
-ParticleVector CORSIKAReaderGenerator::GetLastEvent() const {
+GenParticleVector CORSIKAReaderGenerator::GetLastEvent() const {
   return _last_event;
 }
 //----------------------------------------------------------------------------------------------

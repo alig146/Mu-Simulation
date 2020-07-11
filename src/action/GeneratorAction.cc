@@ -126,7 +126,7 @@ const Physics::Generator* GeneratorAction::GetGenerator() {
 //----------------------------------------------------------------------------------------------
 
 //__Get Last Event Data_________________________________________________________________________
-Physics::ParticleVector GeneratorAction::GetLastEvent() {
+Physics::GenParticleVector GeneratorAction::GetLastEvent() {
   return _gen->GetLastEvent();
 }
 //----------------------------------------------------------------------------------------------

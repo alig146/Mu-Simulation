@@ -134,12 +134,13 @@ Pythia8::Pythia* _create_pythia(std::vector<std::string>* settings,
 //__Convert Pythia Particle to Particle_________________________________________________________
 Particle _convert_particle(const Pythia8::Particle& particle) {
   const auto xz = Cavern::rotate_from_P1(particle.zProd() * mm, -particle.xProd() * mm);
-  Particle out{particle.id(),
+  Particle out(particle.id(),
                particle.tProd() * mm / c_light,
                static_cast<double>(xz.first),
                particle.yProd() * mm,
-               static_cast<double>(xz.second + Earth::TotalShift() + Cavern::CMSIP())};
+               static_cast<double>(xz.second + Earth::TotalShift() + Cavern::CMSIP()));
   out.set_pseudo_lorentz_triplet(particle.pT() * GeVperC, particle.eta(), particle.phi() * rad);
+  out.genParticleRef=particle.index();
   return out;
 }
 //----------------------------------------------------------------------------------------------
@@ -157,17 +158,33 @@ void PythiaGenerator::GeneratePrimaryVertex(G4Event* g4event) {
   ++_counter;
   _pythia->next();
 
+  // "_last_event" is what is stored in the ntuple
+  _last_event.clear();
+  for (int i = 0; i < _pythia->event.size(); ++i)
+    _last_event.push_back(_pythia->event[i]);
+
   if(!_filter)
     _filter=new PythiaFilter();
-   _last_event=_filter->GetParticles(_pythia->event);
-   for (const auto& particle : _last_event)
-     AddParticle(particle, *g4event);
+
+  // "filtered" is what is sent to Geant4 for propagation
+  std::vector<int> indexlist;
+  _filter->GetParticles(_pythia->event, indexlist);
+ 
+  // add the G4index to the _last_event information (add 1 to match Geant4!)
+  // then convert it to a particle for addition to the g4event
+  for(std::size_t i{}; i<indexlist.size(); ++i) {
+    _last_event[indexlist[i]].G4index=i+1;
+    Particle p=_convert_particle(_pythia->event[indexlist[i]]);
+    AddParticle(p, *g4event);
+  }
+
+
 }
   
 //----------------------------------------------------------------------------------------------
 
 //__Get Last Event Data_________________________________________________________________________
-ParticleVector PythiaGenerator::GetLastEvent() const {
+GenParticleVector PythiaGenerator::GetLastEvent() const {
   return _last_event;
 }
 //----------------------------------------------------------------------------------------------
@@ -280,20 +297,20 @@ void PythiaGenerator::SetPythia(const std::string& path) {
   }
   //----------------------------------------------------------------------------------------------
   
-  ParticleVector PythiaFilter::GetParticles(const Pythia8::Event& event) {
-    ParticleVector out;
+  void PythiaFilter::GetParticles(const Pythia8::Event& event, std::vector<int>& indexlist) {
+    indexlist.clear();
     for (int i = 0; i < event.size(); ++i)
       if(event[i].isFinal())
-	out.push_back(_convert_particle(event[i]));
-    return out;
+	indexlist.push_back(i);
+    return;
   }
   
-  ParticleVector PythiaPromptMuonFilter::GetParticles(const Pythia8::Event& event) {
-    ParticleVector out;
+  void PythiaPromptMuonFilter::GetParticles(const Pythia8::Event& event, std::vector<int>& indexlist) {
+    indexlist.clear();
     for (int i = 0; i < event.size(); ++i)
       if(event[i].isFinal() && event[i].idAbs()==13 && event[i].pAbs()>_pCut && event[i].pT()>_ptCut && event[i].eta()>_etaLoCut && event[i].eta()<_etaHiCut && event[i].phi()>_phiLoCut && event[i].phi()<_phiHiCut)
-	out.push_back(_convert_particle(event[i]));
-    return out;
+	indexlist.push_back(i);
+    return;
   }
 
   const Analysis::SimSettingList PythiaPromptMuonFilter::GetSpecification(void) const {
@@ -307,12 +324,12 @@ void PythiaGenerator::SetPythia(const std::string& path) {
     return out;
   }
   
-  ParticleVector PythiaDisplacedFilter::GetParticles(const Pythia8::Event& event) {
-    ParticleVector out;
+  void PythiaDisplacedFilter::GetParticles(const Pythia8::Event& event, std::vector<int>& indexlist) {
+    indexlist.clear();
     for (int i = 0; i < event.size(); ++i)
       if(event[i].isFinal() && event[i].zProd()>_zLoCut && event[i].zProd()<_zHiCut && event[i].yProd()>_yLoCut && event[i].yProd()<_yHiCut && event[i].xProd()>_xLoCut && event[i].xProd()<_xHiCut)
-	out.push_back(_convert_particle(event[i]));
-    return out;
+	indexlist.push_back(i);
+    return;
   }
 
   const Analysis::SimSettingList PythiaDisplacedFilter::GetSpecification(void) const {

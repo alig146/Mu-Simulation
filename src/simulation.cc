@@ -59,6 +59,7 @@ int main(int argc, char* argv[]) {
     {&help_opt, &gen_opt, &det_opt, &shift_opt, &data_opt, &export_opt, &script_opt, &events_opt,
      &save_all_opt, &vis_opt, &quiet_opt, &thread_opt});
 
+
   util::error::exit_when(script_argc && !script_opt.argument,
     "[FATAL ERROR] Illegal Forwarding Arguments:\n"
     "              Passing arguments to simulation without script is disallowed.\n");

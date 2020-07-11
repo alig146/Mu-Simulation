@@ -23,6 +23,8 @@
 #include <G4ThreeVector.hh>
 #include <G4Event.hh>
 
+#include <Pythia8/Event.h>
+
 namespace MATHUSLA { namespace MU {
 
 namespace Physics { ////////////////////////////////////////////////////////////////////////////
@@ -57,6 +59,7 @@ double GetParticleCharge(int id);
 //__Get Name of Particle from ID________________________________________________________________
 const std::string GetParticleName(int id);
 //----------------------------------------------------------------------------------------------
+
 
 //__Basic Momentum Particle_____________________________________________________________________
 struct BasicParticle {
@@ -125,18 +128,19 @@ struct Vertex {
 //__Momentum Vertex Particle____________________________________________________________________
 struct Particle : BasicParticle {
   double t, x, y, z;
-
+  int genParticleRef;
+  
   Particle() = default;
 
   Particle(int identifier)
-      : Particle(identifier, 0, 0, 0, 0, 0, 0, 0) {}
+    : Particle(identifier, 0, 0, 0, 0, 0, 0, 0, -1) {}
 
   Particle(int identifier,
            double t_position,
            double x_position,
            double y_position,
            double z_position)
-      : Particle(identifier, t_position, x_position, y_position, z_position, 0, 0, 0) {}
+    : Particle(identifier, t_position, x_position, y_position, z_position, 0, 0, 0, -1) {}
 
   Particle(int identifier,
            double x_position,
@@ -151,9 +155,10 @@ struct Particle : BasicParticle {
            double z_position,
            double x_momentum,
            double y_momentum,
-           double z_momentum)
+           double z_momentum,
+	   int genParticleIndex)
       : BasicParticle(identifier, x_momentum, y_momentum, z_momentum),
-        t(t_position), x(x_position), y(y_position), z(z_position) {}
+        t(t_position), x(x_position), y(y_position), z(z_position), genParticleRef(genParticleIndex) {}
 
   Particle(int identifier,
            double x_position,
@@ -162,10 +167,10 @@ struct Particle : BasicParticle {
            double x_momentum,
            double y_momentum,
            double z_momentum)
-      : Particle(identifier, 0, x_position, y_position, z_position, x_momentum, y_momentum, z_momentum) {}
+    : Particle(identifier, 0, x_position, y_position, z_position, x_momentum, y_momentum, z_momentum, -1) {}
 
   Particle(const BasicParticle& basic_particle)
-      : Particle(basic_particle.id, 0, 0, 0, 0, basic_particle.px, basic_particle.py, basic_particle.pz) {}
+    : Particle(basic_particle.id, 0, 0, 0, 0, basic_particle.px, basic_particle.py, basic_particle.pz, -1) {}
 
   void set_vertex(double new_x,
                   double new_y,
@@ -189,6 +194,39 @@ void AddParticle(const Particle& particle,
                  G4Event& event);
 //----------------------------------------------------------------------------------------------
 
+struct GenParticle {
+  int index, pdgid, status;
+  int moid1, moid2;
+  int dau1, dau2;
+  Pythia8::Vec4 mom;
+  bool hasVertex;
+  Pythia8::Vec4 vertex;
+  double m;
+  int G4index;
+  
+  GenParticle() : index(-1), pdgid(0), status(-1), moid1(-1), moid2(-1), dau1(-1), dau2(-1),
+		  mom(Pythia8::Vec4(0.,0.,0.,0.)), hasVertex(false), vertex(Pythia8::Vec4(0.,0.,0.,0.)),
+		  m(0.0), G4index(-1) {}
+
+  GenParticle(const Particle& p) : index(-1), pdgid(p.id), status(-1), moid1(-1), moid2(-1),
+				   dau1(-1), dau2(-1), mom(Pythia8::Vec4(p.px,p.py,p.pz,p.e())),
+				   hasVertex(true), vertex(Pythia8::Vec4(p.x,p.y,p.z,p.t)),
+				   m(p.mass()), G4index(-1) {}
+							   
+  
+  GenParticle(const Pythia8::Particle& p) : index(p.index()), pdgid(p.id()), status(p.status()),
+					    moid1(p.mother1()), moid2(p.mother2()), dau1(p.daughter1()),
+					    dau2(p.daughter2()), mom(p.p()), hasVertex(p.hasVertex()),
+					    vertex(p.vProd()), m(p.m()), G4index(-1) {}
+};
+  
+
+
+using GenParticleVector = std::vector<GenParticle>;
+
+
+
+  
 namespace Filter { /////////////////////////////////////////////////////////////////////////////
 
 //__Sign Enum___________________________________________________________________________________
@@ -270,6 +308,7 @@ struct PseudoLorentz {
 };
 //----------------------------------------------------------------------------------------------
 
+  
 } /* namespace Filter */ ///////////////////////////////////////////////////////////////////////
 
 } /* namespace Physics */ //////////////////////////////////////////////////////////////////////

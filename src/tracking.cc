@@ -274,11 +274,12 @@ const Analysis::ROOT::DataEntryList ConvertToAnalysis(const Physics::GenParticle
 
 
     // if we don't want to save everything, then select only those genparticles that were sent to Geant4
-    Physics::GenParticleVector pvec;
-    for (std::size_t index{}; index < particles.size(); ++index) {
-      if(saveall || particles[index].G4index>=0)
-	pvec.push_back(particles[index]);
+  Physics::GenParticleVector pvec;
+  for (std::size_t index=0; index < particles.size(); ++index) {
+    if(saveall || particles[index].G4index>=0) {
+      pvec.push_back(particles[index]);
     }
+  }
     
     constexpr const std::size_t column_count = 20UL;
 

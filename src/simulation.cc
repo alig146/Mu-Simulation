@@ -95,6 +95,8 @@ int main(int argc, char* argv[]) {
     thread_opt.count = 2;
   }
   auto run = new G4MTRunManager;
+  thread_opt.count=1;
+  std::cout << "Warning!!!!! You can only run one thread.  This doesn't work, otherwise." << std::endl;
   run->SetNumberOfThreads(thread_opt.count);
   std::cout << "Running " << thread_opt.count
             << (thread_opt.count > 1 ? " Threads" : " Thread") << "\n";

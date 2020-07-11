@@ -82,7 +82,7 @@ namespace MATHUSLA { namespace MU {
 	PythiaGenerator(const std::string& path);
 	
 	void GeneratePrimaryVertex(G4Event* event);
-	GenParticleVector GetLastEvent() const;
+	virtual GenParticleVector GetLastEvent() const;
 	void SetNewValue(G4UIcommand* command, G4String value);
 	void SetPythia(Pythia8::Pythia* pythia);
 	void SetPythia(const std::vector<std::string>& settings);
@@ -97,6 +97,7 @@ namespace MATHUSLA { namespace MU {
 	static G4ThreadLocal Pythia8::Pythia* _pythia;
 	static G4ThreadLocal std::vector<std::string>* _pythia_settings;
 	static G4ThreadLocal bool _settings_on;
+
 	PythiaFilter* _filter;
 	GenParticleVector _last_event;
 	std::uint_fast64_t _counter;

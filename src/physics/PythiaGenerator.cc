@@ -172,7 +172,7 @@ void PythiaGenerator::GeneratePrimaryVertex(G4Event* g4event) {
  
   // add the G4index to the _last_event information (add 1 to match Geant4!)
   // then convert it to a particle for addition to the g4event
-  for(std::size_t i{}; i<indexlist.size(); ++i) {
+  for(unsigned long i = 0; i<indexlist.size(); ++i) {
     _last_event[indexlist[i]].G4index=i+1;
     Particle p=_convert_particle(_pythia->event[indexlist[i]]);
     AddParticle(p, *g4event);

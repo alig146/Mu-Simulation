@@ -20,4 +20,4 @@
 
 /gen/range/p_mag 50 GeV/c
 
-/run/beamOn 5
+/run/beamOn 5000

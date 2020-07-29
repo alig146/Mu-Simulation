@@ -83,9 +83,9 @@ constexpr int NMODULES{100};
 constexpr int n_top_layers{5};
 constexpr auto x_edge_length = 99.0*m;
 constexpr auto y_edge_length = 99.0*m;
-constexpr auto x_displacement = 70*m;//00*m;
-constexpr auto y_displacement = -49.5*m;//l50*m;
-constexpr auto z_displacement = 20*m;//l50*m;
+constexpr auto x_displacement = 70.0*m;
+constexpr auto y_displacement = -49.5*m;
+constexpr auto z_displacement = 60.0*m;
 constexpr auto steel_thickness = 0.02*m;
 
 
@@ -249,13 +249,21 @@ G4bool Detector::ProcessHits(G4Step* step, G4TouchableHistory*) {
   const auto parentID   = track->GetParentID();
   const auto position   = G4LorentzVector(step_point->GetGlobalTime(), step_point->GetPosition());
   const auto momentum   = G4LorentzVector(step_point->GetTotalEnergy(), step_point->GetMomentum());
+  
+  //______Tranfomation to CMS Coordinates_____________________________________________________
+  const auto transformed_z = -(position.z() - 80.0L*m);
+  const auto position_transformed = G4ThreeVector(position.y(), transformed_z, position.x());
+  const auto new_position = G4LorentzVector(step_point->GetGlobalTime(), position_transformed);
 
-  const auto local_position = position.vect() - G4ThreeVector(x_displacement, y_displacement, z_displacement);
+  const auto transformed_pz = -(momentum.pz());
+  const auto momentum_transformed = G4ThreeVector(momentum.py(), transformed_pz, momentum.px());
+  const auto new_momentum = G4LorentzVector(step_point->GetTotalEnergy(), momentum_transformed);
+  //__________________________________________________________________________________________
 
-  const auto x_index = static_cast<size_t>(std::floor(+local_position.x() / (x_division)  ));
-  const auto y_index = static_cast<size_t>(std::floor(+local_position.y() / (y_division)  ));
-  const auto z_index = static_cast<size_t>(std::floor(-local_position.z() / (layer_spacing + scintillator_height)));
-
+  const auto local_position = new_position.vect() - G4ThreeVector(y_displacement, z_displacement, x_displacement);
+  const auto x_index = static_cast<size_t>(std::floor(+local_position.z() / (x_division)  ));
+  const auto y_index = static_cast<size_t>(std::floor(+local_position.x() / (y_division)  ));
+  const auto z_index = static_cast<size_t>(std::floor(+local_position.y() / (layer_spacing + scintillator_height)));
   const auto x_name = std::to_string(x_index);
   const auto y_name = std::to_string(y_index);
 
@@ -264,11 +272,11 @@ G4bool Detector::ProcessHits(G4Step* step, G4TouchableHistory*) {
     trackID,
     parentID,
     std::to_string(1UL + z_index)
-    + (x_index < 10UL ? "000" + x_name : (x_index < 100UL ? "00" + x_name : (x_index < 1000UL ? "0" + x_name : x_name)))
-    + (y_index < 10UL ? "000" + y_name : (y_index < 100UL ? "00" + y_name : (y_index < 1000UL ? "0" + y_name : y_name))),
+	+ (x_index < 10UL ? "000" + x_name : (x_index < 100UL ? "00" + x_name : (x_index < 1000UL ? "0" + x_name : x_name)))
+	+ (y_index < 10UL ? "000" + y_name : (y_index < 100UL ? "00" + y_name : (y_index < 1000UL ? "0" + y_name : y_name))),
     deposit / Units::Energy,
-    G4LorentzVector(position.t() / Units::Time,   position.vect() / Units::Length),
-    G4LorentzVector(momentum.e() / Units::Energy, momentum.vect() / Units::Momentum)));
+    G4LorentzVector(new_position.t() / Units::Time,   new_position.vect() / Units::Length),
+    G4LorentzVector(new_momentum.e() / Units::Energy, new_momentum.vect() / Units::Momentum)));
 
   return true;
 }

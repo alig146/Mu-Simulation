@@ -85,7 +85,7 @@ constexpr auto x_edge_length = 99.0*m;
 constexpr auto y_edge_length = 99.0*m;
 constexpr auto x_displacement = 70.0*m;
 constexpr auto y_displacement = -49.5*m;
-constexpr auto z_displacement = 60.0*m;
+constexpr auto z_displacement = 6001.5*cm;
 constexpr auto steel_thickness = 0.02*m;
 
 
@@ -249,7 +249,7 @@ G4bool Detector::ProcessHits(G4Step* step, G4TouchableHistory*) {
   const auto parentID   = track->GetParentID();
   const auto position   = G4LorentzVector(step_point->GetGlobalTime(), step_point->GetPosition());
   const auto momentum   = G4LorentzVector(step_point->GetTotalEnergy(), step_point->GetMomentum());
-  
+
   //______Tranfomation to CMS Coordinates_____________________________________________________
   const auto transformed_z = -(position.z() - 80.0L*m);
   const auto position_transformed = G4ThreeVector(position.y(), transformed_z, position.x());
@@ -263,7 +263,30 @@ G4bool Detector::ProcessHits(G4Step* step, G4TouchableHistory*) {
   const auto local_position = new_position.vect() - G4ThreeVector(y_displacement, z_displacement, x_displacement);
   const auto x_index = static_cast<size_t>(std::floor(+local_position.z() / (x_division)  ));
   const auto y_index = static_cast<size_t>(std::floor(+local_position.x() / (y_division)  ));
-  const auto z_index = static_cast<size_t>(std::floor(+local_position.y() / (layer_spacing + scintillator_height)));
+
+  // auto z_index = static_cast<size_t>(std::floor(+local_position.y() / (layer_spacing + scintillator_height)));
+  long double z_index = 0;
+
+  if (new_position.y() < 6050.0L*cm) {
+    z_index = static_cast<std::size_t>(std::floor(+local_position.y() / (layer_spacing + scintillator_height)));
+  } else if (new_position.y() > 6060.0L*cm && new_position.y() < 6150.0L*cm) {
+    z_index = static_cast<std::size_t>(std::floor((+local_position.y() - 1.0L*cm) / (layer_spacing + scintillator_height)));
+  } else if (new_position.y() > 7900.0L*cm && new_position.y() < 8050.0L*cm) {
+    z_index = static_cast<std::size_t>(std::floor((+local_position.y() - 1796.0L*cm) / (layer_spacing + scintillator_height)));
+  } else if (new_position.y() > 8050.0L*cm && new_position.y() < 8150.0L*cm) {
+    z_index = static_cast<std::size_t>(std::floor((+local_position.y() - 1797.0L*cm) / (layer_spacing + scintillator_height)));
+  } else if (new_position.y() > 8400.0L*cm && new_position.y() < 8550.0L*cm) {
+    z_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2092.0L*cm) / (layer_spacing + scintillator_height)));
+  } else if (new_position.y() > 8560.0L*cm && new_position.y() < 8650.0L*cm) {
+    z_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2093.0L*cm) / (layer_spacing + scintillator_height)));
+  } else if (new_position.y() > 8660.0L*cm && new_position.y() < 8750.0L*cm) {
+    z_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2094.0L*cm) / (layer_spacing + scintillator_height)));
+  } else if (new_position.y() > 7760.0L*cm && new_position.y() < 8850.0L*cm) {
+    z_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2095.0L*cm) / (layer_spacing + scintillator_height)));
+  } else {
+    z_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2096.0L*cm) / (layer_spacing + scintillator_height)));
+  }
+
   const auto x_name = std::to_string(x_index);
   const auto y_name = std::to_string(y_index);
 
@@ -272,8 +295,10 @@ G4bool Detector::ProcessHits(G4Step* step, G4TouchableHistory*) {
     trackID,
     parentID,
     std::to_string(1UL + z_index)
-	+ (x_index < 10UL ? "000" + x_name : (x_index < 100UL ? "00" + x_name : (x_index < 1000UL ? "0" + x_name : x_name)))
-	+ (y_index < 10UL ? "000" + y_name : (y_index < 100UL ? "00" + y_name : (y_index < 1000UL ? "0" + y_name : y_name))),
+	+ x_name
+	+ y_name,
+	//	+ (x_index < 10UL ? "000" + x_name : (x_index < 100UL ? "00" + x_name : (x_index < 1000UL ? "0" + x_name : x_name)))
+	//	+ (y_index < 10UL ? "000" + y_name : (y_index < 100UL ? "00" + y_name : (y_index < 1000UL ? "0" + y_name : y_name))),
     deposit / Units::Energy,
     G4LorentzVector(new_position.t() / Units::Time,   new_position.vect() / Units::Length),
     G4LorentzVector(new_momentum.e() / Units::Energy, new_momentum.vect() / Units::Momentum)));

@@ -10,4 +10,4 @@
 /gen/pythia/add_filter displaced
 /gen/pythia/read_file studies/box/signal/hh_to_muon.cmnd
 
-/run/beamOn 1000
+/run/beamOn 50000

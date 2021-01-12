@@ -10,7 +10,7 @@
 
 /gen/range/id 13
 /gen/range/t0 0 ns
-/gen/range/vertex 120 0 60 m
+/gen/range/vertex 120 0 50 m
 /gen/range/p_unit 0 0 -1
 
 /gen/range/phi_min -1.5 rad
@@ -18,6 +18,6 @@
 /gen/range/eta_min -1.4
 /gen/range/eta_max  1.4
 
-/gen/range/p_mag 50 GeV/c
+/gen/range/p_mag 0.0005 GeV/c
 
 /run/beamOn 5000

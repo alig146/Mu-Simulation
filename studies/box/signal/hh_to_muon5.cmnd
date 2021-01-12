@@ -1,4 +1,4 @@
-! File: up.cmnd
+! File: muon.cmnd
 ! This file contains commands to be read in for a Pythia8 run.
 ! Lines not beginning with a letter or digit are comments.
 ! Names are case-insensitive  -  but spellings-sensitive!
@@ -18,8 +18,8 @@ Next:numberShowInfo            = 110 ! print event information n times
 Next:numberShowProcess         = 110 ! print process record n times
 Next:numberShowEvent           = 10  ! print event record n times
 Stat:showPartonLevel           = on  ! more statistics on MPI
-Print:quiet                    = on
-Stat:showErrors                = off
+Print:quiet                    = off
+Stat:showErrors                = on
 
 ! 3) Beam settings.
 Beams:idA = 2212                     ! first beam,  p = 2212, pbar = -2212
@@ -36,18 +36,17 @@ HiggsBSM:allH2 = on                  ! Higgs production by gluon-gluon fusion
 ! Handbook of LHC Higgs Cross Sections: 1. Inclusive Observables,
 ! S. Dittmaier et al., CERN-2011-002 [arXiv:1101.0593].
 ! Note: sum is not quite unity, and so BR's are rescaled accordingly.
-25:m0        = 2.0                   ! Light Higgs mass [15,30,60]
-25:mMin      = 20
-25:mWidth    = 0.00403               ! Higgs width
+25:m0        = 10.0                   ! Light Higgs mass [15,30,60]
+25:mWidth    = 1.9732698E-17               ! Higgs width
 25:tau0      = 10000                 ! Life time of light higgs = [0,10,50]
 25:0:bRatio  = 0.000                 ! H -> d dbar
-25:1:bRatio  = 1.000                 ! H -> u ubar
+25:1:bRatio  = 0.000                 ! H -> u ubar
 25:2:bRatio  = 0.000                 ! H -> s sbar
 25:3:bRatio  = 0.000                 ! H -> c cbar
 25:4:bRatio  = 0.000                 ! H -> b bbar
 25:5:bRatio  = 0.000                 ! H -> t tbar
 25:6:bRatio  = 0.000                 ! H -> e+ e-
-25:7:bRatio  = 0.000                 ! H -> mu+ mu-
+25:7:bRatio  = 1.000                 ! H -> mu+ mu-
 25:8:bRatio  = 0.000                 ! H -> tau+ tau-
 25:9:bRatio  = 0.000                 ! H -> g g
 25:10:bRatio = 0.000                 ! H -> gamma gamma

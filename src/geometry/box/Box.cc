@@ -19,7 +19,7 @@ using dimension = double;
 
 namespace MATHUSLA { namespace MU {
 
-namespace Box { ////////////////////////////////////////////////////////////////////////////////
+namespace Box { /////////////////////////////////////////////////////////////////////////////home/ag1378/cmslink/bobthebuilder/storage/test/tracker//20200922/154152/statistics0.root////
 
 // double X_POS_STEP;
 // double Y_POS_STEP;
@@ -88,18 +88,12 @@ constexpr auto y_displacement = -49.5*m;
 constexpr auto z_displacement = 6001.5*cm;
 constexpr auto steel_thickness = 0.02*m;
 
-
-constexpr auto x_division = 500.0*cm;
-constexpr auto y_division = 5.0*cm;
-
-
 constexpr auto layer_x_edge_length = 9.0*m;
 constexpr auto layer_y_edge_length = 9.0*m;
 
 constexpr auto scint_x_edge_length = 4.5*m;
 constexpr auto scint_y_edge_length = 0.045*m;
 constexpr auto scintillator_height = 0.02*m;
-
 
 constexpr auto steel_height = 3*cm;
 constexpr auto air_gap = 30*m;
@@ -113,9 +107,7 @@ constexpr auto module_x_edge_length = 9.0*m;
 constexpr auto module_y_edge_length = 9.0*m;
 constexpr auto module_case_thickness = 0.02*m;
 
-
 constexpr auto full_layer_height = scintillator_height + 2*scintillator_casing_thickness;
-
 
 constexpr auto layer_w_case = full_layer_height;
 
@@ -261,44 +253,155 @@ G4bool Detector::ProcessHits(G4Step* step, G4TouchableHistory*) {
   //__________________________________________________________________________________________
 
   const auto local_position = new_position.vect() - G4ThreeVector(y_displacement, z_displacement, x_displacement);
-  const auto x_index = static_cast<size_t>(std::floor(+local_position.z() / (x_division)  ));
-  const auto y_index = static_cast<size_t>(std::floor(+local_position.x() / (y_division)  ));
 
   // auto z_index = static_cast<size_t>(std::floor(+local_position.y() / (layer_spacing + scintillator_height)));
-  long double z_index = 0;
+  size_t y_index = 0;
 
   if (new_position.y() < 6050.0L*cm) {
-    z_index = static_cast<std::size_t>(std::floor(+local_position.y() / (layer_spacing + scintillator_height)));
+    y_index = static_cast<std::size_t>(std::floor(+local_position.y() / (layer_spacing + scintillator_height)));
   } else if (new_position.y() > 6060.0L*cm && new_position.y() < 6150.0L*cm) {
-    z_index = static_cast<std::size_t>(std::floor((+local_position.y() - 1.0L*cm) / (layer_spacing + scintillator_height)));
+    y_index = static_cast<std::size_t>(std::floor((+local_position.y() - 1.0L*cm) / (layer_spacing + scintillator_height)));
   } else if (new_position.y() > 7900.0L*cm && new_position.y() < 8050.0L*cm) {
-    z_index = static_cast<std::size_t>(std::floor((+local_position.y() - 1796.0L*cm) / (layer_spacing + scintillator_height)));
+    y_index = static_cast<std::size_t>(std::floor((+local_position.y() - 1796.0L*cm) / (layer_spacing + scintillator_height)));
   } else if (new_position.y() > 8050.0L*cm && new_position.y() < 8150.0L*cm) {
-    z_index = static_cast<std::size_t>(std::floor((+local_position.y() - 1797.0L*cm) / (layer_spacing + scintillator_height)));
+    y_index = static_cast<std::size_t>(std::floor((+local_position.y() - 1797.0L*cm) / (layer_spacing + scintillator_height)));
   } else if (new_position.y() > 8400.0L*cm && new_position.y() < 8550.0L*cm) {
-    z_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2092.0L*cm) / (layer_spacing + scintillator_height)));
+    y_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2092.0L*cm) / (layer_spacing + scintillator_height)));
   } else if (new_position.y() > 8560.0L*cm && new_position.y() < 8650.0L*cm) {
-    z_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2093.0L*cm) / (layer_spacing + scintillator_height)));
+    y_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2093.0L*cm) / (layer_spacing + scintillator_height)));
   } else if (new_position.y() > 8660.0L*cm && new_position.y() < 8750.0L*cm) {
-    z_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2094.0L*cm) / (layer_spacing + scintillator_height)));
-  } else if (new_position.y() > 7760.0L*cm && new_position.y() < 8850.0L*cm) {
-    z_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2095.0L*cm) / (layer_spacing + scintillator_height)));
+    y_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2094.0L*cm) / (layer_spacing + scintillator_height)));
+  } else if (new_position.y() > 8760.0L*cm && new_position.y() < 8850.0L*cm) {
+    y_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2095.0L*cm) / (layer_spacing + scintillator_height)));
   } else {
-    z_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2096.0L*cm) / (layer_spacing + scintillator_height)));
+    y_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2096.0L*cm) / (layer_spacing + scintillator_height)));
+  }
+
+  // if (new_position.y() <= 6003.5L*cm) {
+	//   y_index = static_cast<std::size_t>(std::floor(+local_position.y() / (layer_spacing + scintillator_height)));
+  // } else if (new_position.y() >= 6103.5L*cm && new_position.y() <= 6105.5L*cm) {
+	//   y_index = static_cast<std::size_t>(std::floor((+local_position.y() - 100.0L*cm) / (layer_spacing + scintillator_height)));
+  // } else if (new_position.y() >= 8001.5L*cm && new_position.y() <= 8003.5L*cm) {
+	//   y_index = static_cast<std::size_t>(std::floor((+local_position.y() - 1996.0L*cm) / (layer_spacing + scintillator_height)));
+  // } else if (new_position.y() >= 8103.5L*cm && new_position.y() <= 8105.5L*cm) {
+	//   y_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2096.0L*cm) / (layer_spacing + scintillator_height)));
+  // } else if (new_position.y() >= 8501.5L*cm && new_position.y() <= 8503.5L*cm) {
+	//   y_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2492.0L*cm) / (layer_spacing + scintillator_height)));
+  // } else if (new_position.y() >= 8603.5L*cm && new_position.y() <= 8605.5L*cm) {
+	//   y_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2592.0L*cm) / (layer_spacing + scintillator_height)));
+  // } else if (new_position.y() >= 8705.5L*cm && new_position.y() <= 8707.5L*cm) {
+	//   y_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2692.0L*cm) / (layer_spacing + scintillator_height)));
+  // } else if (new_position.y() >= 8807.5L*cm && new_position.y() <= 8809.5L*cm) {
+	//   y_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2792.0L*cm) / (layer_spacing + scintillator_height)));
+  // } else {
+	//   y_index = static_cast<std::size_t>(std::floor((+local_position.y() - 2892.0L*cm) / (layer_spacing + scintillator_height)));
+  // }
+
+  int _rotation = (1UL + y_index) % 2;
+  size_t x_index;
+  size_t z_index;
+
+  if (_rotation == 0){
+
+	  if (new_position.x() <= -4050.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor(+local_position.x() / (scint_y_edge_length) ));
+	  } else if (new_position.x() >= -3950.0L*cm && new_position.x() <= -3050.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor((+local_position.x() - 100.0L*cm) / (scint_y_edge_length) ));
+	  } else if (new_position.x() >= -2950.0L*cm && new_position.x() <= -2050.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor((+local_position.x() - 200.0L*cm) / (scint_y_edge_length) ));
+	  } else if (new_position.x() >= -1950.0L*cm && new_position.x() <= -1050.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor((+local_position.x() - 300.0L*cm) / (scint_y_edge_length) ));
+	  } else if (new_position.x() >= -950.0L*cm && new_position.x() <= -50.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor((+local_position.x() - 400.0L*cm) / (scint_y_edge_length) ));
+	  } else if (new_position.x() >= 50.0L*cm && new_position.x() <= 950.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor((+local_position.x() - 500.0L*cm) / (scint_y_edge_length) ));
+	  } else if (new_position.x() >= 1050.0L*cm && new_position.x() <= 1950.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor((+local_position.x() - 600.0L*cm) / (scint_y_edge_length) ));
+	  } else if (new_position.x() >= 2050.0L*cm && new_position.x() <= 2950.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor((+local_position.x() - 700.0L*cm) / (scint_y_edge_length) ));
+	  } else if (new_position.x() >= 3050.0L*cm && new_position.x() <= 3950.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor((+local_position.x() - 800.0L*cm) / (scint_y_edge_length) ));
+	  } else if (new_position.x() >= 4050.0L*cm && new_position.x() <= 4950.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor((+local_position.x() - 900.0L*cm) / (scint_y_edge_length) ));
+	  }
+	  if (new_position.z() <= 7900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor(+local_position.z() / (scint_x_edge_length) ));
+	  } else if (new_position.z() >= 8000.0L*cm && new_position.z() <= 8900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor((+local_position.z() - 100.0L*cm) / (scint_x_edge_length) ));
+	  } else if (new_position.z() >= 9000.0L*cm && new_position.z() <= 9900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor((+local_position.z() - 200.0L*cm) / (scint_x_edge_length) ));
+	  } else if (new_position.z() >= 10000.0L*cm && new_position.z() <= 10900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor((+local_position.z() - 300.0L*cm) / (scint_x_edge_length) ));
+	  } else if (new_position.z() >= 11000.0L*cm && new_position.z() <= 11900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor((+local_position.z() - 400.0L*cm) / (scint_x_edge_length) ));
+	  } else if (new_position.z() >= 12000.0L*cm && new_position.z() <= 12900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor((+local_position.z() - 500.0L*cm) / (scint_x_edge_length) ));
+	  } else if (new_position.z() >= 13000.0L*cm && new_position.z() <= 13900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor((+local_position.z() - 600.0L*cm) / (scint_x_edge_length) ));
+	  } else if (new_position.z() >= 14000.0L*cm && new_position.z() <= 14900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor((+local_position.z() - 700.0L*cm) / (scint_x_edge_length) ));
+	  } else if (new_position.z() >= 15000.0L*cm && new_position.z() <= 15900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor((+local_position.z() - 800.0L*cm) / (scint_x_edge_length) ));
+	  } else if (new_position.z() >= 16000.0L*cm && new_position.z() <= 16900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor((+local_position.z() - 900.0L*cm) / (scint_x_edge_length) ));
+	  }
+
+  } else if (_rotation == 1){
+
+	  if (new_position.x() <= -4050.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor(+local_position.x() / (scint_x_edge_length) ));
+	  } else if (new_position.x() >= -3950.0L*cm && new_position.x() <= -3050.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor((+local_position.x() - 100.0L*cm) / (scint_x_edge_length) ));
+	  } else if (new_position.x() >= -2950.0L*cm && new_position.x() <= -2050.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor((+local_position.x() - 200.0L*cm) / (scint_x_edge_length) ));
+	  } else if (new_position.x() >= -1950.0L*cm && new_position.x() <= -1050.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor((+local_position.x() - 300.0L*cm) / (scint_x_edge_length) ));
+	  } else if (new_position.x() >= -950.0L*cm && new_position.x() <= -50.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor((+local_position.x() - 400.0L*cm) / (scint_x_edge_length) ));
+	  } else if (new_position.x() >= 50.0L*cm && new_position.x() <= 950.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor((+local_position.x() - 500.0L*cm) / (scint_x_edge_length) ));
+	  } else if (new_position.x() >= 1050.0L*cm && new_position.x() <= 1950.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor((+local_position.x() - 600.0L*cm) / (scint_x_edge_length) ));
+	  } else if (new_position.x() >= 2050.0L*cm && new_position.x() <= 2950.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor((+local_position.x() - 700.0L*cm) / (scint_x_edge_length) ));
+	  } else if (new_position.x() >= 3050.0L*cm && new_position.x() <= 3950.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor((+local_position.x() - 800.0L*cm) / (scint_x_edge_length) ));
+	  } else if (new_position.x() >= 4050.0L*cm && new_position.x() <= 4950.0L*cm) {
+		  x_index = static_cast<std::size_t>(std::floor((+local_position.x() - 900.0L*cm) / (scint_x_edge_length) ));
+	  }
+	  if (new_position.z() <= 7900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor(+local_position.z() / (scint_y_edge_length) ));
+	  } else if (new_position.z() >= 8000.0L*cm && new_position.z() <= 8900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor((+local_position.z() - 100.0L*cm) / (scint_y_edge_length) ));
+	  } else if (new_position.z() >= 9000.0L*cm && new_position.z() <= 9900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor((+local_position.z() - 200.0L*cm) / (scint_y_edge_length) ));
+	  } else if (new_position.z() >= 10000.0L*cm && new_position.z() <= 10900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor((+local_position.z() - 300.0L*cm) / (scint_y_edge_length) ));
+	  } else if (new_position.z() >= 11000.0L*cm && new_position.z() <= 11900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor((+local_position.z() - 400.0L*cm) / (scint_y_edge_length) ));
+	  } else if (new_position.z() >= 12000.0L*cm && new_position.z() <= 12900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor((+local_position.z() - 500.0L*cm) / (scint_y_edge_length) ));
+	  } else if (new_position.z() >= 13000.0L*cm && new_position.z() <= 13900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor((+local_position.z() - 600.0L*cm) / (scint_y_edge_length) ));
+	  } else if (new_position.z() >= 14000.0L*cm && new_position.z() <= 14900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor((+local_position.z() - 700.0L*cm) / (scint_y_edge_length) ));
+	  } else if (new_position.z() >= 15000.0L*cm && new_position.z() <= 15900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor((+local_position.z() - 800.0L*cm) / (scint_y_edge_length) ));
+	  } else if (new_position.z() >= 16000.0L*cm && new_position.z() <= 16900.0L*cm) {
+		  z_index = static_cast<std::size_t>(std::floor((+local_position.z() - 900.0L*cm) / (scint_y_edge_length) ));
+	  }
   }
 
   const auto x_name = std::to_string(x_index);
-  const auto y_name = std::to_string(y_index);
+  const auto z_name = std::to_string(z_index);
 
   _hit_collection->insert(new Tracking::Hit(
     particle,
     trackID,
     parentID,
-    std::to_string(1UL + z_index)
-	+ x_name
-	+ y_name,
-	//	+ (x_index < 10UL ? "000" + x_name : (x_index < 100UL ? "00" + x_name : (x_index < 1000UL ? "0" + x_name : x_name)))
-	//	+ (y_index < 10UL ? "000" + y_name : (y_index < 100UL ? "00" + y_name : (y_index < 1000UL ? "0" + y_name : y_name))),
+	std::to_string(1UL + y_index)
+    + (z_index < 10UL ? "000" + z_name : (z_index < 100UL ? "00" + z_name : (z_index < 1000UL ? "0" + z_name : z_name)))
+	+ (x_index < 10UL ? "000" + x_name : (x_index < 100UL ? "00" + x_name : (x_index < 1000UL ? "0" + x_name : x_name))),
     deposit / Units::Energy,
     G4LorentzVector(new_position.t() / Units::Time,   new_position.vect() / Units::Length),
     G4LorentzVector(new_momentum.e() / Units::Energy, new_momentum.vect() / Units::Momentum)));
@@ -606,16 +709,11 @@ G4VPhysicalVolume* Detector::ConstructEarth(G4LogicalVolume* world){
 	/////////////// UXC55 AND CMS DETECTOR CONSTRUCTION ////////////////////////////////////////
 
 	auto UXC_55_cavern_solid = Cylinder("UXC55_outer", uxc55_cavern_length, 0.0*m, uxc55_outer_radius);
-
 	auto UXC55_outer_solid = Cylinder("UXC55_outer", uxc55_cavern_length, uxc55_inner_radius, uxc55_outer_radius);
-    auto UXC55_outer_logical = Volume(UXC55_outer_solid, Construction::Material::Concrete, Construction::CasingAttributes());
-
+  auto UXC55_outer_logical = Volume(UXC55_outer_solid, Construction::Material::Concrete, Construction::CasingAttributes());
 	auto CMS_Detector_logical = CMSRingVolume();
-
 	auto UXC_55_air_v1 = new G4SubtractionSolid("UXC_55_air_v1", UXC_55_cavern_solid, UXC55_outer_solid);
-
 	auto UXC_55_air_v2 = new G4SubtractionSolid("UXC_55_air_v2", UXC_55_air_v1, CMS_Detector_logical->GetSolid());
-
 	auto UXC55_air_logical = Volume("UXC55_air", UXC_55_air_v2, Construction::Material::Air, G4VisAttributes::Invisible);
 
 	Construction::PlaceVolume(UXC55_outer_logical, earth, Cavern_Transform()*Construction::Rotate(0, 1, 0, 90*deg) );

@@ -32,6 +32,7 @@ G4History*
 /build
 /cmake-build*
 /data
+/step_data
 /export
 /detector_geo
 

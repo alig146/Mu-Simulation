@@ -15,11 +15,12 @@
 #include "TROOT.h"
 #include "TTree.h"
 
+
 using dimension = double;
 
 namespace MATHUSLA { namespace MU {
 
-namespace Box { /////////////////////////////////////////////////////////////////////////////home/ag1378/cmslink/bobthebuilder/storage/test/tracker//20200922/154152/statistics0.root////
+namespace Box { //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // double X_POS_STEP;
 // double Y_POS_STEP;
@@ -153,13 +154,13 @@ constexpr double module_beam_z_pos[8] = {-0.50*full_detector_height + 0.50*modul
 
 
 
-const std::string folder = "detector_geo";
-const std::string file = "box.gdml";
-const std::string file2 ="mod.gdml";
-const std::string file3 ="layer.gdml";
-const std::string file4 ="earth.gdml";
-const std::string file5 ="modified.gdml";
-const std::string arg4 = "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/Schema/gdml.xsd";
+// const std::string folder = "detector_geo";
+// const std::string file = "box.gdml";
+// const std::string file2 ="mod.gdml";
+// const std::string file3 ="layer.gdml";
+// const std::string file4 ="earth.gdml";
+// const std::string file5 ="modified.gdml";
+// const std::string arg4 = "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/Schema/gdml.xsd";
 
 
 auto get_module_x_displacement(int tag_number){
@@ -509,10 +510,10 @@ G4VPhysicalVolume* Detector::ConstructModule(G4LogicalVolume* DetectorVolume, in
   }
 
 
-  if (tag_number == 0) {
-    std::cout << "ABOUT TO WRITE GDML FOR MODULE" << std::endl;
-    Construction::Export(ModuleVolume, folder, file2, arg4 );
-  }
+  // if (tag_number == 0) {
+  //   std::cout << "ABOUT TO WRITE GDML FOR MODULE" << std::endl;
+  //   Construction::Export(ModuleVolume, folder, file2, arg4 );
+  // }
 
 
     return Construction::PlaceVolume(ModuleVolume, DetectorVolume,
@@ -553,7 +554,7 @@ G4VPhysicalVolume* Detector::Construct(G4LogicalVolume* world) {
 
 	Construction::PlaceVolume(_steel, DetectorVolume, Construction::Transform(0, 0, half_detector_height + 0.5L*steel_height));
 
-	Construction::Export(DetectorVolume, folder, file, arg4 );
+	//	Construction::Export(DetectorVolume, folder, file, arg4 );
 
 	return Construction::PlaceVolume(DetectorVolume, world,
 		   Construction::Transform(0.5L*x_edge_length + x_displacement, 0.5L*y_edge_length + y_displacement, -0.50*full_detector_height + 20*m));
@@ -592,14 +593,14 @@ namespace CMS{
   G4LogicalVolume* EarthVolume() {
     using namespace Earth;
 
-     auto earth_box = Construction::Box("", LayerWidthX(), LayerWidthY(), TotalDepth());
+	auto earth_box = Construction::Box("", LayerWidthX(), LayerWidthY(), TotalDepth());
 
-     auto modified = new G4SubtractionSolid("",
-      earth_box,
-      Construction::Box("AirBox", x_edge_length, y_edge_length, air_gap),
-      Construction::Transform(0.5L*x_edge_length + x_displacement,
-                            0.5L*y_edge_length + y_displacement,
-							  0.5L*(air_gap-Earth::TotalDepth()) -9.50*m ));
+	auto modified = new G4SubtractionSolid("",
+										   earth_box,
+										   Construction::Box("AirBox", x_edge_length, y_edge_length, air_gap),
+										   Construction::Transform(0.5L*x_edge_length + x_displacement,
+																   0.5L*y_edge_length + y_displacement,
+																   0.5L*(air_gap-Earth::TotalDepth()) -9.50*m ));
 
     return Construction::Volume(modified);
   }
@@ -685,8 +686,6 @@ G4VPhysicalVolume* Detector::ConstructEarth(G4LogicalVolume* world){
 
 	auto earth = CMS::EarthVolume();
 
-
-
 	const auto mix_top = Earth::TotalDepth() - Earth::MixDepth();
 	const auto marl_top = mix_top - Earth::MarlDepth();
 	const auto sandstone_top = marl_top - Earth::SandstoneDepth();
@@ -699,18 +698,14 @@ G4VPhysicalVolume* Detector::ConstructEarth(G4LogicalVolume* world){
 							  marl_top + Earth::MarlDepth(), marl_top),
 							  earth, Earth::MarlTransform());
 
-
-
 	auto sandstone = CMS::_calculate_modification("modified_sandstone", CMS::SandstoneVolume(),
 												  sandstone_top + Earth::SandstoneDepth(), sandstone_top);
-
-
 
 	/////////////// UXC55 AND CMS DETECTOR CONSTRUCTION ////////////////////////////////////////
 
 	auto UXC_55_cavern_solid = Cylinder("UXC55_outer", uxc55_cavern_length, 0.0*m, uxc55_outer_radius);
 	auto UXC55_outer_solid = Cylinder("UXC55_outer", uxc55_cavern_length, uxc55_inner_radius, uxc55_outer_radius);
-  auto UXC55_outer_logical = Volume(UXC55_outer_solid, Construction::Material::Concrete, Construction::CasingAttributes());
+	auto UXC55_outer_logical = Volume(UXC55_outer_solid, Construction::Material::Concrete, Construction::CasingAttributes());
 	auto CMS_Detector_logical = CMSRingVolume();
 	auto UXC_55_air_v1 = new G4SubtractionSolid("UXC_55_air_v1", UXC_55_cavern_solid, UXC55_outer_solid);
 	auto UXC_55_air_v2 = new G4SubtractionSolid("UXC_55_air_v2", UXC_55_air_v1, CMS_Detector_logical->GetSolid());
@@ -747,9 +742,9 @@ G4VPhysicalVolume* Detector::ConstructEarth(G4LogicalVolume* world){
 																sandstone->GetSolid(),
 																Construction::Box("AirBox", x_edge_length, y_edge_length, air_gap),
 																Construction::Transform(0.5L*x_edge_length + x_displacement,
-																						0.5L*y_edge_length + y_displacement,
-																						0.5L*(air_gap-Earth::SandstoneDepth()) - 9.50*m)),
-										 Earth::Material::SiO2);
+																0.5L*y_edge_length + y_displacement,
+															    0.5L*(air_gap-Earth::SandstoneDepth()) - 9.50*m)),
+									        	                Earth::Material::SiO2);
 
 	Construction::PlaceVolume(modified, earth, Earth::SandstoneTransform());
 
@@ -757,15 +752,27 @@ G4VPhysicalVolume* Detector::ConstructEarth(G4LogicalVolume* world){
 
 	//auto mod = CMS::_calculate_modification("modified_marl", Earth::MarlVolume(),
 	//                      marl_top + Earth::MarlDepth(), marl_top);
-	Construction::Export(CMSVolume(), folder, file5, arg4 );
 
-	Construction::Export(earth, folder, file4, arg4 );
+
+	//export geometry to gdml files
+	//	Construction::Export(CMSVolume(), folder, file5, arg4 );
+	//	Construction::Export(earth, folder, file4, arg4 );
+
+
+    G4Region* cut_region = new G4Region("Earth_Cut_Region");
+    cut_region->AddRootLogicalVolume(earth);
+
+
+
+
+
 
 	return Construction::PlaceVolume(earth, world, Earth::Transform());
 
 
-}
 
+
+}
 
 
 //----------------------------------------------------------------------------------------------

@@ -36,7 +36,7 @@ HiggsBSM:allH2 = on                  ! Higgs production by gluon-gluon fusion
 ! Handbook of LHC Higgs Cross Sections: 1. Inclusive Observables,
 ! S. Dittmaier et al., CERN-2011-002 [arXiv:1101.0593].
 ! Note: sum is not quite unity, and so BR's are rescaled accordingly.
-25:m0        = 10.0                   ! Light Higgs mass [15,30,60]
+25:m0        = 5.0                   ! Light Higgs mass [15,30,60]
 25:mWidth    = 1.9732698E-17               ! Higgs width
 25:tau0      = 10000                 ! Life time of light higgs = [0,10,50]
 25:0:bRatio  = 0.000                 ! H -> d dbar

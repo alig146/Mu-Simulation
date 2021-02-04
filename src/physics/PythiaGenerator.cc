@@ -298,19 +298,42 @@ void PythiaGenerator::SetPythia(const std::string& path) {
   //----------------------------------------------------------------------------------------------
   
   void PythiaFilter::GetParticles(const Pythia8::Event& event, std::vector<int>& indexlist) {
-    indexlist.clear();
-    for (int i = 0; i < event.size(); ++i)
-      if(event[i].isFinal())
-	indexlist.push_back(i);
-    return;
+	  indexlist.clear();
+	  for (int i = 0; i < event.size(); ++i)
+		  if(event[i].isFinal())
+			  indexlist.push_back(i);
+	  return;
   }
   
   void PythiaPromptMuonFilter::GetParticles(const Pythia8::Event& event, std::vector<int>& indexlist) {
     indexlist.clear();
-    for (int i = 0; i < event.size(); ++i)
-      if(event[i].isFinal() && event[i].idAbs()==13 && event[i].pAbs()>_pCut && event[i].pT()>_ptCut && event[i].eta()>_etaLoCut && event[i].eta()<_etaHiCut && event[i].phi()>_phiLoCut && event[i].phi()<_phiHiCut)
-	indexlist.push_back(i);
-    return;
+    for (int i = 0; i < event.size(); ++i) {
+		//		if(event[i].isFinal() && event[i].idAbs()==13 && event[i].pAbs()>_pCut && event[i].pT()>_ptCut && event[i].eta()>_etaLoCut && event[i].eta()<_etaHiCut && event[i].phi()>_phiLoCut && event[i].phi()<_phiHiCut)
+		if(event[i].isFinal() && event[i].idAbs()==13 && event[i].pT()>_ptCut && event[i].phi()>_phiLoCut && event[i].phi()<_phiHiCut) {
+			if (event[i].eta()>0.6 && event[i].eta()<0.8 && event[i].pAbs()>40.0) {
+				indexlist.push_back(i);
+			}
+            else if (event[i].eta()>=0.8 && event[i].eta()<1.0 && event[i].pAbs()>45.0) {
+                indexlist.push_back(i);
+            }
+			else if (event[i].eta()>=1.0 && event[i].eta()<1.2 && event[i].pAbs()>45.0) {
+				indexlist.push_back(i);
+	 		}
+			else if (event[i].eta()>=1.2 && event[i].eta()<1.4 && event[i].pAbs()>55.0) {
+				indexlist.push_back(i);
+			}
+			else if (event[i].eta()>=1.4 && event[i].eta()<1.6 && event[i].pAbs()>65.0) {
+				indexlist.push_back(i);
+			}
+			else if (event[i].eta()>=1.6 && event[i].eta()<1.9 && event[i].pAbs()>80.0) {
+				indexlist.push_back(i);
+			}
+
+		}
+
+	}
+	return;
+
   }
 
   const Analysis::SimSettingList PythiaPromptMuonFilter::GetSpecification(void) const {

@@ -22,11 +22,15 @@
 #include <G4VisExecutive.hh>
 #include <tls.hh>
 
+#include <G4RegionStore.hh>
+#include <G4ProductionCuts.hh>
+
 #include "action.hh"
 #include "geometry/Construction.hh"
 #include "geometry/Earth.hh"
 #include "physics/Units.hh"
 #include "ui.hh"
+// #include "PhysicsList.hh"
 
 #include "util/command_line_parser.hh"
 #include "util/error.hh"
@@ -113,6 +117,8 @@ int main(int argc, char* argv[]) {
   physics->RegisterPhysics(new G4StepLimiterPhysics);
   run->SetUserInitialization(physics);
 
+  // run->SetUserInitialization(new PhysicsList);
+
   const auto detector = det_opt.argument ? det_opt.argument : "Box";
   const auto export_dir = export_opt.argument ? export_opt.argument : "";
   run->SetUserInitialization(new Construction::Builder(detector, export_dir, save_all_opt.count));
@@ -120,6 +126,7 @@ int main(int argc, char* argv[]) {
   const auto generator = gen_opt.argument ? gen_opt.argument : "basic";
   const auto data_dir = data_opt.argument ? data_opt.argument : "data";
   run->SetUserInitialization(new ActionInitialization(generator, data_dir));
+
 
   auto vis = new G4VisExecutive("Quiet");
   vis->Initialize();

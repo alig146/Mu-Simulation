@@ -8,6 +8,6 @@
 
 /gen/select pythia
 /gen/pythia/add_filter displaced
-/gen/pythia/read_file studies/box/signal/hh_to_muon.cmnd
+/gen/pythia/read_file studies/box/signal/hh_to_muon5.cmnd
 
-/run/beamOn 500000
+/run/beamOn 1000000

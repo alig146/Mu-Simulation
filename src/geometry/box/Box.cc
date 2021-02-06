@@ -758,19 +758,20 @@ G4VPhysicalVolume* Detector::ConstructEarth(G4LogicalVolume* world){
 	//	Construction::Export(CMSVolume(), folder, file5, arg4 );
 	//	Construction::Export(earth, folder, file4, arg4 );
 
-
-    G4Region* cut_region = new G4Region("Earth_Cut_Region");
-    cut_region->AddRootLogicalVolume(earth);
-
-
-
+	
+	// Put Range Cuts on earth volume
+    // G4Region* cut_region = new G4Region("Earth_Cut_Region");
+    // cut_region->AddRootLogicalVolume(earth);
+    // G4ProductionCuts* cuts = new G4ProductionCuts;
+    // cuts->SetProductionCut(1.0*m,G4ProductionCuts::GetIndex("gamma"));
+    // cuts->SetProductionCut(1.0*m,G4ProductionCuts::GetIndex("e-"));
+    // cuts->SetProductionCut(1.0*m,G4ProductionCuts::GetIndex("e+"));
+    // cuts->SetProductionCut(1.0*m,G4ProductionCuts::GetIndex("proton"));
+    // cut_region->SetProductionCuts(cuts);
 
 
 
 	return Construction::PlaceVolume(earth, world, Earth::Transform());
-
-
-
 
 }
 

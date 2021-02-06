@@ -10,4 +10,4 @@
 /gen/pythia/add_filter promptmuon
 /gen/pythia/read_file studies/box/background/w_to_muon.cmnd
 
-/run/beamOn 25000
+/run/beamOn 5000000

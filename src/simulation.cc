@@ -22,15 +22,11 @@
 #include <G4VisExecutive.hh>
 #include <tls.hh>
 
-#include <G4RegionStore.hh>
-#include <G4ProductionCuts.hh>
-
 #include "action.hh"
 #include "geometry/Construction.hh"
 #include "geometry/Earth.hh"
 #include "physics/Units.hh"
 #include "ui.hh"
-// #include "PhysicsList.hh"
 
 #include "util/command_line_parser.hh"
 #include "util/error.hh"
@@ -116,8 +112,6 @@ int main(int argc, char* argv[]) {
   auto physics = new Shielding;
   physics->RegisterPhysics(new G4StepLimiterPhysics);
   run->SetUserInitialization(physics);
-
-  // run->SetUserInitialization(new PhysicsList);
 
   const auto detector = det_opt.argument ? det_opt.argument : "Box";
   const auto export_dir = export_opt.argument ? export_opt.argument : "";

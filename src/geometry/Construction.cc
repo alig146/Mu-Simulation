@@ -172,11 +172,11 @@ G4VPhysicalVolume* Builder::Construct() {
 
   std::cout << "Materials: "
             << *G4Material::GetMaterialTable() << '\n';
-  const std::string folder = "detector_geo";
-  const std::string file = "world.gdml";  
-  const std::string arg4 = "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/Schema/gdml.xsd";
+   // const std::string folder = "detector_geo";
+   // const std::string file = "world.gdml";
+   // const std::string arg4 = "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/Schema/gdml.xsd";
 
-  Construction::Export(world, folder, file, arg4);
+   // Construction::Export(world, folder, file, arg4);
 
   return world;
 }

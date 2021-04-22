@@ -1,3 +1,3 @@
 #!/bin/bash
-#./studies/run $1 $2 $3 $4 studies/box/background/script.mac $5 energy $6
-/home/ag1378/cmslink/bobthebuilder/Mu-Simulation/./simulation -o /home/ag1378/cmslink/bobthebuilder/simulation_service/projects/background/data/ --save_all -s /home/ag1378/cmslink/bobthebuilder/Mu-Simulation/studies/box/background/run_pythia_w.mac
+
+/home/ag1378/cmslink/bobthebuilder/Mu-Simulation_full_bottom_scint/./simulation -o /home/ag1378/cmslink/bobthebuilder/simulation_service/projects/background/data/ -s /home/ag1378/cmslink/bobthebuilder/Mu-Simulation_full_bottom_scint/studies/box/background/run_pythia_w.mac

@@ -119,7 +119,9 @@ int main(int argc, char* argv[]) {
 
   const auto generator = gen_opt.argument ? gen_opt.argument : "basic";
   const auto data_dir = data_opt.argument ? data_opt.argument : "data";
-  run->SetUserInitialization(new ActionInitialization(generator, data_dir));
+  run->SetUserInitialization(new ActionInitialization(generator, data_dir)); 
+  
+
 
 
   auto vis = new G4VisExecutive("Quiet");

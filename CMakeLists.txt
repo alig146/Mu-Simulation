@@ -64,6 +64,10 @@ add_library(mu-simulation-lib SHARED
     src/physics/RangeGenerator.cc
 
     src/util/command_line_parser.cc
+
+    src/PersonalizedSteppingAction.cc
+    src/PersonalizedRunAction.cc
+    src/HistoManager.cc
 )
 
 target_link_libraries(mu-simulation-lib PUBLIC

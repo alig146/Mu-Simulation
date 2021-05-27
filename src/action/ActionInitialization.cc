@@ -16,6 +16,8 @@
  */
 
 #include "action.hh"
+#include "PersonalizedSteppingAction.hh"
+#include "PersonalizedRunAction.hh"
 
 #include <tls.hh>
 
@@ -42,6 +44,11 @@ ActionInitialization::ActionInitialization(const std::string& generator,
 //__Build for Thread Master_____________________________________________________________________
 void ActionInitialization::BuildForMaster() const {
   SetUserAction(new RunAction(_data_dir));
+
+//Added by grace
+  RunAction* runAction = new RunAction();
+  SetUserAction(runAction);
+
 }
 //----------------------------------------------------------------------------------------------
 
@@ -51,6 +58,20 @@ void ActionInitialization::Build() const {
   SetUserAction(new EventAction(100));
   SetUserAction(new GeneratorAction(_generator));
   if (Debug) SetUserAction(new StepAction());
+
+//by grace
+//
+
+PersonalizedRunAction* runAction = new PersonalizedRunAction();
+SetUserAction(runAction);
+
+PersonalizedSteppingAction* steppingAction = new PersonalizedSteppingAction();
+SetUserAction(steppingAction);
+
+
+
+
+
 }
 //----------------------------------------------------------------------------------------------
 

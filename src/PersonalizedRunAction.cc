@@ -32,6 +32,7 @@
 
 #include "PersonalizedRunAction.hh"
 #include "HistoManager.hh"
+#include "PersonalizedSteppingAction.hh"
 
 #include "G4Run.hh"
 #include "G4UnitsTable.hh"
@@ -44,7 +45,8 @@
 PersonalizedRunAction::PersonalizedRunAction()
 :G4UserRunAction(), fHistoManager(0)
 {
-  fHistoManager = new HistoManager();
+
+ fHistoManager = new HistoManager();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -61,10 +63,12 @@ void PersonalizedRunAction::BeginOfRunAction(const G4Run*)
 {      
   //histograms
   //
+
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
   if ( analysisManager->IsActive() ) {
     analysisManager->OpenFile();
   }
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -78,7 +82,9 @@ void PersonalizedRunAction::EndOfRunAction(const G4Run*)
  if ( analysisManager->IsActive() ) {
   analysisManager->Write();
   analysisManager->CloseFile();
- } 
+ }
+ 
 }
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

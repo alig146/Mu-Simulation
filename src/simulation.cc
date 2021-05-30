@@ -122,8 +122,6 @@ int main(int argc, char* argv[]) {
   run->SetUserInitialization(new ActionInitialization(generator, data_dir)); 
   
 
-
-
   auto vis = new G4VisExecutive("Quiet");
   vis->Initialize();
 

@@ -40,6 +40,7 @@ HistoManager::HistoManager()
   : fFileName("simulation")
 {
   Book();
+ // static G4int nbEvents = 0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -53,6 +54,7 @@ HistoManager::~HistoManager()
 
 void HistoManager::Book()
 {
+
   // Create or get analysis manager
   // The choice of analysis technology is done via selection of a namespace
   // in HistoManager.hh
@@ -72,8 +74,8 @@ void HistoManager::Book()
 
   // Default values (to be reset via /analysis/h1/set command)               
   G4int nbins = 100;
-  G4double vmin = -10000 *cm;
-  G4double vmax = 10000 *cm;
+  G4double vmin = -100000 *cm;
+  G4double vmax = 1000000 *cm;
 
   // Create all histograms as inactivated 
   // as we have not yet set nbins, vmin, vmax
@@ -82,5 +84,7 @@ void HistoManager::Book()
     analysisManager->SetH1Activation(ih, false);
   }
 }
-
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//
+
+

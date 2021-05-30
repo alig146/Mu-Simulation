@@ -46,8 +46,8 @@ void ActionInitialization::BuildForMaster() const {
   SetUserAction(new RunAction(_data_dir));
 
 //Added by grace
-  RunAction* runAction = new RunAction();
-  SetUserAction(runAction);
+  PersonalizedRunAction* prunAction = new PersonalizedRunAction();
+  SetUserAction(prunAction);
 
 }
 //----------------------------------------------------------------------------------------------
@@ -62,8 +62,8 @@ void ActionInitialization::Build() const {
 //by grace
 //
 
-PersonalizedRunAction* runAction = new PersonalizedRunAction();
-SetUserAction(runAction);
+PersonalizedRunAction* prunAction = new PersonalizedRunAction();
+SetUserAction(prunAction);
 
 PersonalizedSteppingAction* steppingAction = new PersonalizedSteppingAction();
 SetUserAction(steppingAction);

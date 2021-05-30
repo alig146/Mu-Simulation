@@ -7,7 +7,8 @@
 #include "globals.hh"
 #include "G4UserSteppingAction.hh"
 
-class RunAction;
+
+class PersonalizedRunAction;
 class HistoManager;
 
 class PersonalizedSteppingAction : public G4UserSteppingAction

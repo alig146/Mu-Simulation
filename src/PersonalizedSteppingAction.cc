@@ -5,6 +5,7 @@
 #include <vector>
 #include "HistoManager.hh"
 #include "PersonalizedSteppingAction.hh"
+#include "PersonalizedRunAction.hh"
 #include "G4Track.hh"
 #include "G4Step.hh"
 #include "G4SteppingManager.hh"
@@ -23,9 +24,9 @@ void PersonalizedSteppingAction::UserSteppingAction(const G4Step * theStep) {
 //Variable Definitions
 
 auto DecayPosition = theStep->GetPostStepPoint()->GetPosition();
-G4double X_Value = theStep->GetPostStepPoint()->GetPosition().getX();
-G4double Y_Value = theStep->GetPostStepPoint()->GetPosition().getY();
-G4double Z_Value = theStep->GetPostStepPoint()->GetPosition().getZ();
+X_Value = theStep->GetPostStepPoint()->GetPosition().getX();
+Y_Value = theStep->GetPostStepPoint()->GetPosition().getY();
+Z_Value = theStep->GetPostStepPoint()->GetPosition().getZ();
 auto ParticleType=theStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding();
 
 //if the track is about to decay

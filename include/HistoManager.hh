@@ -40,12 +40,13 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+
 class HistoManager
 {
   public:
    HistoManager();
-  ~HistoManager();
-
+  ~HistoManager();    
+  
   private:
     void Book();
     G4String fFileName;

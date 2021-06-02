@@ -22,11 +22,11 @@ void PersonalizedSteppingAction::UserSteppingAction(const G4Step * theStep) {
     G4Track *theTrack = theStep->GetTrack();
 
 //Variable Definitions
-
+//The Axis are screwed up (x,y,z) is actually (z,x,y)
 auto DecayPosition = theStep->GetPostStepPoint()->GetPosition();
-X_Value = theStep->GetPostStepPoint()->GetPosition().getX();
-Y_Value = theStep->GetPostStepPoint()->GetPosition().getY();
-Z_Value = theStep->GetPostStepPoint()->GetPosition().getZ();
+Z_Value = theStep->GetPostStepPoint()->GetPosition().getX();
+X_Value = theStep->GetPostStepPoint()->GetPosition().getY();
+Y_Value = theStep->GetPostStepPoint()->GetPosition().getZ();
 auto ParticleType=theStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding();
 
 //if the track is about to decay
@@ -36,9 +36,20 @@ auto ParticleType=theStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding()
 //message if a muon decays at all
 G4cout<< ParticleType <<" Muon decays--PostStepPoint "<< DecayPosition <<G4endl;
 
-G4AnalysisManager::Instance()->FillH1(0, X_Value);
-G4AnalysisManager::Instance()->FillH1(1, Y_Value);
-G4AnalysisManager::Instance()->FillH1(2, Z_Value);
+
+//fill plots
+//1D
+G4AnalysisManager::Instance()->FillH1(0, X_Value); //X-Values
+G4AnalysisManager::Instance()->FillH1(1, Y_Value); //Y- Values
+G4AnalysisManager::Instance()->FillH1(2, Z_Value); //Z- Values
+//3D
+G4AnalysisManager::Instance()->FillH3(0, X_Value, Y_Value, Z_Value); //3D decay
+//2D
+G4AnalysisManager::Instance()->FillH2(0, X_Value, Y_Value);
+G4AnalysisManager::Instance()->FillH2(1,Y_Value,Z_Value);
+G4AnalysisManager::Instance()->FillH2(2,Z_Value,X_Value);
+
+
 
 //if the decay is inside the detector
 		if((Z_Value > (7000*cm) && Z_Value < (16900*cm)) &&

@@ -68,7 +68,6 @@ add_library(mu-simulation-lib SHARED
     src/PersonalizedSteppingAction.cc
     src/PersonalizedRunAction.cc
     src/HistoManager.cc
-    include/PersonalizedSteppingAction.hh
 )
 
 target_link_libraries(mu-simulation-lib PUBLIC

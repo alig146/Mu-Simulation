@@ -14,6 +14,9 @@
 /analysis/h1/set 0 100 -100000 100000 cm #X_Value
 /analysis/h1/set 1 100 -100000 100000 cm #Y_Value
 /analysis/h1/set 2 100 -100000 100000 cm #Z_Value
-
+/analysis/h3/set 0 100 -100000 100000 cm none linear 100 -100000 100000 cm none linear 100 -100000 100000 cm none linear #3D_Decay
+/analysis/h2/set 0 100 -100000 100000 cm none linear 100 -100000 100000 cm none linear #XY- Decays
+/analysis/h2/set 1 100 -100000 100000 cm none linear 100 -100000 100000 cm none linear #YZ- Decays
+/analysis/h2/set 2 100 -100000 100000 cm none linear 100 -100000 100000 cm none linear #ZX- Decays
 
 /run/beamOn 100000

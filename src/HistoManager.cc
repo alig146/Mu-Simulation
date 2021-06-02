@@ -40,7 +40,6 @@ HistoManager::HistoManager()
   : fFileName("simulation")
 {
   Book();
- // static G4int nbEvents = 0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -65,17 +64,21 @@ void HistoManager::Book()
   
   // Define histograms start values
   const G4int kMaxHisto = 3;
-  const G4String id[] = {"0","1","2"};
+  const G4String id[] = {"thx","thy","thz","th3","thxy","thyz","thzx"};
   const G4String title[] = 
           { "X-Axis Decay Location",      //0
             "Y-Axis Decay Location",      //1
             "Z-Axis Decay Location",      //2
+            "3D Decay Locations",         //3
+            "X-Y Decay Locations",        //4
+            "Y-Z Decay Locations",        //5
+            "Z-X Decay Locations"         //6
           };
 
   // Default values (to be reset via /analysis/h1/set command)               
   G4int nbins = 100;
-  G4double vmin = -100000 *cm;
-  G4double vmax = 1000000 *cm;
+  G4double vmin = -100000*cm;
+  G4double vmax = 100000 *cm;
 
   // Create all histograms as inactivated 
   // as we have not yet set nbins, vmin, vmax
@@ -83,6 +86,15 @@ void HistoManager::Book()
     G4int ih = analysisManager->CreateH1(id[k], title[k], nbins, vmin, vmax);
     analysisManager->SetH1Activation(ih, false);
   }
+
+  G4int ih = analysisManager->CreateH3(id[3],title[3],nbins,vmin,vmax,nbins,vmin,vmax,nbins,vmin,vmax,"cm","cm","cm","none","none","none","linear","linear","linear");
+  analysisManager->SetH3Activation(ih,false);
+
+  for (G4int k =4; k<7; k++){
+  G4int ij = analysisManager->CreateH2(id[k],title[k],nbins,vmin,vmax,nbins,vmin,vmax);
+  analysisManager->SetH2Activation(ij,false);
+}
+
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //

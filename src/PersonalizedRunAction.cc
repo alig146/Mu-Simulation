@@ -32,7 +32,6 @@
 
 #include "PersonalizedRunAction.hh"
 #include "HistoManager.hh"
-#include "PersonalizedSteppingAction.hh"
 
 #include "G4Run.hh"
 #include "G4UnitsTable.hh"

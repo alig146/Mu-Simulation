@@ -65,7 +65,7 @@ add_library(mu-simulation-lib SHARED
 
     src/util/command_line_parser.cc
 
-    src/PersonalizedSteppingAction.cc
+    src/PersonalizedTrackingAction.cc
     src/PersonalizedRunAction.cc
     src/HistoManager.cc
 )

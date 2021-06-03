@@ -26,7 +26,7 @@ void PersonalizedSteppingAction::UserSteppingAction(const G4Step * theStep) {
 auto DecayPosition = theStep->GetPostStepPoint()->GetPosition();
 Z_Value = theStep->GetPostStepPoint()->GetPosition().getX();
 X_Value = theStep->GetPostStepPoint()->GetPosition().getY();
-Y_Value = theStep->GetPostStepPoint()->GetPosition().getZ();
+Y_Value =-(theStep->GetPostStepPoint()->GetPosition().getZ())+80*m;
 auto ParticleType=theStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding();
 
 //if the track is about to decay

@@ -10,4 +10,4 @@
 /gen/pythia/add_filter displaced
 /gen/pythia/read_file studies/box/signal/hh_to_bbbar_ctau50.cmnd
 
-/run/beamOn 1000000
+/run/beamOn 500000

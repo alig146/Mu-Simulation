@@ -102,7 +102,7 @@ constexpr auto air_gap = 30*m;
 constexpr auto scintillator_casing_thickness = 0.005*m;
 
 constexpr auto layer_spacing = 1.0*m;
-constexpr auto layer_count   = 8UL;
+constexpr auto layer_count   = 7UL;
 
 constexpr auto module_x_edge_length = 9.0*m;
 constexpr auto module_y_edge_length = 9.0*m;
@@ -112,53 +112,61 @@ constexpr auto full_layer_height = scintillator_height + 2*scintillator_casing_t
 
 constexpr auto layer_w_case = full_layer_height;
 
-constexpr auto full_module_height =  25.0*m + 5.0*(layer_w_case) + 4.0*layer_spacing ;
+constexpr auto full_module_height =  (25.0*m - 3.0*layer_w_case - 2.0*layer_spacing) + 5.0*layer_w_case + 4.0*layer_spacing;
+
 constexpr auto scintillator_z_position = 0.00;
 
-constexpr int NBEAMLAYERS = 8;
+constexpr int NBEAMLAYERS = 7;
 constexpr auto beam_x_edge_length = 0.10*m;
 constexpr auto beam_y_edge_length = 0.10*m;
 constexpr auto beam_thickness = 0.02*m;
 
-constexpr auto full_detector_height = full_module_height + steel_height;
+constexpr auto full_detector_height = full_module_height + steel_height + 3.0*layer_w_case + 2.0*layer_spacing;
 constexpr auto half_detector_height = 0.5L * full_detector_height;
 
-constexpr double layer_z_displacement[8] = {-0.5*full_module_height + 1.5*layer_w_case + layer_spacing,
-                                            -0.5*full_module_height + 20.0*m + 0.5*layer_w_case,
-                                            -0.5*full_module_height + 20.0*m + layer_spacing + 1.5*layer_w_case,
-                                            -0.5*full_module_height + 25.0*m + 0.5*layer_w_case,
-                                            -0.5*full_module_height + 25.0*m + layer_spacing + 1.5*layer_w_case,
-                                            -0.5*full_module_height + 25.0*m + 2*layer_spacing + 2.5*layer_w_case,
-                                            -0.5*full_module_height + 25.0*m + 3*layer_spacing + 3.5*layer_w_case,
-                                            -0.5*full_module_height + 25.0*m + 4*layer_spacing + 4.5*layer_w_case};
+constexpr double layer_z_displacement[7] = {-0.5*full_module_height + (20.0*m - 3.0*layer_w_case - 2.0*layer_spacing) + 0.5*layer_w_case,
+											-0.5*full_module_height + (20.0*m - 3.0*layer_w_case - 2.0*layer_spacing) + layer_spacing + 1.5*layer_w_case,
+											-0.5*full_module_height + (25.0*m - 3.0*layer_w_case - 2.0*layer_spacing) + 0.5*layer_w_case,
+											-0.5*full_module_height + (25.0*m - 3.0*layer_w_case - 2.0*layer_spacing) + layer_spacing + 1.5*layer_w_case,
+											-0.5*full_module_height + (25.0*m - 3.0*layer_w_case - 2.0*layer_spacing) + 2*layer_spacing + 2.5*layer_w_case,
+											-0.5*full_module_height + (25.0*m - 3.0*layer_w_case - 2.0*layer_spacing) + 3*layer_spacing + 3.5*layer_w_case,
+											-0.5*full_module_height + (25.0*m - 3.0*layer_w_case - 2.0*layer_spacing) + 4*layer_spacing + 4.5*layer_w_case};
 
-constexpr double module_beam_heights[8] = {layer_spacing,
-                                           20.0*m - 2*layer_w_case - layer_spacing,
-                                           layer_spacing,
-                                           5.0*m - 2*layer_w_case - layer_spacing,
-                                           layer_spacing,
-                                           layer_spacing,
-                                           layer_spacing,
-                                           layer_spacing};
+constexpr double module_beam_heights[7] = {20.0*m - 3*layer_w_case - 2*layer_spacing,
+										   layer_spacing,
+										   5.0*m - 2*layer_w_case - layer_spacing,
+										   layer_spacing,
+										   layer_spacing,
+										   layer_spacing,
+										   layer_spacing};
 
-constexpr double module_beam_z_pos[8] = {-0.50*full_module_height + 0.50*module_beam_heights[0] + layer_w_case,
-                                         -0.50*full_module_height + 2*layer_w_case + layer_spacing + 0.50*module_beam_heights[1],
-                                         -0.50*full_module_height + 20.0*m + layer_w_case + 0.50*module_beam_heights[2],
-                                         -0.50*full_module_height + 20.0*m + 2*layer_w_case + layer_spacing + 0.50*module_beam_heights[3],
-                                         -0.50*full_module_height + 25.0*m + layer_w_case + 0.50*module_beam_heights[4],
-                                         -0.50*full_module_height + 25.0*m + 2*layer_w_case + layer_spacing + 0.50*module_beam_heights[5],
-                                         -0.50*full_module_height + 25.0*m + 3*layer_w_case + 2*layer_spacing + 0.50*module_beam_heights[6],
-                                         -0.50*full_module_height + 25.0*m + 4*layer_w_case + 3*layer_spacing + 0.50*module_beam_heights[7]};
+	// constexpr double module_beam_z_pos[9] = {-0.50*full_module_height + 0.50*module_beam_heights[0] + layer_w_case,
+	//                                          -0.50*full_module_height + 2*layer_w_case + layer_spacing + 0.50*module_beam_heights[1],
+	//                                          -0.50*full_module_height + 3*layer_w_case + 2*layer_spacing + 0.50*module_beam_heights[2],
+	//                                          -0.50*full_module_height + 20.0*m + layer_w_case + 0.50*module_beam_heights[3],
+	//                                          -0.50*full_module_height + 20.0*m + 2*layer_w_case + layer_spacing + 0.50*module_beam_heights[4],
+	//                                          -0.50*full_module_height + 25.0*m + layer_w_case + 0.50*module_beam_heights[5],
+	//                                          -0.50*full_module_height + 25.0*m + 2*layer_w_case + layer_spacing + 0.50*module_beam_heights[6],
+	//                                          -0.50*full_module_height + 25.0*m + 3*layer_w_case + 2*layer_spacing + 0.50*module_beam_heights[7],
+	//                                          -0.50*full_module_height + 25.0*m + 4*layer_w_case + 3*layer_spacing + 0.50*module_beam_heights[8]};
+
+constexpr double module_beam_z_pos[7] = {-0.50*full_module_height + 0.50*module_beam_heights[0],
+										 -0.50*full_module_height + (20.0*m - 3.0*layer_w_case - 2.0*layer_spacing) + layer_w_case + 0.50*module_beam_heights[1],
+										 -0.50*full_module_height + (20.0*m - 3.0*layer_w_case - 2.0*layer_spacing) + 2*layer_w_case + layer_spacing + 0.50*module_beam_heights[2],
+										 -0.50*full_module_height + (25.0*m - 3.0*layer_w_case - 2.0*layer_spacing) + layer_w_case + 0.50*module_beam_heights[3],
+										 -0.50*full_module_height + (25.0*m - 3.0*layer_w_case - 2.0*layer_spacing) + 2*layer_w_case + layer_spacing + 0.50*module_beam_heights[4],
+										 -0.50*full_module_height + (25.0*m - 3.0*layer_w_case - 2.0*layer_spacing) + 3*layer_w_case + 2*layer_spacing + 0.50*module_beam_heights[5],
+										 -0.50*full_module_height + (25.0*m - 3.0*layer_w_case - 2.0*layer_spacing) + 4*layer_w_case + 3*layer_spacing + 0.50*module_beam_heights[6]};
 
 
 
-// const std::string folder = "detector_geo";
-// const std::string file = "box.gdml";
-// const std::string file2 ="mod.gdml";
-// const std::string file3 ="layer.gdml";
-// const std::string file4 ="earth.gdml";
-// const std::string file5 ="modified.gdml";
-// const std::string arg4 = "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/Schema/gdml.xsd";
+const std::string folder = "detector_geo";
+const std::string file = "box.gdml";
+const std::string file2 ="mod.gdml";
+const std::string file3 ="layer.gdml";
+const std::string file4 ="earth.gdml";
+const std::string file5 ="modified.gdml";
+const std::string arg4 = "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/Schema/gdml.xsd";
 
 
 auto get_module_x_displacement(int tag_number){
@@ -466,60 +474,59 @@ G4VPhysicalVolume* Detector::ConstructScintillatorLayer(G4LogicalVolume* ModuleV
 
 G4VPhysicalVolume* Detector::ConstructModule(G4LogicalVolume* DetectorVolume, int tag_number, dimension detector_x, dimension detector_y, dimension detector_z){
 
-  auto ModuleVolume = Construction::BoxVolume("Module" + std::to_string(tag_number), module_x_edge_length + module_case_thickness, module_y_edge_length + module_case_thickness,
-                                               full_module_height - layer_w_case);
+	auto ModuleVolume = Construction::BoxVolume("Module" + std::to_string(tag_number), module_x_edge_length + module_case_thickness, module_y_edge_length + module_case_thickness, full_module_height);
 
- // auto ModuleCaseVolume = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "_Case", module_x_edge_length, module_y_edge_length, full_module_height,
- //                                                 module_case_thickness, Construction::Material::Iron, *ModuleVisAttr());
+	// auto ModuleCaseVolume = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "_Case", module_x_edge_length, module_y_edge_length, full_module_height,
+	//                                                 module_case_thickness, Construction::Material::Iron, *ModuleVisAttr());
 
- // Construction::PlaceVolume(ModuleCaseVolume, ModuleVolume, Construction::Transform(0.0, 0.0, 0.0));
-
-
-  for (std::size_t layer{}; layer < layer_count; ++layer) {
-    auto current = Detector::ConstructScintillatorLayer(ModuleVolume, tag_number, layer,
-                                                        0*m,
-                                                        0*m,
-                                                        get_layer_z_displacement(layer)); //DELETE THIS?
-  }
-
-  //CONSTRUCTING AND INSERTING STEEL BEAMS
-
-  for (int beam_layer = 0; beam_layer < NBEAMLAYERS; beam_layer++){
-    auto BeamL1 = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "BL" + std::to_string(beam_layer) + "PL1", beam_x_edge_length, beam_y_edge_length, module_beam_heights[beam_layer],
-                                              beam_thickness, Construction::Material::Iron, Construction::CasingAttributes());
-    auto BeamL2 = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "BL" + std::to_string(beam_layer) + "PL2", beam_x_edge_length, beam_y_edge_length, module_beam_heights[beam_layer],
-                                              beam_thickness, Construction::Material::Iron, Construction::CasingAttributes());
-    auto BeamR1 = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "BL" + std::to_string(beam_layer) + "PR1", beam_x_edge_length, beam_y_edge_length, module_beam_heights[beam_layer],
-                                              beam_thickness, Construction::Material::Iron, Construction::CasingAttributes());
-    auto BeamR2 = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "BL" + std::to_string(beam_layer) + "PR2", beam_x_edge_length, beam_y_edge_length, module_beam_heights[beam_layer],
-                                              beam_thickness, Construction::Material::Iron, Construction::CasingAttributes());
-
-    Construction::PlaceVolume(BeamL1, ModuleVolume, Construction::Transform(-0.50*module_x_edge_length + 0.50*beam_x_edge_length,
-                                                                            -0.50*module_y_edge_length + 0.50*beam_y_edge_length,
-                                                                            -1.0*module_beam_z_pos[beam_layer]));
-    Construction::PlaceVolume(BeamL2, ModuleVolume, Construction::Transform(-0.50*module_x_edge_length + 0.50*beam_x_edge_length,
-                                                                            0.50*module_y_edge_length - 0.50*beam_y_edge_length,
-                                                                            -1.0*module_beam_z_pos[beam_layer]));
-    Construction::PlaceVolume(BeamR1, ModuleVolume, Construction::Transform(0.50*module_x_edge_length - 0.50*beam_x_edge_length,
-                                                                            -0.50*module_y_edge_length + 0.50*beam_y_edge_length,
-                                                                            -1.0* module_beam_z_pos[beam_layer]));
-    Construction::PlaceVolume(BeamR2, ModuleVolume, Construction::Transform(0.50*module_x_edge_length - 0.50*beam_x_edge_length,
-                                                                            0.50*module_y_edge_length - 0.50*beam_y_edge_length,
-                                                                            -1.0* module_beam_z_pos[beam_layer]));
-  }
+	// Construction::PlaceVolume(ModuleCaseVolume, ModuleVolume, Construction::Transform(0.0, 0.0, 0.0));
 
 
-  // if (tag_number == 0) {
-  //   std::cout << "ABOUT TO WRITE GDML FOR MODULE" << std::endl;
-  //   Construction::Export(ModuleVolume, folder, file2, arg4 );
-  // }
+	for (std::size_t layer{}; layer < layer_count; ++layer) {
+		auto current = Detector::ConstructScintillatorLayer(ModuleVolume, tag_number, layer,
+															0*m,
+															0*m,
+															get_layer_z_displacement(layer));
+	}
+
+	//CONSTRUCTING AND INSERTING STEEL BEAMS
+
+	for (int beam_layer = 0; beam_layer < NBEAMLAYERS; beam_layer++){
+		auto BeamL1 = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "BL" + std::to_string(beam_layer) + "PL1", beam_x_edge_length, beam_y_edge_length, module_beam_heights[beam_layer],
+												  beam_thickness, Construction::Material::Iron, Construction::CasingAttributes());
+		auto BeamL2 = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "BL" + std::to_string(beam_layer) + "PL2", beam_x_edge_length, beam_y_edge_length, module_beam_heights[beam_layer],
+												  beam_thickness, Construction::Material::Iron, Construction::CasingAttributes());
+		auto BeamR1 = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "BL" + std::to_string(beam_layer) + "PR1", beam_x_edge_length, beam_y_edge_length, module_beam_heights[beam_layer],
+												  beam_thickness, Construction::Material::Iron, Construction::CasingAttributes());
+		auto BeamR2 = Construction::OpenBoxVolume("Module" + std::to_string(tag_number) + "BL" + std::to_string(beam_layer) + "PR2", beam_x_edge_length, beam_y_edge_length, module_beam_heights[beam_layer],
+												  beam_thickness, Construction::Material::Iron, Construction::CasingAttributes());
+
+		Construction::PlaceVolume(BeamL1, ModuleVolume, Construction::Transform(-0.50*module_x_edge_length + 0.50*beam_x_edge_length,
+																				-0.50*module_y_edge_length + 0.50*beam_y_edge_length,
+																				-1.0*module_beam_z_pos[beam_layer]));
+		Construction::PlaceVolume(BeamL2, ModuleVolume, Construction::Transform(-0.50*module_x_edge_length + 0.50*beam_x_edge_length,
+																				0.50*module_y_edge_length - 0.50*beam_y_edge_length,
+																				-1.0*module_beam_z_pos[beam_layer]));
+		Construction::PlaceVolume(BeamR1, ModuleVolume, Construction::Transform(0.50*module_x_edge_length - 0.50*beam_x_edge_length,
+																				-0.50*module_y_edge_length + 0.50*beam_y_edge_length,
+																				-1.0* module_beam_z_pos[beam_layer]));
+		Construction::PlaceVolume(BeamR2, ModuleVolume, Construction::Transform(0.50*module_x_edge_length - 0.50*beam_x_edge_length,
+																				0.50*module_y_edge_length - 0.50*beam_y_edge_length,
+																				-1.0* module_beam_z_pos[beam_layer]));
+	}
+
+
+	if (tag_number == 0) {
+		std::cout << "ABOUT TO WRITE GDML FOR MODULE" << std::endl;
+		Construction::Export(ModuleVolume, folder, file2, arg4 );
+	}
 
 
     return Construction::PlaceVolume(ModuleVolume, DetectorVolume,
-                    Construction::Transform(get_module_x_displacement(tag_number),
-                    get_module_y_displacement(tag_number),
-                    0.00,
-                    0.0, 0.0, 1.0, 0.00));
+									 Construction::Transform(get_module_x_displacement(tag_number),
+															 get_module_y_displacement(tag_number),
+                                                             half_detector_height - steel_height - 3.0*layer_w_case - 2.0*layer_spacing - 0.5*full_module_height,
+															 0.0, 0.0, 1.0, 0.0));
 
 
 }
@@ -542,25 +549,40 @@ G4VPhysicalVolume* Detector::Construct(G4LogicalVolume* world) {
 		auto current = Detector::ConstructModule(DetectorVolume, module_number,
 					   0.5L*x_edge_length + x_displacement, //add extra terms for displacement from center here
 					   0.5L*y_edge_length + y_displacement,
-					   -half_detector_height + steel_height + layer_w_case);
+					   -half_detector_height + steel_height + 3.0*layer_w_case + 2.0*layer_spacing);
 	}
 
-    auto bottom_full_layer_scintillator = new Scintillator("FL1",
-                                                           x_edge_length,
-                                                           y_edge_length,
-                                                           full_layer_height,
-                                                           scintillator_casing_thickness);
-    _scintillators.push_back(bottom_full_layer_scintillator);
-    bottom_full_layer_scintillator->PlaceIn(DetectorVolume, G4Translate3D(0.0, 0.0, 0.5*full_module_height - 0.5*layer_w_case));
+    auto first_hermetic_floor = new Scintillator("HF1",
+                                                 x_edge_length,
+                                                 y_edge_length,
+                                                 full_layer_height,
+                                                 scintillator_casing_thickness);
+    _scintillators.push_back(first_hermetic_floor);
+    first_hermetic_floor->PlaceIn(DetectorVolume, G4Translate3D(0.0, 0.0, half_detector_height - 0.5*layer_w_case - steel_height));
+
+    auto second_hermetic_floor = new Scintillator("HF2",
+                                                 x_edge_length,
+                                                 y_edge_length,
+                                                 full_layer_height,
+                                                 scintillator_casing_thickness);
+    _scintillators.push_back(second_hermetic_floor);
+    second_hermetic_floor->PlaceIn(DetectorVolume, G4Translate3D(0.0, 0.0, half_detector_height - 1.5*layer_w_case - layer_spacing - steel_height));
+
+    auto third_hermetic_floor = new Scintillator("HF3",
+                                                 x_edge_length,
+                                                 y_edge_length,
+                                                 full_layer_height,
+                                                 scintillator_casing_thickness);
+    _scintillators.push_back(third_hermetic_floor);
+    third_hermetic_floor->PlaceIn(DetectorVolume, G4Translate3D(0.0, 0.0, half_detector_height - 2.5*layer_w_case - 2*layer_spacing - steel_height));
 
 	_steel = Construction::BoxVolume("SteelPlate",
 			 x_edge_length, y_edge_length, steel_height,
 			 Construction::Material::Iron,
 			 Construction::CasingAttributes());
+	Construction::PlaceVolume(_steel, DetectorVolume, Construction::Transform(0.0, 0.0, half_detector_height - 0.5*steel_height));
 
-	Construction::PlaceVolume(_steel, DetectorVolume, Construction::Transform(0.0, 0.0, half_detector_height + 0.5*steel_height));
-
-	//	Construction::Export(DetectorVolume, folder, file, arg4 );
+	Construction::Export(DetectorVolume, folder, file, arg4 );
 
 	return Construction::PlaceVolume(DetectorVolume, world,
 		   Construction::Transform(0.5L*x_edge_length + x_displacement, 0.5L*y_edge_length + y_displacement, -0.50*full_detector_height + 20*m));
@@ -761,8 +783,8 @@ G4VPhysicalVolume* Detector::ConstructEarth(G4LogicalVolume* world){
 
 
 	////export geometry to gdml files
-	//	Construction::Export(CMSVolume(), folder, file5, arg4 );
-	//	Construction::Export(earth, folder, file4, arg4 );
+	Construction::Export(CMSVolume(), folder, file5, arg4 );
+	Construction::Export(earth, folder, file4, arg4 );
 
 
 	//// Put Range Cuts on earth volume

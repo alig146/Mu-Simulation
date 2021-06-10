@@ -11,12 +11,22 @@
 /gen/pythia/read_file studies/box/background/w_to_muon.cmnd
 
 /analysis/setFileName Muon
-/analysis/h1/set 0 100 -100000 100000 cm #X_Value
-/analysis/h1/set 1 100 -100000 100000 cm #Y_Value
-/analysis/h1/set 2 100 -100000 100000 cm #Z_Value
-/analysis/h3/set 0 100 -100000 100000 cm none linear 100 -100000 100000 cm none linear 100 -100000 100000 cm none linear #3D_Decay
-/analysis/h2/set 0 100 -100000 100000 cm none linear 100 -100000 100000 cm none linear #XY- Decays
-/analysis/h2/set 1 100 -100000 100000 cm none linear 100 -100000 100000 cm none linear #YZ- Decays
-/analysis/h2/set 2 100 -100000 100000 cm none linear 100 -100000 100000 cm none linear #ZX- Decays
+/analysis/h1/set 0 100 -1000 1000 m #X_Value
+/analysis/h1/set 1 100 -1000 1000 m #Y_Value
+/analysis/h1/set 2 100 -1000 1000 m #Z_Value
+/analysis/h1/set 3 100 0 15 GeV #Momentum Decay Values
+/analysis/h1/set 4 100 0 15 GeV #Non-Zero Momentum Decay Values
 
-/run/beamOn 100000
+/analysis/h2/set 0 100 -1000 1000 m none linear 100 -1000 1000 m none linear #XY- Decays
+/analysis/h2/set 1 100 -1000 1000 m none linear 100 -1000 1000 m none linear #YZ- Decays
+/analysis/h2/set 2 100 -1000 1000 m none linear 100 -1000 1000 m none linear #ZX- Decays
+/analysis/h2/set 3 100 -1000 1000 m none linear 100 -1000 1000 m none linear #XY- Decays Non-Zero Momentum
+/analysis/h2/set 4 100 -1000 1000 m none linear 100 -1000 1000 m none linear #YZ- Decays Non-Zero Momentum
+/analysis/h2/set 5 100 -1000 1000 m none linear 100 -1000 1000 m none linear #ZX- Decays Non-Zero Momentum
+/analysis/h2/set 6 100 -1000 1000 m none linear 100 -1000 1000 m none linear #XY- Decays Zero Momentum
+/analysis/h2/set 7 100 -1000 1000 m none linear 100 -1000 1000 m none linear #YZ- Decays Zero Momentum
+/analysis/h2/set 8 100 -1000 1000 m none linear 100 -1000 1000 m none linear #ZX- Decays Zero Momentum
+
+/analysis/h3/set 0 100 -1000 1000 m none linear 100 -1000 1000 m none linear 100 -1000 1000 m none linear #3D_Decay
+
+/run/beamOn 1000000

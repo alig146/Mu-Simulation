@@ -16,9 +16,9 @@
  */
 
 #include "action.hh"
-//#include "PersonalizedSteppingAction.hh"
+#include "PersonalizedSteppingAction.hh"
 #include "PersonalizedRunAction.hh"
-#include "PersonalizedTrackingAction.hh"
+#include "MuonTrackingAction.hh"
 
 #include <tls.hh>
 
@@ -66,12 +66,14 @@ void ActionInitialization::Build() const {
 PersonalizedRunAction* prunAction = new PersonalizedRunAction();
 SetUserAction(prunAction);
 
-PersonalizedTrackingAction* ptrackingAction = new PersonalizedTrackingAction();
-SetUserAction(ptrackingAction);
 
-//PersonalizedSteppingAction* steppingAction = new PersonalizedSteppingAction();
-//SetUserAction(steppingAction);
+MuonTrackingAction* mtrackingAction = new MuonTrackingAction();
+SetUserAction(mtrackingAction);
 
+/*
+PersonalizedSteppingAction* steppingAction = new PersonalizedSteppingAction();
+SetUserAction(steppingAction);
+*/
 
 
 

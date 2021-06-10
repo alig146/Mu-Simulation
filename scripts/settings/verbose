@@ -1,15 +1,15 @@
-/control/verbose 1
+/control/verbose 0
 # 0 : silent
 # 1 : commands
 # 2 : comments
 
-/cuts/verbose 1
+/cuts/verbose 0
 # 0 : silent
 # 1 : warnings
 # 2 : more
 # 3 : debug
 
-/event/stack/verbose 1
+/event/stack/verbose 0
 # 0 : silent
 # 1 : minimum stats
 # 2 : reports
@@ -25,7 +25,7 @@
 # 0 : silent
 # 1 : new field value
 
-/hits/verbose 3
+/hits/verbose 0
 
 /material/verbose 0
 
@@ -34,19 +34,19 @@
 # 1 : warnings
 # 2 : more
 
-/particle/verbose 1
+/particle/verbose 0
 # 0 : silent
 # 1 : warnings
 # 2 : more
 
-/process/verbose 1
+/process/verbose 0
 
-/run/particle/verbose 1
+/run/particle/verbose 0
 # 0 : silent
 # 1 : warnings
 # 2 : more
 
-/run/verbose 2
+/run/verbose 0
 # 0 : silent
 # 1 : main topics
 # 2 : run summary
@@ -59,7 +59,7 @@
 # 4 : step point during process
 # 5 : step length
 
-/vis/verbose 2
+/vis/verbose 0
 # 0 : quiet
 # 1 : startup
 # 2 : errors

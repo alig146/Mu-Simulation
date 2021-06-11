@@ -109,12 +109,16 @@ constexpr auto module_y_edge_length = 9.0*m;
 constexpr auto module_case_thickness = 0.02*m;
 
 constexpr auto full_layer_height = scintillator_height + 2*scintillator_casing_thickness;
+constexpr auto wall_gap = 0.01*m;
+constexpr auto x_edge_increase = 2*full_layer_height + 4*wall_gap;
 
 constexpr auto layer_w_case = full_layer_height;
 
 constexpr auto full_module_height =  (25.0*m - 3.0*layer_w_case - 2.0*layer_spacing) + 5.0*layer_w_case + 4.0*layer_spacing;
 
 constexpr auto scintillator_z_position = 0.00;
+
+constexpr auto wall_height = 20*m;
 
 constexpr int NBEAMLAYERS = 7;
 constexpr auto beam_x_edge_length = 0.10*m;
@@ -540,7 +544,7 @@ G4VPhysicalVolume* Detector::Construct(G4LogicalVolume* world) {
 	// pre_data->Branch("X_H", &X_POS_HIT, "X_H/D");
 	// pre_data->Branch("Y_H", &Y_POS_HIT, "Y_H/D");
 
-	auto DetectorVolume = Construction::BoxVolume("Box", x_edge_length, y_edge_length, full_detector_height,
+	auto DetectorVolume = Construction::BoxVolume("Box", x_edge_length + x_edge_increase, y_edge_length, full_detector_height,
 												  Construction::Material::Air, G4VisAttributes::Invisible);
 
 	//DetectorVolume->SetVisAttributes(G4VisAttributes::Invisible);
@@ -576,7 +580,15 @@ G4VPhysicalVolume* Detector::Construct(G4LogicalVolume* world) {
     _scintillators.push_back(third_hermetic_floor);
     third_hermetic_floor->PlaceIn(DetectorVolume, G4Translate3D(0.0, 0.0, half_detector_height - 2.5*layer_w_case - 2*layer_spacing - steel_height));
 
-	_steel = Construction::BoxVolume("SteelPlate",
+    auto hermetic_wall = new Scintillator("HW1",
+                                            full_layer_height,
+                                            y_edge_length,
+                                            wall_height,
+                                            scintillator_casing_thickness);                                                                      
+    _scintillators.push_back(hermetic_wall);
+    hermetic_wall->PlaceIn(DetectorVolume, G4Translate3D(-0.5L*x_edge_length - 0.5L*full_layer_height - wall_gap, 0.0, half_detector_height -  0.5L*wall_height));
+    
+    _steel = Construction::BoxVolume("SteelPlate",
 			 x_edge_length, y_edge_length, steel_height,
 			 Construction::Material::Iron,
 			 Construction::CasingAttributes());
@@ -625,7 +637,7 @@ namespace CMS{
 
 	auto modified = new G4SubtractionSolid("",
 										   earth_box,
-										   Construction::Box("AirBox", x_edge_length, y_edge_length, air_gap),
+										   Construction::Box("AirBox", x_edge_length + x_edge_increase, y_edge_length, air_gap),
 										   Construction::Transform(0.5L*x_edge_length + x_displacement,
 																   0.5L*y_edge_length + y_displacement,
 																   0.5L*(air_gap-Earth::TotalDepth()) -9.50*m ));
@@ -768,7 +780,7 @@ G4VPhysicalVolume* Detector::ConstructEarth(G4LogicalVolume* world){
 
 	auto modified = Construction::Volume(new G4SubtractionSolid("ModifiedSandstone",
 																sandstone->GetSolid(),
-																Construction::Box("AirBox", x_edge_length, y_edge_length, air_gap),
+																Construction::Box("AirBox", x_edge_length + x_edge_increase, y_edge_length, air_gap),
 																Construction::Transform(0.5L*x_edge_length + x_displacement,
 																0.5L*y_edge_length + y_displacement,
 															    0.5L*(air_gap-Earth::SandstoneDepth()) - 9.50*m)),

@@ -33,11 +33,13 @@ add_library(mu-simulation-lib SHARED
     src/tracking.cc
     
     src/action/ActionInitialization.cc
+    src/action/TrackingAction.cc
     src/action/EventAction.cc
     src/action/GeneratorAction.cc
     src/action/RunAction.cc
     src/action/StepAction.cc
-
+    src/action/StackingAction.cc
+    
     src/geometry/Cavern.cc
     src/geometry/Construction.cc
     src/geometry/Earth.cc
@@ -64,6 +66,7 @@ add_library(mu-simulation-lib SHARED
     src/physics/RangeGenerator.cc
 
     src/util/command_line_parser.cc
+    src/CSVParser/csvParse.cpp
 )
 
 target_link_libraries(mu-simulation-lib PUBLIC

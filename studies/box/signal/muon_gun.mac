@@ -20,4 +20,4 @@
 
 /gen/range/ke 5 GeV
 
-/run/beamOn 50
+/run/beamOn 1000

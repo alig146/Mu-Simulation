@@ -22,6 +22,7 @@
 namespace MATHUSLA { namespace MU {
 
 bool ActionInitialization::Debug = false;
+bool ActionInitialization::Five = true;
 
 namespace { ////////////////////////////////////////////////////////////////////////////////////
 //__Generator Name______________________________________________________________________________
@@ -41,15 +42,19 @@ ActionInitialization::ActionInitialization(const std::string& generator,
 
 //__Build for Thread Master_____________________________________________________________________
 void ActionInitialization::BuildForMaster() const {
-  SetUserAction(new RunAction(_data_dir));
+  
+ SetUserAction(new RunAction(_data_dir));
 }
 //----------------------------------------------------------------------------------------------
 
 //__Build for Threads___________________________________________________________________________
 void ActionInitialization::Build() const {
+
   SetUserAction(new RunAction(_data_dir));
   SetUserAction(new EventAction(100));
   SetUserAction(new GeneratorAction(_generator));
+  SetUserAction(new TrackingAction());
+  //SetUserAction(new StackingAction());
   if (Debug) SetUserAction(new StepAction());
 }
 //----------------------------------------------------------------------------------------------

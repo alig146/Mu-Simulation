@@ -26,7 +26,15 @@
 #include <G4UserSteppingAction.hh>
 #include <G4VUserPrimaryGeneratorAction.hh>
 #include <G4Event.hh>
+#include <G4UserTrackingAction.hh>
 #include <G4Run.hh>
+#include <G4Track.hh>
+#include <G4UserStackingAction.hh>
+#include <G4ParticleTypes.hh>
+#include <G4RunManager.hh>
+#include <G4SystemOfUnits.hh>
+#include <G4UnitsTable.hh>
+#include <G4LorentzVector.hh>
 #include "TROOT.h"
 #include "TTree.h"
 
@@ -43,6 +51,7 @@ public:
   void BuildForMaster() const;
   void Build() const;
   static bool Debug;
+  static bool Five;
 };
 //----------------------------------------------------------------------------------------------
 
@@ -86,6 +95,29 @@ private:
 };
 //----------------------------------------------------------------------------------------------
 
+class TrackingAction: public G4UserTrackingAction{
+
+  public:
+    TrackingAction();
+   ~TrackingAction();
+
+    virtual void PreUserTrackingAction(const G4Track*);
+    virtual void PostUserTrackingAction(const G4Track*);
+
+};
+
+//----------------------------------------------------------------------------------------------
+
+class StackingAction: public G4UserStackingAction{
+ public:
+ StackingAction();
+ virtual ~StackingAction();
+
+ virtual G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track*);
+
+};
+
+//----------------------------------------------------------------------------------------------
 class StepAction : public G4UserSteppingAction {
 public:
 
@@ -93,6 +125,7 @@ public:
   void UserSteppingAction( const G4Step* aStep);
   static void WriteTree(int);
   static TTree* _step_data;
+  void KillSecondaries(const G4Step* step);
 
 };
 

@@ -85,6 +85,11 @@ void StepAction::WriteTree(int id){
   f->Close();
 }
 
+void StepAction::KillSecondaries(const G4Step* step)
+{
+ 
+}
+
 } } /* namespace MATHUSLA::MU */
 
 

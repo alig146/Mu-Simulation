@@ -34,8 +34,11 @@
 #include "geometry/Prototype.hh"
 #include "geometry/Flat.hh"
 #include "geometry/MuonMapper.hh"
+#include "geometry/Earth.hh"
 
 #include "util/io.hh"
+
+#include "MultiParticleChangeCrossSection.hh"
 
 namespace MATHUSLA { namespace MU {
 
@@ -123,7 +126,7 @@ G4VPhysicalVolume* Builder::Construct() {
   std::cout << "Computed tolerance = "
             << G4GeometryTolerance::GetInstance()->GetSurfaceTolerance() / m << " m\n";
 
-  auto worldLV = BoxVolume("World", WorldLength, WorldLength, WorldLength - 700*m);
+  auto worldLV = BoxVolume("World", WorldLength, WorldLength, WorldLength - 1552*m);
 
   if (!_export_dir.empty()) {
     if (_detector == "Flat") {
@@ -172,11 +175,11 @@ G4VPhysicalVolume* Builder::Construct() {
 
   std::cout << "Materials: "
             << *G4Material::GetMaterialTable() << '\n';
-   // const std::string folder = "detector_geo";
-   // const std::string file = "world.gdml";
-   // const std::string arg4 = "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/Schema/gdml.xsd";
 
-   // Construction::Export(world, folder, file, arg4);
+  // const std::string folder = "detector_geo";
+  // const std::string file = "world.gdml";
+  // const std::string arg4 = "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/Schema/gdml.xsd";
+  // Construction::Export(world, folder, file, arg4);
 
   return world;
 }
@@ -196,6 +199,16 @@ void Builder::ConstructSDandField() {
     _data_keys = &Box::Detector::DataKeys;
     _data_key_types = &Box::Detector::DataKeyTypes;
     G4SDManager::GetSDMpointer()->AddNewDetector(new Box::Detector);
+
+    G4LogicalVolume* earth_volume = G4LogicalVolumeStore::GetInstance()->GetVolume("ModifiedSandstone");
+	MultiParticleChangeCrossSection* biasingOperator = new MultiParticleChangeCrossSection;
+	biasingOperator->AddParticle( "mu+" );
+	biasingOperator->AddParticle( "mu-" );
+	biasingOperator->AttachTo(earth_volume);
+	G4cout << " Attaching biasing operator " << biasingOperator->GetName()
+		   << " to logical volume " << earth_volume->GetName()
+		   << G4endl;
+
   } else if (_detector == "MuonMapper") {
     _data_per_event = MuonMapper::Detector::DataPerEvent;
     _data_name = MuonMapper::Detector::DataName;
@@ -209,6 +222,7 @@ void Builder::ConstructSDandField() {
     _data_key_types = &Prototype::Detector::DataKeyTypes;
     G4SDManager::GetSDMpointer()->AddNewDetector(new Prototype::Detector);
   }
+
 }
 //----------------------------------------------------------------------------------------------
 

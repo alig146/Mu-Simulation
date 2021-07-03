@@ -16,11 +16,14 @@
  */
 
 #include <G4MTRunManager.hh>
-#include <Shielding.hh>
 #include <G4StepLimiterPhysics.hh>
 #include <G4UIExecutive.hh>
 #include <G4VisExecutive.hh>
 #include <tls.hh>
+
+#include "FTFP_BERT.hh"
+
+#include "G4GenericBiasingPhysics.hh"
 
 #include "action.hh"
 #include "geometry/Construction.hh"
@@ -109,8 +112,16 @@ int main(int argc, char* argv[]) {
   if (shift_opt.argument)
     Earth::LastShift(std::stold(shift_opt.argument) * m);
 
-  auto physics = new Shielding;
+
+  auto physics = new FTFP_BERT;
+
+  G4GenericBiasingPhysics* biasingPhysics = new G4GenericBiasingPhysics();
+  biasingPhysics->Bias( "mu+" );
+  biasingPhysics->Bias( "mu-" );
+  physics->RegisterPhysics( biasingPhysics );
+
   physics->RegisterPhysics(new G4StepLimiterPhysics);
+
   run->SetUserInitialization(physics);
 
   const auto detector = det_opt.argument ? det_opt.argument : "Box";

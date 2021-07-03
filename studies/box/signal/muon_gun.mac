@@ -13,11 +13,11 @@
 /gen/range/vertex 120 0 -20 m
 /gen/range/p_unit 0 0 -1
 
-/gen/range/phi_min -3.2 rad
-/gen/range/phi_max  3.2 rad
+/gen/range/phi_min -3.14 rad
+/gen/range/phi_max  3.14 rad
 /gen/range/eta_min  1.8
 /gen/range/eta_max -1.8
 
-/gen/range/ke 5 GeV
+/gen/range/ke 10 GeV
 
-/run/beamOn 1000000
+/run/beamOn 1000

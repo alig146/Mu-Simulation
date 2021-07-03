@@ -31,6 +31,8 @@ include(${Geant4_USE_FILE})
 add_library(mu-simulation-lib SHARED
     src/analysis.cc
     src/tracking.cc
+	src/ChangeCrossSection.cc
+	src/MultiParticleChangeCrossSection.cc
     
     src/action/ActionInitialization.cc
     src/action/EventAction.cc

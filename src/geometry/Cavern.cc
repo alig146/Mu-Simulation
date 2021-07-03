@@ -151,9 +151,9 @@ G4LogicalVolume* _calculate_modification(const std::string& name,
 
 //__Construct Cavern____________________________________________________________________________
 G4VPhysicalVolume* Construct(G4LogicalVolume* world) {
-// const std::string folder = "detector_geo";
-// const std::string file4 ="prototype_earth.gdml";
-// const std::string arg4 = "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/Schema/gdml.xsd";
+	//  const std::string folder = "detector_geo";
+	//  const std::string file4 ="prototype_earth.gdml";
+	//  const std::string arg4 = "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/Schema/gdml.xsd";
 
   Material::Define();
   Earth::Material::Define();

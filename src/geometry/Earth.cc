@@ -41,9 +41,13 @@ static auto _buffer_zone_higher_depth =   100.0L*cm;
 static auto _buffer_zone_lower_depth  =    60.0L*cm;
 static auto _sx1_slab_width           =  1500.0L*cm;
 static auto _sx1_slab_depth           =   200.0L*cm;
-static auto _sandstone_depth          =  4530.0L*cm;
-static auto _marl_depth               =  1825.0L*cm;
-static auto _mix_depth                =  3645.0L*cm;
+// static auto _sandstone_depth          =  4530.0L*cm;
+// static auto _marl_depth               =  1825.0L*cm;
+// static auto _mix_depth                =  3645.0L*cm;
+
+static auto _sandstone_depth          =  2501.0L*cm;
+static auto _marl_depth               =  0.0L*cm;
+static auto _mix_depth                =  0.0L*cm;
 //----------------------------------------------------------------------------------------------
 
 } /* anonymous namespace */ ////////////////////////////////////////////////////////////////////
@@ -248,10 +252,10 @@ const G4Translate3D MixTransform() {
 G4VPhysicalVolume* Construct(G4LogicalVolume* world) {
   Material::Define();
   auto earth = Volume();
-  Construction::PlaceVolume(SX1SlabVolume(), earth, SX1SlabTransform());
+  //  Construction::PlaceVolume(SX1SlabVolume(), earth, SX1SlabTransform());
   Construction::PlaceVolume(SandstoneVolume(), earth, SandstoneTransform());
-  Construction::PlaceVolume(MarlVolume(), earth, MarlTransform());
-  Construction::PlaceVolume(MixVolume(), earth, MixTransform());
+  //  Construction::PlaceVolume(MarlVolume(), earth, MarlTransform());
+  //  Construction::PlaceVolume(MixVolume(), earth, MixTransform());
 
   return Construction::PlaceVolume(earth, world, Transform());
 }

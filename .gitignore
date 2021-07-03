@@ -20,6 +20,7 @@
 *.so
 *~
 *#
+*.root
 
 .DAWN_*
 G4History*
@@ -35,5 +36,6 @@ G4History*
 /step_data
 /export
 /detector_geo
+/git_ignore
 
 simulation

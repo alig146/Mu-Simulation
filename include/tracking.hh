@@ -116,6 +116,10 @@ HitCollection* GenerateHitCollection(G4VSensitiveDetector* detector,
                                      G4HCofThisEvent* event);
 //----------------------------------------------------------------------------------------------
 
+//__Convert HitCollection to Cut Analysis Form______________________________________________________
+const Analysis::ROOT::DataEntryList ConvertToCutAnalysis(const HitCollection* collection, std::vector<std::vector<double>> layer_bounds);
+//----------------------------------------------------------------------------------------------
+
 //__Convert HitCollection to Analysis Form______________________________________________________
 const Analysis::ROOT::DataEntryList ConvertToAnalysis(const HitCollection* collection);
 //----------------------------------------------------------------------------------------------

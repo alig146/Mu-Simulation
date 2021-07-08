@@ -105,6 +105,19 @@ void Hit::Print() {
 }
 //----------------------------------------------------------------------------------------------
 
+
+std::ostream& operator<<(std::ostream& os, const std::vector<double>& v)
+{
+    os << "[";
+    for (int i = 0; i < v.size(); ++i) {
+        os << v[i];
+        if (i != v.size() - 1)
+            os << ", ";
+    }
+    os << "]\n";
+    return os;
+}
+
 //__Stream Hit__________________________________________________________________________________
 std::ostream& operator<<(std::ostream& os,
                          const Hit& hit) {
@@ -203,7 +216,72 @@ const Analysis::ROOT::DataEntryList _convert_to_analysis(const HitCollection* co
 }
 //----------------------------------------------------------------------------------------------
 
+//__Convert HitCollection to Cut Analysis Form______________________________________________________
+template<class NameMap>
+const Analysis::ROOT::DataEntryList _convert_to_cut_analysis(const HitCollection* collection, std::vector<std::vector<double>> layer_bounds, NameMap name_map) {
+  constexpr const std::size_t column_count = 14UL;
+
+  Analysis::ROOT::DataEntryList out;
+  out.reserve(column_count);
+
+  const auto size = collection->GetSize();
+  for (std::size_t i = 0; i < column_count; ++i) {
+    Analysis::ROOT::DataEntry entry;
+    entry.reserve(size);
+    out.push_back(entry);
+  }
+
+  std::vector<double> tracker_layers;
+
+  for (std::size_t i = 0; i < size; ++i) {
+	  const auto hit = dynamic_cast<Hit*>(collection->GetHit(i));
+	  if (hit->GetMomentum().py() > 0 && hit->GetDeposit() >= 0.5 && hit->GetPosition().y() > 7000){
+		  for(std::size_t k = 0; k < layer_bounds.size(); k++) {
+			  if (hit->GetPosition().y() > layer_bounds[k][0] && hit->GetPosition().y() < layer_bounds[k][1]){
+				  tracker_layers.push_back(k);
+			  }
+		  }
+	  }
+  }
+
+  // make unique tracker_layers
+  std::sort(tracker_layers.begin(), tracker_layers.end());
+  auto last = std::unique(tracker_layers.begin(), tracker_layers.end());
+  tracker_layers.erase(last, tracker_layers.end());
+  /////////////////////////
+
+  if (tracker_layers.size() >= 3) {
+      for (std::size_t i = 0; i < size; ++i) {
+        const auto hit = dynamic_cast<Hit*>(collection->GetHit(i));
+        out[0].push_back(hit->GetDeposit());
+        out[1].push_back(hit->GetPosition().t());
+        out[2].push_back(name_map(hit->GetChamberID()));
+        out[3].push_back(hit->GetPDGEncoding());
+        out[4].push_back(hit->GetTrackID());
+        out[5].push_back(hit->GetParentID());
+        out[6].push_back(hit->GetPosition().x());
+        out[7].push_back(hit->GetPosition().y());
+        out[8].push_back(hit->GetPosition().z());
+        out[9].push_back(hit->GetMomentum().e());
+        out[10].push_back(hit->GetMomentum().px());
+        out[11].push_back(hit->GetMomentum().py());
+        out[12].push_back(hit->GetMomentum().pz());
+        out[13].push_back(1);
+      }
+  }
+
+
+  return out;
+}
+//----------------------------------------------------------------------------------------------
+
 } /* anonymous namespace */ ////////////////////////////////////////////////////////////////////
+
+//__Convert HitCollection to Analysis Form With Cuts______________________________________________________
+const Analysis::ROOT::DataEntryList ConvertToCutAnalysis(const HitCollection* collection, std::vector<std::vector<double>> layer_bounds) {
+  return _convert_to_cut_analysis(collection, layer_bounds, [](const auto& id) { return std::stold(id); });
+}
+//----------------------------------------------------------------------------------------------
 
 //__Convert HitCollection to Analysis Form______________________________________________________
 const Analysis::ROOT::DataEntryList ConvertToAnalysis(const HitCollection* collection) {
@@ -280,14 +358,14 @@ const Analysis::ROOT::DataEntryList ConvertToAnalysis(const Physics::GenParticle
       pvec.push_back(particles[index]);
     }
   }
-    
+
     constexpr const std::size_t column_count = 20UL;
 
     Analysis::ROOT::DataEntryList out;
     out.reserve(column_count);
 
     const auto size = pvec.size();
-  
+
     for (std::size_t i{}; i < column_count; ++i) {
       Analysis::ROOT::DataEntry entry;
       entry.reserve(size);
@@ -316,9 +394,9 @@ const Analysis::ROOT::DataEntryList ConvertToAnalysis(const Physics::GenParticle
       out[17].push_back(particle.mom.pT());
       out[18].push_back(particle.mom.eta());
       out[19].push_back(particle.mom.phi());
-      
+
   }
-    
+
     return out;
 }
 //----------------------------------------------------------------------------------------------

@@ -95,6 +95,8 @@ constexpr auto scint_x_edge_length = 4.5*m;
 constexpr auto scint_y_edge_length = 0.045*m;
 constexpr auto scintillator_height = 0.02*m;
 
+std::vector<std::vector<double>> y_bounds = {{8003, 8006}, {8105, 8109}, {8502, 8506}, {8605, 8609}, {8708, 8712}, {8811, 8815}, {8914, 8918}};
+
 constexpr auto steel_height = 0.03*m;
 
 constexpr auto air_gap = 30*m;
@@ -160,13 +162,13 @@ constexpr double module_beam_z_pos[7] = {-0.50*full_module_height + 0.50*module_
 
 
 
-// const std::string folder = "detector_geo";
-// const std::string file = "box.gdml";
-// const std::string file2 ="mod.gdml";
-// const std::string file3 ="layer.gdml";
-// const std::string file4 ="earth.gdml";
-// const std::string file5 ="modified.gdml";
-// const std::string arg4 = "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/Schema/gdml.xsd";
+const std::string folder = "detector_geo";
+const std::string file = "box.gdml";
+const std::string file2 ="mod.gdml";
+const std::string file3 ="layer.gdml";
+const std::string file4 ="earth.gdml";
+const std::string file5 ="modified.gdml";
+const std::string arg4 = "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/Schema/gdml.xsd";
 
 
 auto get_module_x_displacement(int tag_number){
@@ -422,6 +424,7 @@ void Detector::EndOfEvent(G4HCofThisEvent*) {
   if (_hit_collection->GetSize() == 0)
     return;
 
+  //const auto collection_data = Tracking::ConvertToCutAnalysis(_hit_collection, y_bounds);
   const auto collection_data = Tracking::ConvertToAnalysis(_hit_collection);
 
   Analysis::ROOT::DataEntryList root_data;
@@ -516,10 +519,10 @@ G4VPhysicalVolume* Detector::ConstructModule(G4LogicalVolume* DetectorVolume, in
 	}
 
 
-	// if (tag_number == 0) {
-	// 	std::cout << "ABOUT TO WRITE GDML FOR MODULE" << std::endl;
-	// 	Construction::Export(ModuleVolume, folder, file2, arg4 );
-	// }
+	if (tag_number == 0) {
+		std::cout << "ABOUT TO WRITE GDML FOR MODULE" << std::endl;
+		Construction::Export(ModuleVolume, folder, file2, arg4 );
+	}
 
 
     return Construction::PlaceVolume(ModuleVolume, DetectorVolume,
@@ -582,7 +585,7 @@ G4VPhysicalVolume* Detector::Construct(G4LogicalVolume* world) {
 			 Construction::CasingAttributes());
 	Construction::PlaceVolume(_steel, DetectorVolume, Construction::Transform(0.0, 0.0, half_detector_height - 0.5*steel_height));
 
-	//	Construction::Export(DetectorVolume, folder, file, arg4 );
+    Construction::Export(DetectorVolume, folder, file, arg4 );
 
 	return Construction::PlaceVolume(DetectorVolume, world,
 		   Construction::Transform(0.5L*x_edge_length + x_displacement, 0.5L*y_edge_length + y_displacement, -0.50*full_detector_height + 20*m));
@@ -627,7 +630,7 @@ namespace CMS{
 
 	auto modified = new G4SubtractionSolid("",
 										   earth_box,
-										   Construction::Box("AirBox", x_edge_length, y_edge_length, air_gap),
+										   Construction::Box("AirBox", x_edge_length + 2.0L*cm, y_edge_length + 2.0L*cm, air_gap),
 										   Construction::Transform(0.5L*x_edge_length + x_displacement,
 																   0.5L*y_edge_length + y_displacement,
 																   0.5L*(air_gap-Earth::TotalDepth()) -9.50*m ));
@@ -637,8 +640,8 @@ namespace CMS{
 
   G4LogicalVolume* SandstoneVolume() {
     using namespace Earth;
-    auto sandstone_box = Construction::Box("", LayerWidthX(), LayerWidthY(), SandstoneDepth());
-
+	//    auto sandstone_box = Construction::Box("", LayerWidthX(), LayerWidthY(), SandstoneDepth());
+    auto sandstone_box = Construction::Box("", LayerWidthX() - 475.0L*m, LayerWidthY() - 715.0L*m, SandstoneDepth());
     return Construction::Volume(sandstone_box, Material::SiO2, Construction::BorderAttributes());
   }
 
@@ -770,7 +773,7 @@ G4VPhysicalVolume* Detector::ConstructEarth(G4LogicalVolume* world){
 
 	auto modified = Construction::Volume(new G4SubtractionSolid("ModifiedSandstone",
 																sandstone->GetSolid(),
-																Construction::Box("AirBox", x_edge_length, y_edge_length, air_gap),
+																Construction::Box("AirBox", x_edge_length + 2.0L*cm, y_edge_length + 2.0L*cm, air_gap),
 																Construction::Transform(0.5L*x_edge_length + x_displacement,
 																0.5L*y_edge_length + y_displacement,
 															    0.5L*(air_gap-Earth::SandstoneDepth()) - 9.50*m)),
@@ -787,7 +790,7 @@ G4VPhysicalVolume* Detector::ConstructEarth(G4LogicalVolume* world){
 
 	////export geometry to gdml files
 	// Construction::Export(CMSVolume(), folder, file5, arg4 );
-	//	Construction::Export(earth, folder, file4, arg4 );
+	Construction::Export(earth, folder, file4, arg4 );
 
 
 	//// Put Range Cuts on earth volume

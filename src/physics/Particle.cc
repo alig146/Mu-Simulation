@@ -43,11 +43,11 @@ const PseudoLorentzTriplet Convert(const G4ThreeVector& momentum) {
 
 //__Convert Pseudo-Lorentz Triplet to Momentum__________________________________________________
 const G4ThreeVector Convert(const PseudoLorentzTriplet& triplet) {
-  const auto pxpz = Cavern::rotate_to_P1(triplet.pT * std::sinh(triplet.eta),
-                                        -triplet.pT * std::cos(triplet.phi));
-  return G4ThreeVector(static_cast<double>(pxpz.first),
+	//  const auto pxpz = Cavern::rotate_to_P1(triplet.pT * std::sinh(triplet.eta),
+	//                                         triplet.pT * std::cos(triplet.phi));
+  return G4ThreeVector(triplet.pT * std::sinh(triplet.eta),
                        triplet.pT * std::sin(triplet.phi),
-                       static_cast<double>(pxpz.second));
+                       triplet.pT * std::cos(triplet.phi));
 }
 //----------------------------------------------------------------------------------------------
 

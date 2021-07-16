@@ -50,6 +50,7 @@ int main(int argc, char* argv[]) {
   option script_opt  ('s', "script",   "Custom Script",             option::required_arguments);
   option events_opt  ('e', "events",   "Event Count",               option::required_arguments);
   option save_all_opt(0,   "save_all", "Save All Generator Events", option::no_arguments);
+  option save_cut_opt(0,   "save_cut", "Save Events With Digi Cuts",option::no_arguments);
   option vis_opt     ('v', "vis",      "Visualization",             option::no_arguments);
   option quiet_opt   ('q', "quiet",    "Quiet Mode",                option::no_arguments);
   option thread_opt  ('j', "threads",
@@ -60,7 +61,7 @@ int main(int argc, char* argv[]) {
 
   const auto script_argc = -1 + util::cli::parse(argv,
     {&help_opt, &gen_opt, &det_opt, &shift_opt, &data_opt, &export_opt, &script_opt, &events_opt,
-     &save_all_opt, &vis_opt, &quiet_opt, &thread_opt});
+	 &save_all_opt, &save_cut_opt, &vis_opt, &quiet_opt, &thread_opt});
 
 
   util::error::exit_when(script_argc && !script_opt.argument,
@@ -126,7 +127,8 @@ int main(int argc, char* argv[]) {
 
   const auto detector = det_opt.argument ? det_opt.argument : "Box";
   const auto export_dir = export_opt.argument ? export_opt.argument : "";
-  run->SetUserInitialization(new Construction::Builder(detector, export_dir, save_all_opt.count));
+  run->SetUserInitialization(new Construction::Builder(detector, export_dir, save_cut_opt.count));
+
 
   const auto generator = gen_opt.argument ? gen_opt.argument : "basic";
   const auto data_dir = data_opt.argument ? data_opt.argument : "data";

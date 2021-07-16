@@ -116,10 +116,6 @@ HitCollection* GenerateHitCollection(G4VSensitiveDetector* detector,
                                      G4HCofThisEvent* event);
 //----------------------------------------------------------------------------------------------
 
-//__Convert HitCollection to Cut Analysis Form______________________________________________________
-const Analysis::ROOT::DataEntryList ConvertToCutAnalysis(const HitCollection* collection, std::vector<std::vector<double>> layer_bounds);
-//----------------------------------------------------------------------------------------------
-
 //__Convert HitCollection to Analysis Form______________________________________________________
 const Analysis::ROOT::DataEntryList ConvertToAnalysis(const HitCollection* collection);
 //----------------------------------------------------------------------------------------------
@@ -135,6 +131,10 @@ const Analysis::ROOT::DataEntryList ConvertToAnalysis(const G4Event* event);
 
 //__Convert GenParticleVector to Analysis Form_____________________________________________________
 const Analysis::ROOT::DataEntryList ConvertToAnalysis(const Physics::GenParticleVector& particles, bool saveall);
+//----------------------------------------------------------------------------------------------
+
+//__Convert HitCollection to Cut Analysis Form______________________________________________________
+const Analysis::ROOT::DataEntryList ConvertToAnalysis(const HitCollection* collection, std::vector<std::vector<double>> layer_bounds, bool savecut);
 //----------------------------------------------------------------------------------------------
 
 //__Convert Extra to Analysis Form______________________________________________________________

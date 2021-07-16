@@ -1,0 +1,17 @@
+/det/select Box
+
+/gen/select range
+
+/gen/range/id 13
+/gen/range/t0 0 ns
+/gen/range/vertex 0 0 -20 m
+/gen/range/p_unit 0 0 1
+
+/gen/range/phi_min  1.1 rad
+/gen/range/phi_max -1.1 rad
+/gen/range/eta_min  0.9
+/gen/range/eta_max -0.9
+
+/gen/range/ke 10 GeV
+
+/run/beamOn 3000

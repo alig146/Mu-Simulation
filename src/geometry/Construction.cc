@@ -253,7 +253,8 @@ void Builder::SetSaveOption(bool option) {
   if (_detector == "Flat") {
     Flat::Detector::SaveAll = option;
   } else if (_detector == "Box") {
-    Box::Detector::SaveAll = option;
+	  //    Box::Detector::SaveAll = option;
+	Box::Detector::SaveCut = option;
   } else if (_detector == "MuonMapper") {
     MuonMapper::Detector::SaveAll = option;
   } else {

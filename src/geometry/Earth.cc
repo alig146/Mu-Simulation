@@ -31,8 +31,10 @@ constexpr auto safety_margin = 1.0*mm;
 
 //__Earth Layer Size Constants__________________________________________________________________
 static auto _lastshift                =     0.0L*cm;
-static auto _layer_width_x            = 82500.0L*cm;
-static auto _layer_width_y            = 82500.0L*cm;
+// static auto _layer_width_x            = 82500.0L*cm;
+// static auto _layer_width_y            = 82500.0L*cm;
+static auto _layer_width_x            = 11000.0L*cm;
+static auto _layer_width_y            = 11000.0L*cm;
 static auto _buffer_zone_x_shift      =  -338.7L*cm;
 static auto _buffer_zone_length       =  1376.0L*cm;
 static auto _buffer_zone_higher_width =   900.0L*cm;
@@ -45,7 +47,7 @@ static auto _sx1_slab_depth           =   200.0L*cm;
 // static auto _marl_depth               =  1825.0L*cm;
 // static auto _mix_depth                =  3645.0L*cm;
 
-static auto _sandstone_depth          =  2501.0L*cm;
+static auto _sandstone_depth          =  3001.0L*cm;
 static auto _marl_depth               =  0.0L*cm;
 static auto _mix_depth                =  0.0L*cm;
 //----------------------------------------------------------------------------------------------
@@ -253,7 +255,7 @@ G4VPhysicalVolume* Construct(G4LogicalVolume* world) {
   Material::Define();
   auto earth = Volume();
   //  Construction::PlaceVolume(SX1SlabVolume(), earth, SX1SlabTransform());
-  Construction::PlaceVolume(SandstoneVolume(), earth, SandstoneTransform());
+  //  Construction::PlaceVolume(SandstoneVolume(), earth, SandstoneTransform());
   //  Construction::PlaceVolume(MarlVolume(), earth, MarlTransform());
   //  Construction::PlaceVolume(MixVolume(), earth, MixTransform());
 

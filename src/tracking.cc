@@ -226,16 +226,15 @@ const Analysis::ROOT::DataEntryList _convert_to_cut_analysis(const HitCollection
 
   const auto size = collection->GetSize();
   for (std::size_t i = 0; i < column_count; ++i) {
-    Analysis::ROOT::DataEntry entry;
-    entry.reserve(size);
-    out.push_back(entry);
+	  Analysis::ROOT::DataEntry entry;
+	  entry.reserve(size);
+	  out.push_back(entry);
   }
 
   std::vector<double> tracker_layers;
-
   for (std::size_t i = 0; i < size; ++i) {
 	  const auto hit = dynamic_cast<Hit*>(collection->GetHit(i));
-	  if (hit->GetMomentum().py() > 0 && hit->GetDeposit() >= 0.5 && hit->GetPosition().y() > 7000){
+	  if (hit->GetMomentum().py() > 0 && hit->GetDeposit() > 0.5 && hit->GetPosition().y() > 7000){
 		  for(std::size_t k = 0; k < layer_bounds.size(); k++) {
 			  if (hit->GetPosition().y() > layer_bounds[k][0] && hit->GetPosition().y() < layer_bounds[k][1]){
 				  tracker_layers.push_back(k);
@@ -268,20 +267,14 @@ const Analysis::ROOT::DataEntryList _convert_to_cut_analysis(const HitCollection
         out[12].push_back(hit->GetMomentum().pz());
         out[13].push_back(1);
       }
-  }
-
-
+  }	 
+ 
   return out;
 }
 //----------------------------------------------------------------------------------------------
 
 } /* anonymous namespace */ ////////////////////////////////////////////////////////////////////
 
-//__Convert HitCollection to Analysis Form With Cuts______________________________________________________
-const Analysis::ROOT::DataEntryList ConvertToCutAnalysis(const HitCollection* collection, std::vector<std::vector<double>> layer_bounds) {
-  return _convert_to_cut_analysis(collection, layer_bounds, [](const auto& id) { return std::stold(id); });
-}
-//----------------------------------------------------------------------------------------------
 
 //__Convert HitCollection to Analysis Form______________________________________________________
 const Analysis::ROOT::DataEntryList ConvertToAnalysis(const HitCollection* collection) {
@@ -398,6 +391,16 @@ const Analysis::ROOT::DataEntryList ConvertToAnalysis(const Physics::GenParticle
   }
 
     return out;
+}
+//----------------------------------------------------------------------------------------------
+
+//__Convert HitCollection to Analysis Form With Cuts______________________________________________________
+const Analysis::ROOT::DataEntryList ConvertToAnalysis(const HitCollection* collection, std::vector<std::vector<double>> layer_bounds, bool savecut) {
+  if (savecut) {
+	  return _convert_to_cut_analysis(collection, layer_bounds, [](const auto& id) { return std::stold(id); });
+  } else {
+	  return _convert_to_analysis(collection, [](const auto& id) { return std::stold(id); });
+  }
 }
 //----------------------------------------------------------------------------------------------
 

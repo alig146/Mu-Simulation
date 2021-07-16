@@ -8,7 +8,7 @@
 #include "geometry/Earth.hh"
 #include "physics/Units.hh"
 #include "tracking.hh"
-#include "geometry/Cavern.hh"
+//#include "geometry/Cavern.hh"
 #include <G4IntersectionSolid.hh>
 #include <G4UnionSolid.hh>
 #include <G4SubtractionSolid.hh>
@@ -51,16 +51,16 @@ bool _between(const double min_layer,
 //----------------------------------------------------------------------------------------------
 
 //__Calculate Subtraction of Volumes____________________________________________________________
-G4LogicalVolume* _calculate_modification(const std::string& name,
-                                         G4LogicalVolume* earth_component,
-                                         const double base_depth,
-                                         const double top_depth) {
-  return Construction::Volume(new G4SubtractionSolid(name,
-    earth_component->GetSolid(),
-    Cavern::Volume()->GetSolid(),
-    Construction::Transform(0, 1.7 * m, -0.5 * (base_depth - top_depth) + Cavern::CenterDepth() - top_depth)),
-    earth_component->GetMaterial());
-}
+// G4LogicalVolume* _calculate_modification(const std::string& name,
+//                                          G4LogicalVolume* earth_component,
+//                                          const double base_depth,
+//                                          const double top_depth) {
+//   return Construction::Volume(new G4SubtractionSolid(name,
+//     earth_component->GetSolid(),
+//     Cavern::Volume()->GetSolid(),
+//     Construction::Transform(0, 1.7 * m, -0.5 * (base_depth - top_depth) + Cavern::CenterDepth() - top_depth)),
+//     earth_component->GetMaterial());
+// }
 
 }
 
@@ -84,7 +84,7 @@ constexpr int NMODULES{100};
 constexpr int n_top_layers{5};
 constexpr auto x_edge_length = 99.0*m;
 constexpr auto y_edge_length = 99.0*m;
-constexpr auto x_displacement = 70.0*m;
+constexpr auto x_displacement = 0.0*m;
 constexpr auto y_displacement = -49.5*m;
 constexpr auto z_displacement = 6001.5*cm;
 
@@ -201,6 +201,7 @@ const std::string& Detector::DataName = "box_run";
 const Analysis::ROOT::DataKeyList Detector::DataKeys = Analysis::ROOT::DefaultDataKeyList;
 const Analysis::ROOT::DataKeyTypeList Detector::DataKeyTypes = Analysis::ROOT::DefaultDataKeyTypeList;
 bool Detector::SaveAll = false;
+bool Detector::SaveCut = false;
 //----------------------------------------------------------------------------------------------
 
 //__Detector Constructor________________________________________________________________________
@@ -424,8 +425,10 @@ void Detector::EndOfEvent(G4HCofThisEvent*) {
   if (_hit_collection->GetSize() == 0)
     return;
 
-  //const auto collection_data = Tracking::ConvertToCutAnalysis(_hit_collection, y_bounds);
-  const auto collection_data = Tracking::ConvertToAnalysis(_hit_collection);
+  const auto collection_data = Tracking::ConvertToAnalysis(_hit_collection, y_bounds, SaveCut);
+
+  if (collection_data.size() == 0)
+	  return;
 
   Analysis::ROOT::DataEntryList root_data;
   root_data.reserve(24UL);
@@ -550,7 +553,7 @@ G4VPhysicalVolume* Detector::Construct(G4LogicalVolume* world) {
 
 	for (int module_number = 0; module_number < NMODULES; module_number++){
 		auto current = Detector::ConstructModule(DetectorVolume, module_number,
-					   0.5L*x_edge_length + x_displacement, //add extra terms for displacement from center here
+					   x_displacement, //add extra terms for displacement from center here
 					   0.5L*y_edge_length + y_displacement,
 					   -half_detector_height + steel_height + 3.0*layer_w_case + 2.0*layer_spacing);
 	}
@@ -588,7 +591,7 @@ G4VPhysicalVolume* Detector::Construct(G4LogicalVolume* world) {
     Construction::Export(DetectorVolume, folder, file, arg4 );
 
 	return Construction::PlaceVolume(DetectorVolume, world,
-		   Construction::Transform(0.5L*x_edge_length + x_displacement, 0.5L*y_edge_length + y_displacement, -0.50*full_detector_height + 20*m));
+		   Construction::Transform(x_displacement, 0.5L*y_edge_length + y_displacement, -0.50*full_detector_height + 20*m));
 
 }
 
@@ -617,8 +620,8 @@ namespace CMS{
   constexpr auto CMSDetectorLength   = 20.00L*m;
   constexpr auto CMSDetectorRadius   = 8.00L*m;
 
-  constexpr auto AS_Depth            = 20.50*m;
-  constexpr auto AS_Width            = 20.50*m;
+  constexpr auto AS_Depth            = 2.50*m;
+  constexpr auto AS_Width            = 2.50*m;
   constexpr auto AS_Height           = earth_total_depth - 2 * uxc55_outer_radius;
   constexpr auto AS_Thickness        = 1.5*m;
 
@@ -631,18 +634,23 @@ namespace CMS{
 	auto modified = new G4SubtractionSolid("",
 										   earth_box,
 										   Construction::Box("AirBox", x_edge_length + 2.0L*cm, y_edge_length + 2.0L*cm, air_gap),
-										   Construction::Transform(0.5L*x_edge_length + x_displacement,
+										   Construction::Transform(x_displacement,
 																   0.5L*y_edge_length + y_displacement,
 																   0.5L*(air_gap-Earth::TotalDepth()) -9.50*m ));
 
     return Construction::Volume(modified);
   }
 
+  // G4LogicalVolume* SandstoneVolume() {
+  //   using namespace Earth;
+	// //    auto sandstone_box = Construction::Box("", LayerWidthX(), LayerWidthY(), SandstoneDepth());
+  //   auto sandstone_box = Construction::Box("", LayerWidthX(), LayerWidthY(), SandstoneDepth());
+  //   return Construction::Volume(sandstone_box, Material::SiO2, Construction::BorderAttributes());
+  // }
+
   G4LogicalVolume* SandstoneVolume() {
     using namespace Earth;
-	//    auto sandstone_box = Construction::Box("", LayerWidthX(), LayerWidthY(), SandstoneDepth());
-    auto sandstone_box = Construction::Box("", LayerWidthX() - 475.0L*m, LayerWidthY() - 715.0L*m, SandstoneDepth());
-    return Construction::Volume(sandstone_box, Material::SiO2, Construction::BorderAttributes());
+    return Construction::BoxVolume("modified_sandstone", LayerWidthX(), LayerWidthY(), SandstoneDepth(), Material::SiO2);
   }
 
   long double BaseDepth() {
@@ -697,7 +705,7 @@ namespace CMS{
                                          const double top_depth) {
     return Construction::Volume(new G4SubtractionSolid(name,
       earth_component->GetSolid(),
-      Construction::Box("AirBox2", AS_Width, AS_Depth, 25*m),
+      Construction::Box("AirBox2", 1.0, 1.0, 1.0),
       Construction::Transform(-0.5*uxc55_cavern_length + 0.5*AS_Width, 0.0, 0.0)
       *Construction::Rotate(0, 0, 1, 90*deg)
       *Construction::Transform(0.0, 0.0, -0.5 * (base_depth - top_depth) + CenterDepth() - top_depth - uxc55_outer_radius - 0.5*AS_Height)),
@@ -731,8 +739,10 @@ G4VPhysicalVolume* Detector::ConstructEarth(G4LogicalVolume* world){
 	// 						  marl_top + Earth::MarlDepth(), marl_top),
 	// 						  earth, Earth::MarlTransform());
 
-	auto sandstone = CMS::_calculate_modification("modified_sandstone", CMS::SandstoneVolume(),
-												  sandstone_top + Earth::SandstoneDepth(), sandstone_top);
+
+    auto sandstone = CMS::SandstoneVolume();
+	// auto sandstone = CMS::_calculate_modification("modified_sandstone", CMS::SandstoneVolume(),
+	// 											  sandstone_top + Earth::SandstoneDepth(), sandstone_top);
 
 	/////////////// UXC55 AND CMS DETECTOR CONSTRUCTION ////////////////////////////////////////
 
@@ -773,8 +783,8 @@ G4VPhysicalVolume* Detector::ConstructEarth(G4LogicalVolume* world){
 
 	auto modified = Construction::Volume(new G4SubtractionSolid("ModifiedSandstone",
 																sandstone->GetSolid(),
-																Construction::Box("AirBox", x_edge_length + 2.0L*cm, y_edge_length + 2.0L*cm, air_gap),
-																Construction::Transform(0.5L*x_edge_length + x_displacement,
+																Construction::Box("AirBox3", x_edge_length + 2.0L*cm, y_edge_length + 2.0L*cm, air_gap),
+																Construction::Transform(x_displacement,
 																0.5L*y_edge_length + y_displacement,
 															    0.5L*(air_gap-Earth::SandstoneDepth()) - 9.50*m)),
 									        	                Earth::Material::SiO2);

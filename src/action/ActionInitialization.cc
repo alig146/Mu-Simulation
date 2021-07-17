@@ -16,13 +16,15 @@
  */
 
 #include "action.hh"
-
+#include "PhysicsList.hh"
 #include <tls.hh>
+#include "G4MTRunManager.hh"
 
 namespace MATHUSLA { namespace MU {
 
 bool ActionInitialization::Debug = false;
-bool ActionInitialization::Five = true;
+
+class CLHEP;
 
 namespace { ////////////////////////////////////////////////////////////////////////////////////
 //__Generator Name______________________________________________________________________________
@@ -51,10 +53,13 @@ void ActionInitialization::BuildForMaster() const {
 void ActionInitialization::Build() const {
 
   SetUserAction(new RunAction(_data_dir));
-  SetUserAction(new EventAction(100));
+  EventAction* eAction = new EventAction(100);
+  SetUserAction(eAction);
   SetUserAction(new GeneratorAction(_generator));
-  SetUserAction(new TrackingAction());
-  //SetUserAction(new StackingAction());
+
+//TrackingAction* trackingAction = new TrackingAction();
+//SetUserAction(trackingAction);
+
   if (Debug) SetUserAction(new StepAction());
 }
 //----------------------------------------------------------------------------------------------

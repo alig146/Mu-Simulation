@@ -57,6 +57,7 @@ namespace detail { /////////////////////////////////////////////////////////////
 //__Execute Geant4 Command Helper_______________________________________________________________
 inline void Execute(G4UImanager* manager,
                     const std::string& command) {
+  G4cout<<"Execute (G4UImanager* maager....)"<<command.c_str() <<"  ------------------------"<<G4endl;
   manager->ApplyCommand(command.c_str());
 }
 template<class ...String>

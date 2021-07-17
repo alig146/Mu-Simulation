@@ -125,6 +125,8 @@ void RunAction::BeginOfRunAction(const G4Run* run) {
 
   if (!G4Threading::IsWorkerThread())
     std::cout << "\n\n";
+
+  
 }
 //----------------------------------------------------------------------------------------------
 
@@ -198,5 +200,8 @@ std::size_t RunAction::EventCount() {
   return _event_count;
 }
 //----------------------------------------------------------------------------------------------
+
+
+
 
 } } /* namespace MATHUSLA::MU */

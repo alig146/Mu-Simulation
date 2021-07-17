@@ -14,13 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#define debug
 #include <G4MTRunManager.hh>
 #include <FTFP_BERT.hh>
 #include <G4StepLimiterPhysics.hh>
 #include <G4UIExecutive.hh>
 #include <G4VisExecutive.hh>
 #include <tls.hh>
+#include <PhysicsList.hh>
 
 #include "action.hh"
 #include "geometry/Construction.hh"
@@ -94,7 +95,9 @@ int main(int argc, char* argv[]) {
   } else if (!thread_opt.count) {
     thread_opt.count = 2;
   }
-  auto run = new G4MTRunManager;
+//Replace three body muon decays with five body decays
+G4bool five = false;
+auto run = new G4MTRunManager();
   thread_opt.count=1;
   std::cout << "Warning!!!!! You can only run one thread.  This doesn't work, otherwise." << std::endl;
   run->SetNumberOfThreads(thread_opt.count);
@@ -109,10 +112,15 @@ int main(int argc, char* argv[]) {
   if (shift_opt.argument)
     Earth::LastShift(std::stold(shift_opt.argument) * m);
 
+if(five){
+auto physics = new PhysicsList();
+run->SetUserInitialization(physics);
+
+}else{
   auto physics = new FTFP_BERT;
   physics->RegisterPhysics(new G4StepLimiterPhysics);
   run->SetUserInitialization(physics);
-
+}
   const auto detector = det_opt.argument ? det_opt.argument : "Box";
   const auto export_dir = export_opt.argument ? export_opt.argument : "";
   run->SetUserInitialization(new Construction::Builder(detector, export_dir, save_all_opt.count));

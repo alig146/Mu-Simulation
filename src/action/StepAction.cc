@@ -72,6 +72,9 @@ void StepAction::UserSteppingAction( const G4Step* step){
   StepDataStore::_material_index = step_point->GetMaterial()->GetIndex();
   _step_data->Fill();
 
+  
+
+
 }
 
 void StepAction::WriteTree(int id){
@@ -85,10 +88,6 @@ void StepAction::WriteTree(int id){
   f->Close();
 }
 
-void StepAction::KillSecondaries(const G4Step* step)
-{
- 
-}
 
 } } /* namespace MATHUSLA::MU */
 

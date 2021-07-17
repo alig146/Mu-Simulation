@@ -49,7 +49,7 @@ fi
 mkdir -p build
 cd build
 
-if [[ "$CONFIG_CMAKE" -eq 1 ]]; then cmake -DCMAKE_INSTALL_PREFIX=../.temp/sim-install/ ..;   fi;
+if [[ "$CONFIG_CMAKE" -eq 1 ]]; then cmake -DCMAKE_INSTALL_PREFIX=../.temp/sim-install/ .. -DCMAKE_BUILD_TYPE=Debug --trace ;   fi;
 if [[ "$CLEAN_BUILD"  -eq 1 ]]; then make clean; fi;
 
 make -j8

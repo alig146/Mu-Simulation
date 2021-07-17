@@ -23,40 +23,34 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// 
-/// \file B3StackingAction.cc
-/// \brief Implementation of the B3StackingAction class
+//
+/// \file field/field04/include/F04PhysicsList.hh
+/// \brief Definition of the F04PhysicsList class
+//
 
-#include "action.hh"
+#ifndef PhysicsList_h
+#define PhysicsList_h 1
 
+#include "globals.hh"
+#include "G4VModularPhysicsList.hh"
+#include "MuonDataController.hh"
+
+class G4VPhysicsConstructor;
 namespace MATHUSLA { namespace MU {
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-StackingAction::StackingAction()
-{ }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-StackingAction::~StackingAction()
-{ }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-G4ClassificationOfNewTrack
-StackingAction::ClassifyNewTrack(const G4Track* track)
+class PhysicsList: public G4VModularPhysicsList
 {
-  //keep primary particle
-  if (track->GetParentID() == 0) return fUrgent;
+public:
 
-  //Determine parent
-  auto ParentId = track->GetParentID();
-  auto trackId = track->GetTrackID();
-  auto name = track->GetDefinition()->GetParticleName();
+    PhysicsList();
+    virtual ~PhysicsList();
 
-  G4cout<<"ParentID: "<<ParentId<<" trackId: "<<trackId<<" name: "<<name<<G4endl;
-  return fUrgent;
-  
-}
+    virtual void ConstructParticle();
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+private:
+
+    MuonDataController* fData;
+
+};
 }}
+#endif

@@ -62,56 +62,28 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track)
 void TrackingAction::PostUserTrackingAction(const G4Track* track)
 {
 
-   //Make sure 5-body muon decays are turned on
-   if(ActionInitialization::Five != true){return;}
    auto ParticleType=track->GetParticleDefinition()->GetPDGEncoding();
    
    //Determine that the track is a muon or anti-muon
    if((ParticleType !=13) && (ParticleType != -13)){return;} 
-
    const std::vector<const G4Track*>* secondariesInCurrentStep
                               = track->GetStep()->GetSecondaryInCurrentStep();
    size_t nbtrkCurrent = (*secondariesInCurrentStep).size();
-
-   //Determine that a three body decay has occured
+G4cout<<"End of muon with "<<nbtrkCurrent<<" secondaries"<<G4endl;
+   //Determine that the new decay has occured
    if(nbtrkCurrent !=3){return;}
+   G4cout<<"Muon status "<<track->GetTrackStatus()<<" energy "<<track->GetTotalEnergy()<<G4endl;   
    
-   //kill secondaries from 3 body decay  
+   //list info from secondaries  
    for(int i=0; i<nbtrkCurrent; i++){
    const G4Track* strack = secondariesInCurrentStep->at(i);
    auto sname = strack->GetDefinition()->GetParticleName();
-  
-   G4Track* str = (G4Track*) strack;
-   str->SetTrackStatus(fStopAndKill);}
-   
-   //Information for inserting 5-Body Decay
-   auto muonMomentum = track->GetMomentum();
-   auto XMuonMomentum = muonMomentum.getY();
-   auto YMuonMomentum = -(muonMomentum.getZ())+80*m;
-   auto ZMuonMomentum = muonMomentum.getX();
-   auto muonEnergy = track->GetTotalEnergy();
-   
-   //anti will flip secondaries based on muon or anti-muon
-   G4int anti = 1;
-   if(ParticleType == 13){anti = -1;}
-   
-   //make 4-vector for muon
-   CLHEP::HepLorentzVector muon4Momentum = CLHEP::HepLorentzVector(muonMomentum,muonEnergy);
-   
-   //Get secondary particles data
-
-   //Make secondary particle 4 momentum vectors
-      
-   //Rotate secondary particles along correct axis
-    
-   //Boost secondary particles to correct frame
-
-   //Create tracks with this data
-   
+   auto momentum = strack->GetMomentum();  
+   G4cout<<"Secondary "<<i<<" is "<<sname<<" with momentum "<<momentum<<G4endl;   
 
 }
- 
-
+     
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 }}

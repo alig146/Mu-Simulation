@@ -35,13 +35,17 @@
 #include <G4SystemOfUnits.hh>
 #include <G4UnitsTable.hh>
 #include <G4LorentzVector.hh>
+#include <G4Positron.hh>
+#include <G4Electron.hh>
+#include <G4StackManager.hh>
 #include "TROOT.h"
 #include "TTree.h"
+#include "G4ProcessManager.hh"
 
 #include "physics/Generator.hh"
 #include "ui.hh"
 
-namespace MATHUSLA { namespace MU {
+namespace MATHUSLA { namespace MU { 
 
 //__Geant4 Action Initializer___________________________________________________________________
 class ActionInitialization : public G4VUserActionInitialization {
@@ -63,6 +67,7 @@ public:
   void EndOfEventAction(const G4Event* event);
   static const G4Event* GetEvent();
   static size_t EventID();
+  G4bool FiveBodyDecay;
 };
 //----------------------------------------------------------------------------------------------
 
@@ -95,6 +100,18 @@ private:
 };
 //----------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------
+
+class StackingAction: public G4UserStackingAction{
+  
+  public:
+   StackingAction();
+   virtual ~StackingAction();
+
+   virtual G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track*);
+ };
+
+//----------------------------------------------------------------------------------------------
 class TrackingAction: public G4UserTrackingAction{
 
   public:
@@ -102,19 +119,7 @@ class TrackingAction: public G4UserTrackingAction{
    ~TrackingAction();
 
     virtual void PreUserTrackingAction(const G4Track*);
-    virtual void PostUserTrackingAction(const G4Track*);
-
-};
-
-//----------------------------------------------------------------------------------------------
-
-class StackingAction: public G4UserStackingAction{
- public:
- StackingAction();
- virtual ~StackingAction();
-
- virtual G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track*);
-
+    virtual void PostUserTrackingAction(const G4Track*); 
 };
 
 //----------------------------------------------------------------------------------------------
@@ -125,7 +130,6 @@ public:
   void UserSteppingAction( const G4Step* aStep);
   static void WriteTree(int);
   static TTree* _step_data;
-  void KillSecondaries(const G4Step* step);
 
 };
 

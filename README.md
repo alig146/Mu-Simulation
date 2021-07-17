@@ -1,7 +1,5 @@
 # MATHUSLA Mu-Simulation
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/71dc15058b39409ea724775ec2b9816d)](https://app.codacy.com/app/MATHUSLA/Mu-Simulation?utm_source=github.com&utm_medium=referral&utm_content=MATHUSLA/Mu-Simulation&utm_campaign=badger)
-
 _simulation of muons through earth material_
 
 ## Build & Run
@@ -29,9 +27,11 @@ The simulation executable itself comes with several configuration parameters:
 | Custom Script         | `-s <file>`      | `--script=<file>`   |
 | Data Output Directory | `-o <dir>`       | `--out=<dir>`       |
 | Number of Threads     | `-j <count>`     | `--threads=<count>` |
-| Visualization         | `-v`             | `--vis`             |
-| Quiet Mode            | `-q`             | `--quiet`           |
-| Help                  | `-h`             | `--help`            |
+| Visualization             | `-v`             | `--vis`             |
+| Quiet Mode                | `-q`             | `--quiet`           |
+| Help                      | `-h`             | `--help`            |
+| Save All Generator Events | `NA`             | `--save_all`        |
+| Save Events With Pseudo-Digi Cuts | `NA`             | `--save_cut`|
 
 Arguments can also be passed through the simulation to a script. Adding key value pairs which correspond to aliased arguments in a script, will be forwarded through. Here's an example:
 

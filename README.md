@@ -33,6 +33,8 @@ The simulation executable itself comes with several configuration parameters:
 | Save All Generator Events | `NA`             | `--save_all`        |
 | Save Events With Pseudo-Digi Cuts | `NA`             | `--save_cut`|
 
+An example script for running muon gun above ground, to emulate cosmic muons, can be found in studies/box/cosmics/muon/
+
 Arguments can also be passed through the simulation to a script. Adding key value pairs which correspond to aliased arguments in a script, will be forwarded through. Here's an example:
 
 ```

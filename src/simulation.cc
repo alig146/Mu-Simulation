@@ -22,6 +22,7 @@
 #include <G4VisExecutive.hh>
 #include <tls.hh>
 #include <PhysicsList.hh>
+#include <MuonDataController.hh>
 
 #include "action.hh"
 #include "geometry/Construction.hh"
@@ -48,6 +49,8 @@ int main(int argc, char* argv[]) {
   option script_opt  ('s', "script",   "Custom Script",             option::required_arguments);
   option events_opt  ('e', "events",   "Event Count",               option::required_arguments);
   option save_all_opt(0,   "save_all", "Save All Generator Events", option::no_arguments);
+  option five_body_muon_decay_opt('f',   "five_muon", "Make 3-body muon decay 5-body", option::no_arguments);
+  option non_random_muon_decay_opt('n',   "non_random", "Make 5-body muon decays in order", option::no_arguments);
   option vis_opt     ('v', "vis",      "Visualization",             option::no_arguments);
   option quiet_opt   ('q', "quiet",    "Quiet Mode",                option::no_arguments);
   option thread_opt  ('j', "threads",
@@ -58,7 +61,7 @@ int main(int argc, char* argv[]) {
 
   const auto script_argc = -1 + util::cli::parse(argv,
     {&help_opt, &gen_opt, &det_opt, &shift_opt, &data_opt, &export_opt, &script_opt, &events_opt,
-     &save_all_opt, &vis_opt, &quiet_opt, &thread_opt});
+     &save_all_opt, &five_body_muon_decay_opt, &non_random_muon_decay_opt, &vis_opt, &quiet_opt, &thread_opt});
 
 
   util::error::exit_when(script_argc && !script_opt.argument,
@@ -95,8 +98,7 @@ int main(int argc, char* argv[]) {
   } else if (!thread_opt.count) {
     thread_opt.count = 2;
   }
-//Replace three body muon decays with five body decays
-G4bool five = false;
+
 auto run = new G4MTRunManager();
   thread_opt.count=1;
   std::cout << "Warning!!!!! You can only run one thread.  This doesn't work, otherwise." << std::endl;
@@ -112,15 +114,27 @@ auto run = new G4MTRunManager();
   if (shift_opt.argument)
     Earth::LastShift(std::stold(shift_opt.argument) * m);
 
-if(five){
+//G4bool fiveBodyMuonDecays = five_body_muon_decay_opt.count;
+G4bool fiveBodyMuonDecays = five_body_muon_decay_opt.count;
+G4bool randomize = !(non_random_muon_decay_opt.count);
+
+G4cout<<"fiveBodyMuonDecays "<<fiveBodyMuonDecays<<" randomize "<<randomize<<G4endl;
+
+if(fiveBodyMuonDecays){
 auto physics = new PhysicsList();
 run->SetUserInitialization(physics);
+MuonDataController* controller = MuonDataController::getMuonDataController();
+controller->setRandom(randomize);
 
 }else{
   auto physics = new FTFP_BERT;
   physics->RegisterPhysics(new G4StepLimiterPhysics);
   run->SetUserInitialization(physics);
+  util::error::exit_when(!randomize,"You have set the flag -n so that the order of five-body muon decays are not random, but you have not set -f to turn on five-body muon decays. \n Turn on five-body muon decays and try again, or do not use the flag -n");
+
 }
+
+
   const auto detector = det_opt.argument ? det_opt.argument : "Box";
   const auto export_dir = export_opt.argument ? export_opt.argument : "";
   run->SetUserInitialization(new Construction::Builder(detector, export_dir, save_all_opt.count));

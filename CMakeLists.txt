@@ -41,7 +41,6 @@ add_library(mu-simulation-lib SHARED
     src/action/PhysicsList.cc
     src/action/FiveBodyMuonDecayChannel.cc
     src/action/MuonDataController.cc
-    include/MuonDataController.hh
     
     src/geometry/Cavern.cc
     src/geometry/Construction.cc
@@ -69,7 +68,6 @@ add_library(mu-simulation-lib SHARED
     src/physics/RangeGenerator.cc
 
     src/util/command_line_parser.cc
-    src/CSVParser/csvParse.cpp
 )
 
 target_link_libraries(mu-simulation-lib PUBLIC

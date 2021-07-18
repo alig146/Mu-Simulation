@@ -165,6 +165,7 @@ G4DecayProducts* FiveBodyMuonDecayChannel::DecayIt(G4double)
   
 //Define parser
 
+G4cout<<"Five Body Muon Decay ================================================================="<<G4endl;
 G4double insertParticles[9];
 G4bool random = fData->getRandom();
 G4int muonDecays = fData->getMuonDecays();
